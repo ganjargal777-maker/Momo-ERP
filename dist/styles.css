@@ -36,3 +36,4 @@
 .user-status.active{color:var(--success)}.status-display.delivered{background:var(--success-soft);color:var(--success)}
 .live-pill{color:var(--success);background:var(--success-soft)}.live-pill i{background:var(--success)}
 .customer-cell .avatar{background:var(--brand-soft);color:var(--brand-dark)}.bar-col b{background:var(--brand-dark)}
+.toast.error{background:#6f2020}.toast.error svg{color:#ffb1b1}.toast.error span{color:#ffd5d5}

@@ -83,7 +83,7 @@
         catch { payload = {}; }
         if (!response.ok || payload.ok !== true) {
           const requestId = payload.requestId ? ` (ID: ${payload.requestId})` : '';
-          throw new Error(`${payload.error || `Серверийн алдаа (${response.status})`}${requestId}`);
+          throw new Error(`${payload.error || payload.message || `Серверийн алдаа (${response.status})`}${requestId}`);
         }
         return payload;
       }

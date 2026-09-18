@@ -81,13 +81,18 @@ Deno.serve(async (request: Request) => {
   if (!uuidPattern.test(roleId)) return json(origin, 400, { error: "Хандах эрхийн сонголт буруу байна." });
   if (startDate && !datePattern.test(startDate)) return json(origin, 400, { error: "Ажилд орсон огноо буруу байна." });
 
-  const { data: role, error: roleError } = await adminClient
+  const { data: role, error: roleError } = await callerClient
     .from("roles")
-    .select("id")
+    .select("id,organization_id")
     .eq("id", roleId)
-    .eq("organization_id", callerProfile.organization_id)
     .maybeSingle();
-  if (roleError || !role) return json(origin, 400, { error: "Сонгосон хандах эрх олдсонгүй." });
+  if (roleError) {
+    console.error("invite-user role lookup failed", roleError);
+    return json(origin, 500, { error: "Хандах эрхийн мэдээллийг шалгаж чадсангүй." });
+  }
+  if (!role || role.organization_id !== callerProfile.organization_id) {
+    return json(origin, 400, { error: "Сонгосон хандах эрх тухайн байгууллагад олдсонгүй." });
+  }
 
   const { data: duplicateProfile } = await adminClient.from("profiles").select("id").ilike("email", email).maybeSingle();
   if (duplicateProfile) return json(origin, 409, { error: "Энэ цахим хаягтай хэрэглэгч бүртгэлтэй байна." });
@@ -102,10 +107,16 @@ Deno.serve(async (request: Request) => {
     },
   });
   if (inviteError || !invitation.user) {
-    const duplicate = /already|registered|exists/i.test(inviteError?.message ?? "");
+    const inviteMessage = inviteError?.message ?? "";
+    const duplicate = /already|registered|exists/i.test(inviteMessage);
+    const rateLimited = /rate|limit|too many/i.test(inviteMessage);
     console.error("invite-user auth invitation failed", inviteError);
     return json(origin, duplicate ? 409 : 502, {
-      error: duplicate ? "Энэ цахим хаягтай хэрэглэгч бүртгэлтэй байна." : "Урилгын имэйл илгээж чадсангүй. Дахин оролдоно уу.",
+      error: duplicate
+        ? "Энэ цахим хаягтай хэрэглэгч бүртгэлтэй байна."
+        : rateLimited
+          ? "Урилгын имэйл илгээх хязгаарт хүрсэн байна. Түр хүлээгээд дахин оролдоно уу."
+          : "Урилгын имэйл илгээж чадсангүй. Supabase Auth email тохиргоог шалгана уу.",
     });
   }
 
@@ -132,6 +143,7 @@ Deno.serve(async (request: Request) => {
   }
 
   return json(origin, 200, {
+    ok: true,
     message: "Хэрэглэгч амжилттай нэмэгдэж, нууц үг тохируулах урилга илгээгдлээ.",
     userId: invitation.user.id,
   });
