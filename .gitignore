@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+.vercel/
+.supabase/
+supabase/.temp/
+node_modules/
+dist/runtime-config.js

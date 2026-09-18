@@ -1,0 +1,7 @@
+{
+  "name": "momo-erp",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-runtime-config.mjs"
+  }
+}
