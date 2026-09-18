@@ -20,3 +20,19 @@
 @keyframes modalAttention{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}.modal.attention{animation:modalAttention .28s ease 2;box-shadow:0 0 0 3px rgba(216,83,83,.2),0 20px 60px rgba(15,35,30,.2)}
 .operator-call{display:grid;gap:3px}.operator-call small,.operator-call time{font-size:8px;color:var(--muted)}.operator-call time{color:var(--brand);font-weight:700}.call-history{display:grid;gap:6px;margin-top:7px;padding-top:8px;border-top:1px solid var(--line)}.call-history>div{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:7px 8px;border-radius:6px;background:#fff}.call-history strong,.call-history span,.call-history time{font-size:8px}.call-history span{color:#9a6712}.call-history time{color:var(--muted)}
 .duplicate-row{background:#fff8e8!important;box-shadow:inset 4px 0 #f2a71b}.duplicate-row:hover{background:#fff3d1!important}.duplicate-badge{display:inline-flex;margin-left:6px;padding:2px 5px;border-radius:4px;background:#f2a71b;color:#3f2a00;font-size:7px;font-weight:800}.lead-tabs [data-lead-duplicate]{display:inline-flex;align-items:center;gap:5px}.lead-tabs [data-lead-duplicate] svg{width:13px}.lead-tabs [data-lead-duplicate] b{min-width:17px;height:17px;padding:0 4px;border-radius:8px;background:#fff1c7;color:#8a5a00;display:grid;place-items:center;font-size:8px}.lead-tabs [data-lead-duplicate].active{color:#9a6712;border-color:#f2a71b}
+
+/* MomoERP brand accents; semantic status colors stay independent. */
+:root{--brand:#e64072;--brand-dark:#c72f5d;--brand-soft:#fde8ef;--success:#147d64;--success-soft:#e7f5f0}
+.brand-mark{overflow:hidden;background:transparent;color:transparent;flex:0 0 37px}
+.brand-mark img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;border-radius:8px}
+.nav-item.active{background:#7a2947}.nav-item.active svg{color:#f58aad}
+.usage-row strong{color:#f58aad}.usage-track span{background:var(--brand)}
+.profile .avatar,.user-name .avatar{background:var(--brand-soft);color:var(--brand-dark)}
+.bar-col span{background:#f5c8d7}.bar-col.today span{background:var(--brand)}.chart-summary div:nth-child(2) span{background:#f5c8d7}
+.green{background:var(--success-soft);color:var(--success)}.up,.positive{color:var(--success)}
+.donut{background:conic-gradient(var(--success) 0 82%,var(--orange) 82% 93%,#d9dfe4 93%)}
+.dot.delivered{background:var(--success)}.status.delivered{background:var(--success-soft);color:var(--success)}
+.transaction-icon.income{background:var(--success-soft);color:var(--success)}
+.user-status.active{color:var(--success)}.status-display.delivered{background:var(--success-soft);color:var(--success)}
+.live-pill{color:var(--success);background:var(--success-soft)}.live-pill i{background:var(--success)}
+.customer-cell .avatar{background:var(--brand-soft);color:var(--brand-dark)}.bar-col b{background:var(--brand-dark)}

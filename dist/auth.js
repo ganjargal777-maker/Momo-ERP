@@ -61,7 +61,33 @@
       lastName: profile.last_name?.trim() || '', email: profile.email || session.user.email || '',
       roleName: assignments[0]?.roles?.name || 'Хэрэглэгч'
     };
-    window.nexerpAuth = { client, profile: authenticatedProfile };
+    window.nexerpAuth = {
+      client,
+      profile: authenticatedProfile,
+      invokeAuthenticated: async (functionName, body) => {
+        const { data: sessionData, error: sessionError } = await client.auth.getSession();
+        if (sessionError || !sessionData.session?.access_token) {
+          throw new Error('Нэвтрэх хугацаа дууссан байна. Дахин нэвтэрнэ үү.');
+        }
+        const response = await fetch(`${config.url}/functions/v1/${functionName}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: config.publishableKey,
+            Authorization: `Bearer ${sessionData.session.access_token}`
+          },
+          body: JSON.stringify(body)
+        });
+        let payload;
+        try { payload = await response.json(); }
+        catch { payload = {}; }
+        if (!response.ok || payload.ok !== true) {
+          const requestId = payload.requestId ? ` (ID: ${payload.requestId})` : '';
+          throw new Error(`${payload.error || `Серверийн алдаа (${response.status})`}${requestId}`);
+        }
+        return payload;
+      }
+    };
     const fullName = [authenticatedProfile.lastName, authenticatedProfile.firstName].filter(Boolean).join(' ') || authenticatedProfile.email;
     const greetingName = authenticatedProfile.firstName || authenticatedProfile.email;
     const initials = [authenticatedProfile.lastName?.[0], authenticatedProfile.firstName?.[0]].filter(Boolean).join('') || authenticatedProfile.email.slice(0, 2).toUpperCase() || 'ERP';
