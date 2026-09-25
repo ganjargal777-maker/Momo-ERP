@@ -49,7 +49,7 @@
       showError('Таны ERP хэрэглэгчийн эрх идэвхжээгүй байна. Администраторт хандана уу.'); return;
     }
     const { data: assignments, error: roleError } = await client.from('user_roles')
-      .select('roles(name)').eq('user_id', session.user.id);
+      .select('roles(name,role_permissions(permission_code))').eq('user_id', session.user.id);
     if (roleError || !assignments?.length) {
       await client.auth.signOut(); showLogin();
       showError('Таны ERP хандах эрх тохируулагдаагүй байна. Администраторт хандана уу.'); return;
@@ -61,9 +61,14 @@
       lastName: profile.last_name?.trim() || '', email: profile.email || session.user.email || '',
       roleName: assignments[0]?.roles?.name || 'Хэрэглэгч'
     };
+    const permissions = [...new Set(assignments.flatMap(assignment =>
+      (assignment.roles?.role_permissions || []).map(permission => permission.permission_code)
+    ))];
     window.nexerpAuth = {
       client,
       profile: authenticatedProfile,
+      permissions,
+      can: permission => permissions.includes(permission),
       invokeAuthenticated: async (functionName, body) => {
         const { data: sessionData, error: sessionError } = await client.auth.getSession();
         if (sessionError || !sessionData.session?.access_token) {
