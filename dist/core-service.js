@@ -37,6 +37,14 @@
     };
     return Object.assign(new Error(messages[code] ?? 'Хүсэлт амжилтгүй. Холболт, эрх болон шинэ төлөвийг шалгана уу. Хадгалах үйлдлийг шинэ дугаараар бүү давтаарай.'), { code });
   };
+  function filterProductSearch(query, search) {
+    const term = text(search);
+    if (!term) return query;
+    // PostgreSQL literal regex mode and separate PostgREST value quoting.
+    const literal = '"(?q)' + term.replace(/["\\]/gu, '\\$&') + '"';
+    return query.or('name.imatch.' + literal + ',sku.imatch.' + literal);
+  }
+  const pickerColumns = 'id,name,sku,sale_price,discount_price,is_active';
   class MomoCoreService {
     constructor(auth) {
       if (!auth?.client || !UUID.test(auth.profile?.organizationId ?? auth.profile?.organization_id ?? '')) fail('Идэвхтэй байгууллагын Supabase холболт шаардлагатай.');
@@ -70,6 +78,17 @@
       }
       return Object.fromEntries(rows.map(row => [row.product_id, row.quantity]));
     }
+    async searchProducts(search) {
+      if (!this.can('products.read')) throw friendly({ code: '42501' });
+      if (text(search).length < 2) return [];
+      const query = this.client.from('products').select(pickerColumns)
+        .eq('organization_id', this.organizationId).eq('is_active', true);
+      const { data, error } = await filterProductSearch(query, search)
+        .order('name', { ascending: true }).order('id', { ascending: true }).limit(30);
+      if (error) throw friendly(error);
+      if (!Array.isArray(data)) throw friendly({ code: 'invalid_response' });
+      return data;
+    }
     async loadCatalogPage({ page = 1, pageSize = 24, search = '', categoryId = '' } = {}) {
       if (!this.can('products.read')) throw friendly({ code: '42501' });
       const offset = (page - 1) * pageSize;
@@ -80,13 +99,7 @@
         .eq('organization_id', this.organizationId).eq('is_active', true);
       if (categoryId === 'uncategorized') query = query.is('category_id', null);
       else if (categoryId) query = query.eq('category_id', uuid(categoryId));
-      const term = text(search);
-      if (term) {
-        // PostgreSQL's (?q) treats the entire remaining pattern as literal text.
-        // Quote the value separately for PostgREST's logical filter grammar.
-        const literal = '"(?q)' + term.replace(/["\\]/gu, '\\$&') + '"';
-        query = query.or('name.imatch.' + literal + ',sku.imatch.' + literal);
-      }
+      query = filterProductSearch(query, search);
       const { data, count, error } = await query.order('name', { ascending: true })
         .order('id', { ascending: true }).range(offset, offset + pageSize - 1);
       if (error) throw friendly(error);
@@ -104,7 +117,7 @@
         ['balances', 'inventory.read', 'inventory_balances', '*'],
         ['movements', 'inventory.read', 'inventory_movements', '*'],
         ['orders', 'orders.read', 'orders', '*,order_items(id,product_id,quantity,unit_price,line_total,products(name,sku))', true],
-        ['leads', 'leads.read', 'leads', '*', true],
+        ['leads', 'leads.read', 'leads', this.can('products.read') ? `*,product:products(${pickerColumns})` : '*', true],
         ['calls', 'leads.read', 'call_logs', '*'],
         ['deliveries', 'deliveries.read', 'deliveries', '*'],
         // Never select Page token/credential-reference columns.

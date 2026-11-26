@@ -45,10 +45,13 @@
       const csv = '\uFEFF' + [keys.map(cell).join(','), ...rows.map(row => keys.map(key => cell(row[key])).join(','))].join('\r\n');
       const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); link.download = filename; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     }
-    function displayProduct(item, stock, category) {
+    function salePrice(item) {
       const discount = Number(item.discount_price), price = Number(item.sale_price);
-      return { ...item, price: discount > 0 && discount < price ? discount : price,
-        discountPrice: discount, cost: Number(item.cost_price), stock: stock[item.id] ?? null,
+      return discount > 0 && discount < price ? discount : price;
+    }
+    function displayProduct(item, stock, category) {
+      return { ...item, price: salePrice(item),
+        discountPrice: Number(item.discount_price), cost: Number(item.cost_price), stock: stock[item.id] ?? null,
         category: category ?? 'Ангилалгүй' };
     }
     function mapRows() {
@@ -61,7 +64,7 @@
         productAmount: Number(item.product_total), statusLabel: format.orderLabels[item.status], address: item.delivery_address, date: labelDate(item.created_at),
         dateKey: new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ulaanbaatar' }).format(new Date(item.created_at)) }));
       leads = state.leads.map(item => ({ ...item, customer: item.customer_name, phone: item.phone_normalized, page: pages.get(item.facebook_page_id) ?? 'Гараар',
-        product: products.find(product => product.id === item.product_id)?.name ?? item.product_id ?? 'Сонгоогүй', productId: item.product_id,
+        product: item.product?.name ?? item.product_id ?? 'Сонгоогүй', productId: item.product_id,
         operator: users.find(user => user.id === item.assigned_operator_id)?.firstName ?? (item.assigned_operator_id ? 'Хуваарилагдсан ажилтан' : 'Хуваарилаагүй'),
         statusLabel: format.leadLabels[item.status], created: labelDate(item.created_at), attempts: item.call_attempts, lastCall: item.last_called_at,
       }));
@@ -133,17 +136,57 @@
       q('#inventory-list').innerHTML = inventoryProducts.slice(0, 30).map(item => `<div class="inventory-item"><div><strong>${h(item.name)}</strong><small>${h(item.sku)}</small></div><b>${h(item.stock)} ш</b></div>`).join('') || '<p>Үлдэгдлийн мэдээлэл алга эсвэл унших боломжгүй.</p>';
       set('#product-count', state?.summary?.inventory?.products ?? state?.totals.products); set('#out-count', state?.summary?.inventory?.outOfStock); set('#stock-value', state?.summary?.inventory?.stockCost == null ? '—' : money(state.summary.inventory.stockCost));
     };
-    productSearch = function (input, results, onPick) {
+    let orderSelection = null;
+    function updateOrderAmount() {
+      setOrderAmount(orderSelection ? salePrice(orderSelection) * Number(orderForm.elements.quantity.value || 1) : '');
+    }
+    orderForm.elements.quantity.oninput = updateOrderAmount;
+    function bindProductPicker(input, results, label, onSelection) {
+      let revision = 0, timer;
+      const form = input.form;
+      function clear() {
+        revision++;
+        clearTimeout(timer);
+        results.replaceChildren();
+        results.classList.remove('open');
+        form.elements.productId.value = '';
+        input.setCustomValidity('');
+        set(label, 'Бараа сонгоогүй байна.');
+        onSelection(null);
+      }
+      function pick(item) {
+        clear();
+        form.elements.productId.value = item.id;
+        input.value = item.name;
+        set(label, `${item.name} · ${item.sku}`);
+        onSelection(item);
+      }
+      form.addEventListener('reset', clear);
       input.oninput = () => {
-        const search = input.value.trim().toLocaleLowerCase('mn');
-        if (search.length < 2) { results.classList.remove('open'); return; }
-        const found = products.filter(item => `${item.name} ${item.sku}`.toLocaleLowerCase('mn').includes(search)).slice(0, 30);
-        results.innerHTML = found.map(item => `<button type="button" data-product-result="${h(item.id)}"><strong>${h(item.name)} · ${h(item.sku)}</strong><span>${h(money(item.price))}</span></button>`).join('') || '<p>Бараа олдсонгүй.</p>';
-        results.classList.add('open'); results.querySelectorAll('[data-product-result]').forEach(button => { button.onclick = () => { onPick(products.find(item => item.id === button.dataset.productResult)); results.classList.remove('open'); }; });
+        clear();
+        const search = input.value.trim(), request = revision;
+        if (input.value) input.setCustomValidity('Жагсаалтаас бараа сонгоно уу.');
+        if (search.length < 2) return;
+        timer = setTimeout(async () => {
+          try {
+            const rows = await service.searchProducts(search);
+            if (revision !== request) return;
+            results.innerHTML = rows.map(item => `<button type="button" data-product-result="${h(item.id)}"><strong>${h(item.name)} · ${h(item.sku)}</strong><span>${h(money(salePrice(item)))}</span></button>`).join('') || '<p>Бараа олдсонгүй.</p>';
+            results.querySelectorAll('button').forEach((button, index) => { button.onclick = () => pick(rows[index]); });
+          } catch (error) {
+            if (revision !== request) return;
+            results.textContent = error.message || 'Барааны хайлт амжилтгүй.';
+          }
+          results.classList.add('open');
+        }, 180);
       };
-    };
-    productSearch(orderProductSearch, orderProductResults, item => { orderForm.elements.productId.value = item.id; orderProductSearch.value = item.name; set('#selected-order-product', `${item.name} · ${item.sku}`); setOrderAmount(item.price * Number(orderForm.elements.quantity.value || 1)); });
-    productSearch(leadProductSearch, leadProductResults, item => { leadForm.elements.productId.value = item.id; leadProductSearch.value = item.name; set('#selected-lead-product', item.name); });
+      return pick;
+    }
+    const pickOrderProduct = bindProductPicker(orderProductSearch, orderProductResults, '#selected-order-product', item => {
+      orderSelection = item;
+      updateOrderAmount();
+    });
+    bindProductPicker(leadProductSearch, leadProductResults, '#selected-lead-product', () => {});
     openProductModal = function (id) {
       editingProduct = id ? catalogRows.find(item => item.id === id) : null;
       if (id && !editingProduct) return;
@@ -189,10 +232,11 @@
     updateLead = async function (id, action, value) {
       const item = rawLead(String(id)); if (!item) return;
       if (action === 'convert') {
-        showView('orders'); openOrder(item.id); const product = products.find(product => product.id === item.product_id);
+        showView('orders'); openOrder(item.id);
         orderForm.elements.customer.value = item.customer_name; orderForm.elements.phone.value = item.phone_normalized;
-        orderForm.elements.sourcePage.value = item.facebook_page_id ?? ''; orderForm.elements.productId.value = item.product_id ?? '';
-        orderProductSearch.value = product?.name ?? ''; if (product) setOrderAmount(product.price); return;
+        orderForm.elements.sourcePage.value = item.facebook_page_id ?? '';
+        if (item.product?.is_active) pickOrderProduct(item.product);
+        return;
       }
       const status = action === 'call' ? (item.call_attempts ? 'follow_up' : 'no_answer') : Object.keys(format.leadLabels).find(key => format.leadLabels[key] === value) ?? value;
       try { await service.updateLead(item, status, { recordCall: action === 'call' }); await refresh(); showToast('Дугаарын мэдээлэл шинэчлэгдлээ.'); } catch (error) { showToast(error.message, 'error'); }

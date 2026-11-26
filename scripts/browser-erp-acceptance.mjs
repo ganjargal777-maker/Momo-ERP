@@ -405,6 +405,67 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       await page.locator('#category-filter').selectOption(category);
       await assertPage([last]);
     });
+    await check('Order and lead pickers find an older SKU and retain its discounted price through conversion', async () => {
+      const sku = 'SYNTH-E2E-001', unitPrice = 9500;
+      const product = (await database.query(`UPDATE public.products SET discount_price=$3
+        WHERE organization_id=$1 AND sku=$2 RETURNING id, name`, [org, sku, unitPrice])).rows[0];
+      const warehouse = (await database.query(`SELECT warehouse_id FROM public.inventory_balances
+        WHERE organization_id=$1 AND product_id=$2`, [org, product.id])).rows[0].warehouse_id;
+      const outsideSnapshot = await page.evaluate(id => {
+        const { products, limited } = window.momoCoreUi.snapshot;
+        return limited.products && products.length === 500 && !products.some(item => item.id === id);
+      }, product.id);
+      assert.equal(outsideSnapshot, true);
+
+      async function pickProduct(kind) {
+        await page.locator(`#${kind}-product-search`).fill(sku.toLowerCase());
+        await page.locator(`#${kind}-product-results [data-product-result="${product.id}"]`).click();
+        assert.equal(await page.locator(`#${kind}-form [name=productId]`).inputValue(), product.id);
+      }
+      const order = page.locator('#order-form');
+      async function submitOrder(quantity, phone, leadId) {
+        assert.equal(await order.locator('[name=productId]').inputValue(), product.id);
+        assert.equal(Number(await order.locator('[name=amount]').inputValue()), unitPrice);
+        await order.locator('[name=address]').fill('SYNTHETIC picker test address');
+        await order.locator('[name=warehouse_id]').selectOption(warehouse);
+        await order.locator('[name=quantity]').fill(String(quantity));
+        const total = quantity * unitPrice;
+        assert.equal(Number(await order.locator('[name=amount]').inputValue()), total);
+        assert.equal(Number(await order.locator('[name=collectAmount]').inputValue()), total);
+        await order.locator('[type=submit]').click();
+        await order.waitFor({ state: 'hidden' });
+        const saved = await database.query(`SELECT o.lead_id, i.product_id, i.quantity, i.unit_price::int,
+          o.product_total::int, o.collect_amount::int FROM public.orders o
+          JOIN public.order_items i ON i.order_id=o.id WHERE o.organization_id=$1 AND o.phone_normalized=$2`, [org, phone]);
+        assert.deepEqual(saved.rows, [{ lead_id: leadId, product_id: product.id, quantity,
+          unit_price: unitPrice, product_total: total, collect_amount: total }]);
+      }
+
+      await nav('orders');
+      await page.locator('[data-open-order]:visible').first().click();
+      await order.locator('[name=customer]').fill('SYNTHETIC direct picker order');
+      await order.locator('[name=phone]').fill('00000003');
+      await pickProduct('order');
+      await submitOrder(2, '00000003', null);
+      await page.waitForFunction(() => window.momoCoreUi.snapshot.orders.length === 2);
+      await nav('leads');
+      await page.locator('#open-lead').click();
+      const lead = page.locator('#lead-form'), leadPhone = '00000004';
+      const pageId = await page.evaluate(() => window.momoCoreUi.snapshot.pages[0].id);
+      await lead.locator('[name=page]').selectOption(pageId);
+      await lead.locator('[name=leadCustomer]').first().fill('SYNTHETIC converted picker order');
+      await lead.locator('[name=leadPhone]').first().fill(leadPhone);
+      await pickProduct('lead');
+      await lead.locator('[type=submit]').click();
+      await lead.waitFor({ state: 'hidden' });
+      const savedLead = (await database.query(`SELECT id, product_id FROM public.leads
+        WHERE organization_id=$1 AND phone_normalized=$2`, [org, leadPhone])).rows[0];
+      assert.equal(savedLead.product_id, product.id);
+      await page.locator(`[data-core-convert="${savedLead.id}"]`).click();
+      await page.waitForFunction(name => document.querySelector('#order-product-search').value === name, product.name);
+      await submitOrder(3, leadPhone, savedLead.id);
+      await page.waitForFunction(() => window.momoCoreUi.snapshot.orders.length === 3);
+    });
     await check('Permission revocation is enforced by PostgREST/RPC despite stale UI grants', async () => {
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='products.manage'", [role]);
       const denial = await page.evaluate(async () => {
