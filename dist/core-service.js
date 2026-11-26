@@ -77,6 +77,10 @@
       return this.#readExport('deliveries.read', 'core_delivery_export', 'order_id',
         'order_id,status,courier_id,delivered_at');
     }
+    loadInventoryExport() {
+      return this.#readExport('inventory.read', 'inventory_balances', 'warehouse_id',
+        'warehouse_id,product_id,quantity', 'product_id');
+    }
     loadFinanceExport() {
       return this.#readExport('finance.view', 'finance_entries', 'occurred_at',
         'id,entry_type,amount,description,occurred_at', 'id');
@@ -91,7 +95,7 @@
         if (table === 'orders' || table === 'finance_entries') query = query.eq('is_demo', false);
         if (before !== null) {
           if (tieBreaker) {
-            // Preserve database timestamp precision across pages with equal dates.
+            // Continue after the last key pair, including rows sharing the first key.
             const value = before[cursor];
             query = query.or(`${cursor}.lt.${value},and(${cursor}.eq.${value},${tieBreaker}.lt.${before[tieBreaker]})`);
           } else {

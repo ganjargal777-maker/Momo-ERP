@@ -226,6 +226,12 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
         catch (error) { return error.code === '42501'; }
       });
       assert.equal(financeExportDenied, true);
+      assert.equal(await employeePage.locator('[data-core-report="inventory"]').isDisabled(), true);
+      const inventoryExportDenied = await employeePage.evaluate(async () => {
+        try { await window.momoCoreUi.service.loadInventoryExport(); return false; }
+        catch (error) { return error.code === '42501'; }
+      });
+      assert.equal(inventoryExportDenied, true);
       assert.equal(await employeePage.evaluate(() => window.momoCoreUi.snapshot.summary.finance), null);
       const login = await createClient(stack.apiUrl, stack.publicKey, { auth: { persistSession: false, autoRefreshToken: false } }).auth.signInWithPassword({ email: employeeEmail, password });
       assert.equal(login.error, null);
@@ -339,7 +345,6 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
         const inventoryRow = page.locator('#inventory-list .inventory-item').filter({ hasText: sku });
         assert.equal(await inventoryRow.locator('b').textContent(), expected);
       }
-      assert.match(await page.locator('[data-core-report="inventory"]').textContent(), /500 мөр/u);
     });
     await check('Dashboard and warehouse count active SKUs across all stock locations, including missing balances', async () => {
       await database.query(`INSERT INTO public.products(organization_id, sku, name, is_active)
@@ -661,6 +666,61 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       assert.equal(await countLedger(), report.exportedFinanceCount);
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='finance.view'", [role]);
       assert.equal(await countLedger(), 0);
+    });
+    await check('Inventory CSV matches tenant balances across warehouse and product page boundaries', async () => {
+      // More than one page shares the first warehouse key. Other warehouses reuse the same product IDs.
+      await database.query(`INSERT INTO public.inventory_balances(organization_id,warehouse_id,product_id,quantity)
+        SELECT p.organization_id,w.id,p.id,row_number() OVER (ORDER BY p.id)::int - 1
+        FROM public.products p CROSS JOIN (
+          SELECT id FROM public.warehouses WHERE organization_id=$1 ORDER BY id DESC LIMIT 1
+        ) w WHERE p.organization_id=$1 ON CONFLICT DO NOTHING`, [org]);
+      await database.query(`WITH w AS (
+          INSERT INTO public.warehouses(organization_id,name) VALUES($1,'SYNTHETIC export control') RETURNING id
+        ), p AS (
+          INSERT INTO public.products(organization_id,sku,name) VALUES($1,'SYNTH-FOREIGN','SYNTHETIC export control') RETURNING id
+        ) INSERT INTO public.inventory_balances(organization_id,warehouse_id,product_id,quantity)
+          SELECT $1,w.id,p.id,711 FROM w CROSS JOIN p`, [otherOrg]);
+      const expected = await database.query(`SELECT warehouse_id,product_id,quantity FROM public.inventory_balances
+        WHERE organization_id=$1 ORDER BY warehouse_id DESC,product_id DESC`, [org]);
+      assert.ok(expected.rowCount > 1000);
+      await page.reload();
+      await page.waitForFunction(() => window.momoCoreUi?.snapshot?.limited.balances === true);
+      assert.equal(await page.evaluate(() => window.momoCoreUi.snapshot.balances.length), 500);
+      const downloadBalances = async selector => {
+        const [download] = await Promise.all([page.waitForEvent('download'), page.locator(selector).click()]);
+        assert.match(download.suggestedFilename(), /^momo-inventory-\d{4}-\d{2}-\d{2}\.csv$/u);
+        const csv = await readFile(await download.path(), 'utf8');
+        const [header, ...records] = csv.replace(/^\uFEFF/u, '').split('\r\n');
+        assert.equal(header, '"warehouseId","productId","quantity"');
+        assert.deepEqual(records, expected.rows.map(row => '"' + row.warehouse_id + '","' + row.product_id + '","' + row.quantity + '"'));
+      };
+      await nav('reports');
+      await downloadBalances('[data-core-report="inventory"]');
+      const readerRole = randomUUID();
+      await database.query("INSERT INTO public.roles(id,organization_id,name) VALUES($1,$2,'Synthetic inventory reader')", [readerRole, org]);
+      await database.query("INSERT INTO public.role_permissions(role_id,permission_code) VALUES($1,'inventory.read')", [readerRole]);
+      await database.query('UPDATE public.user_roles SET role_id=$1 WHERE user_id=$2 AND role_id=$3', [readerRole, user, role]);
+      try {
+        await page.reload();
+        await page.waitForFunction(() => window.momoCoreUi?.snapshot?.limited.balances === true);
+        assert.equal(await page.locator('.nav-item[data-view=reports]').isHidden(), true);
+        await nav('warehouse');
+        await downloadBalances('#core-export-inventory');
+        const visibleBalanceCount = () => page.evaluate(async () => {
+          const { count, error } = await window.nexerpAuth.client.from('inventory_balances')
+            .select('product_id', { count: 'exact', head: true });
+          if (error) throw new Error(error.code);
+          return count;
+        });
+        assert.equal(await visibleBalanceCount(), expected.rowCount);
+        await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='inventory.read'", [readerRole]);
+        assert.equal(await visibleBalanceCount(), 0);
+        report.exportedInventoryCount = expected.rowCount;
+      } finally {
+        await database.query('UPDATE public.user_roles SET role_id=$1 WHERE user_id=$2 AND role_id=$3', [role, user, readerRole]);
+        await page.reload();
+        await page.waitForFunction(() => window.momoCoreUi?.snapshot?.status === 'ready');
+      }
     });
     await check('Permission revocation is enforced by PostgREST/RPC despite stale UI grants', async () => {
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='products.manage'", [role]);

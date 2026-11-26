@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAtUtc": "2026-11-26T22:03:31.482Z",
+  "checkedAtUtc": "2026-11-26T23:02:52.829Z",
   "scope": "real-local-Chromium-GoTrue-PostgREST-PG15-Mailpit",
   "checks": [
     {
@@ -92,6 +92,10 @@
       "status": "PASS"
     },
     {
+      "name": "Inventory CSV matches tenant balances across warehouse and product page boundaries",
+      "status": "PASS"
+    },
+    {
       "name": "Permission revocation is enforced by PostgREST/RPC despite stale UI grants",
       "status": "PASS"
     },
@@ -116,7 +120,7 @@
   "localInviteHandlerAdapter": true,
   "hostedEdgeGatewayVerified": false,
   "stack": {
-    "projectId": "momo-browser-132f8f8c-17f",
+    "projectId": "momo-browser-d1dc71df-b21",
     "host": "127.0.0.1",
     "postgresMajor": 15,
     "auth": "real-local-GoTrue",
@@ -127,9 +131,10 @@
   "exportedOrderCount": 1008,
   "exportedDeliveryCount": 1008,
   "exportedFinanceCount": 1006,
+  "exportedInventoryCount": 1020,
   "status": "PASS",
   "counts": {
-    "pass": 26,
+    "pass": 27,
     "fail": 0
   },
   "ownedStackCleaned": true,

@@ -72,7 +72,7 @@ than the handler's15s deadline, with form-validity/stage diagnostics. The final
 browser run passed all16 checks and cleaned its owned stack. Build and syntax
 checks passed with synthetic public local configuration.
 
-Remaining functional limits: snapshot lists and inventory CSV capped at 500; order, delivery and cashflow CSV exports paginated; finance is cashflow,
+Remaining functional limits: snapshot lists capped at 500; order, delivery, inventory and cashflow CSV exports paginated; finance is cashflow,
 not full accounting/tax/profit; returned/failed delivery requires explicit stock
 and cash reconciliation; current form idempotency keys are not persisted across
 browser restart. Invitation outcomes without a durable operation receipt require
