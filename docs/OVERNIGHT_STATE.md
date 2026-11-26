@@ -4,6 +4,25 @@ Updated: 2026-11-27, Asia/Ulaanbaatar. Owner requests hourly independent safe
 development until **2026-11-27 08:00 +08:00**; no production deployment, secret
 changes, paid service, database reset or real customer test data.
 
+## Захиалга, дугаарын барааны хайлт · 2026-11-27 02:00, Улаанбаатар
+
+Суурь `93cd727`, хэрэгжүүлэлт ба браузерын нотолгоо `5334de7`.
+Захиалга, дугаарын маягт тухайн байгууллагын идэвхтэй барааг нэр эсвэл
+SKU-гаар хайна. Дугаарыг захиалга болгоход сонгосон бараа, хөнгөлөлттэй
+үнэ дамжиж, тоо ширхэг өөрчлөхөд төлбөр авах дүн шинэчлэгдэнэ.
+
+- Локал Chromium / GoTrue / PostgREST / PG15 шалгалт 20 PASS, 0 FAIL,
+  0 SKIPPED. Сүүлийн 500 мөрд ороогүй SKU-г хоёр маягтаас сонгож,
+  шууд болон дугаараас үүсгэсэн захиалгын UUID, ширхэг, нэгж үнэ,
+  нийт дүнг PostgreSQL-ээс шалгав. Локал орчны цэвэрлэгээ амжилттай.
+- Үндсэн regression 158 PASS, 0 FAIL, 2 SKIPPED. Хоёр шалгалт тусдаа
+  өгөгдлийн сан шаарддаг. Энэ гүйлтээр тусдаа бүрэн PG regression ажиллуулаагүй.
+- Дараагийн ажил нь нөөцийн хөдөлгөөний маягтад бүх идэвхтэй бараанаас
+  хайж сонгох боломж нэмэх. Сүүлийн 500 мөрөөс гадуурх барааг сонгож,
+  сонгосон агуулах дахь үлдэгдэл болон хөдөлгөөний бичилтийг шалгана.
+- Production нөөц хуулбар, сэргээх баталгаа, rollback, hosted acceptance
+  баталгаажаагүй тул нэвтрүүлэлт BLOCKED. Production бичилт 0.
+
 ## Catalog pagination, 2026-11-27 01:03 run, Asia/Ulaanbaatar
 
 Implementation and browser evidence in `7c15cd5` on verified overnight base
