@@ -1,8 +1,33 @@
 # MOMO ERP overnight state
 
-Updated: 2026-11-26, Asia/Ulaanbaatar. Owner requests hourly independent safe
+Updated: 2026-11-27, Asia/Ulaanbaatar. Owner requests hourly independent safe
 development until **2026-11-27 08:00 +08:00**; no production deployment, secret
 changes, paid service, database reset or real customer test data.
+
+## Catalog pagination, 2026-11-27 01:03 run, Asia/Ulaanbaatar
+
+Implementation and browser evidence in `7c15cd5` on verified overnight base
+`d291fec`. The readiness checkpoint `c4c088c` is already an ancestor.
+The catalog requests 24 active products per page, filtered by organization,
+name/SKU and optional category before counting. Equal names sort by UUID.
+Stock uses the page's product IDs. Edits and archives use the displayed row's
+version, including products outside the 500-row operational snapshot.
+
+- Local Chromium with real GoTrue, PostgREST, PG15 and Mailpit finished with
+  19 PASS / 0 FAIL / 0 SKIPPED. All 506 equal-name fixtures matched the database
+  across 22 pages. A last-page product showed six units across two warehouses.
+  Editing its name and category updated the original UUID. Literal punctuation,
+  case-insensitive search, category selection and previous-page navigation passed.
+  Evidence is in `docs/evidence/browser-erp-acceptance.json`.
+- Local default regression finished with 158 PASS / 0 FAIL / 2 SKIPPED. The
+  two database entrypoints require their own isolated targets. The browser
+  suite applied 15 migrations on its own PG15 instance and cleaned it up.
+  The separate full PG15 regression was last run for the dashboard change below.
+- Next run should extend server-side product lookup to the order and lead forms.
+  These selectors still search the latest 500 products. Verify choosing a SKU
+  outside that snapshot, quantity/price updates and the saved product UUID.
+- Hosted acceptance and deployment remain BLOCKED pending verified backup,
+  restore, rollback and hosted acceptance access. Production writes were zero.
 
 ## Dashboard SKU totals, run started 2026-11-26 23:56 +08:00
 
