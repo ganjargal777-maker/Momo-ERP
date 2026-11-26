@@ -4,6 +4,26 @@ Updated: 2026-11-27, Asia/Ulaanbaatar. Owner requests hourly independent safe
 development until **2026-11-27 08:00 +08:00**; no production deployment, secret
 changes, paid service, database reset or real customer test data.
 
+## Хүргэлтийн бүрэн CSV · 2026-11-27 05:06, Улаанбаатар
+
+Суурь `a4da8e0`, хэрэгжүүлэлт ба нотолгоо `82f3eec`.
+Хүргэлтийн тайлан байгууллагын демо бус захиалгад хамаарах хүргэлтийг
+500 хүртэл мөрөөр үргэлжлүүлэн уншина. Хуудас бүр тухайн үед хадгалагдсан
+утгыг агуулна. Хүргэлт унших эрх хангалттай.
+
+- Локал Chromium / GoTrue / PostgREST / PG15 шалгалт 24 PASS, 0 FAIL,
+  0 SKIPPED. Дэлгэцийн жагсаалт 500 мөртэй байхад CSV-ийн 1,008 хүргэлт
+  PG-ийн хүлээгдэж буй дараалал болон дөрвөн талбартай таарсан. Демо
+  болон өөр байгууллагын мөр хасагдсан. Хүргэлтийн эрхийг цуцлахад
+  байгууллагын шүүлтгүй шууд REST хүсэлт 0 мөр буцаасан.
+- Үндсэн regression 158 PASS, 0 FAIL, 2 SKIPPED. Тусгаарласан PG15 бүхий
+  regression 225 PASS, 0 FAIL, 2 SKIPPED. Browser ба PG evidence шинэчлэгдсэн.
+- Production бичилт 0. Backup/restore, rollback болон hosted acceptance
+  баталгаажаагүй тул production нэвтрүүлэлт BLOCKED.
+- Дараагийн ажил нь мөнгөн урсгалын CSV-г 500 мөрөөс давуулж,
+  `finance.view` эрх, дүн, орлого/зарлагын төрөл, демо болон байгууллагын
+  шүүлтийг локал PostgreSQL-тэй тулгах.
+
 ## Захиалгын бүрэн CSV · 2026-11-27 04:08, Улаанбаатар
 
 Суурь `774f823`, хэрэгжүүлэлт ба нотолгоо `4e5b83d`.
