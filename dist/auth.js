@@ -4,11 +4,18 @@
   const error = document.querySelector('#auth-error');
   const setupForm = document.querySelector('#setup-password-form');
   const setupError = document.querySelector('#setup-error');
+  const resetForm = document.querySelector('#reset-password-form');
+  const resetError = document.querySelector('#reset-error');
+  const resetSuccess = document.querySelector('#reset-success');
   const loginCopy = document.querySelector('#login-copy');
+  const resetCopy = document.querySelector('#reset-copy');
   const setupCopy = document.querySelector('#setup-copy');
+  const setupDescription = document.querySelector('#setup-description');
   const shell = document.querySelector('.app-shell');
   const config = window.__NEXERP_CONFIG__ || {};
-  const setupRequested = new URLSearchParams(location.search).get('setup') === '1';
+  const urlParams = new URLSearchParams(location.search);
+  const setupRequested = urlParams.get('setup') === '1';
+  const recoveryRequested = urlParams.get('reset') === '1' || new URLSearchParams(location.hash.slice(1)).get('type') === 'recovery';
   let appLoaded = false;
 
   const showError = (message, target = error) => { target.textContent = message; target.hidden = false; };
@@ -19,11 +26,22 @@
   };
   const showLogin = () => {
     document.body.className = 'auth-pending'; shell.setAttribute('aria-hidden', 'true'); gate.hidden = false;
-    loginCopy.hidden = false; form.hidden = false; setupCopy.hidden = true; setupForm.hidden = true;
+    loginCopy.hidden = false; form.hidden = false; resetCopy.hidden = true; resetForm.hidden = true;
+    setupCopy.hidden = true; setupForm.hidden = true;
   };
-  const showPasswordSetup = () => {
+  const showPasswordReset = () => {
     document.body.className = 'auth-pending'; shell.setAttribute('aria-hidden', 'true'); gate.hidden = false;
-    loginCopy.hidden = true; form.hidden = true; setupCopy.hidden = false; setupForm.hidden = false;
+    loginCopy.hidden = true; form.hidden = true; resetCopy.hidden = false; resetForm.hidden = false;
+    setupCopy.hidden = true; setupForm.hidden = true;
+    resetError.hidden = true; resetSuccess.hidden = true;
+  };
+  const showPasswordSetup = (isRecovery = recoveryRequested) => {
+    document.body.className = 'auth-pending'; shell.setAttribute('aria-hidden', 'true'); gate.hidden = false;
+    loginCopy.hidden = true; form.hidden = true; resetCopy.hidden = true; resetForm.hidden = true;
+    setupCopy.hidden = false; setupForm.hidden = false;
+    setupDescription.textContent = isRecovery
+      ? 'Шинэ нууц үгээ оруулж хадгална уу.'
+      : 'Өөрийн байнгын нууц үгийг үүсгэнэ үү.';
   };
   const loadApp = () => {
     if (appLoaded) return;
@@ -111,6 +129,31 @@
     await authorize(data.session);
   });
 
+  document.querySelector('#show-reset-password').addEventListener('click', () => {
+    const email = form.elements.email.value.trim();
+    showPasswordReset();
+    if (email) resetForm.elements.email.value = email;
+    resetForm.elements.email.focus();
+  });
+
+  document.querySelector('#back-to-login').addEventListener('click', showLogin);
+
+  resetForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    resetError.hidden = true; resetSuccess.hidden = true;
+    setBusy(true, resetForm, 'Сэргээх холбоос илгээх');
+    const email = new FormData(resetForm).get('email').trim();
+    const { error: resetRequestError } = await client.auth.resetPasswordForEmail(email, {
+      redirectTo: `${location.origin}/`
+    });
+    setBusy(false, resetForm, 'Сэргээх холбоос илгээх');
+    if (resetRequestError) {
+      return showError(resetRequestError.message || 'Сэргээх холбоос илгээж чадсангүй. Түр хүлээгээд дахин оролдоно уу.', resetError);
+    }
+    resetSuccess.textContent = 'Хэрэв энэ цахим хаяг бүртгэлтэй бол нууц үг сэргээх холбоос илгээгдлээ. И-мэйлээ шалгана уу.';
+    resetSuccess.hidden = false;
+  });
+
   setupForm.addEventListener('submit', async event => {
     event.preventDefault(); setupError.hidden = true; const values = new FormData(setupForm);
     const password = values.get('password');
@@ -128,10 +171,18 @@
     if (!confirm('Системээс гарах уу?')) return;
     await client.auth.signOut(); location.reload();
   });
+  client.auth.onAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY' && session) showPasswordSetup(true);
+  });
   client.auth.getSession().then(({ data }) => {
-    if (setupRequested) {
-      if (data.session) showPasswordSetup();
-      else { showLogin(); showError('Урилгын холбоос хүчингүй эсвэл хугацаа дууссан байна.'); }
+    if (setupRequested || recoveryRequested) {
+      if (data.session) showPasswordSetup(recoveryRequested);
+      else {
+        showLogin();
+        showError(recoveryRequested
+          ? 'Нууц үг сэргээх холбоос хүчингүй эсвэл хугацаа дууссан байна.'
+          : 'Урилгын холбоос хүчингүй эсвэл хугацаа дууссан байна.');
+      }
     } else if (data.session) authorize(data.session); else showLogin();
   });
   if (window.lucide) window.lucide.createIcons();
