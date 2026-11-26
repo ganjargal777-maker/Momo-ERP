@@ -69,6 +69,8 @@ New orders/leads/ledger rows have `is_demo=false`; no browser/demo/localStorage/
 
 Summary source is `supabase`, currency MNT and organization timezone. `today.date`, created order count and delivered revenue use the organization calendar. Current new/delivered/in-transit/pending status counters represent the current backlog, so UI must label them as current statuses rather than claim they are daily changes. `dailySales` covers seven calendar days. Stock cost is only returned with finance.view; inventory section requires inventory.read and products.read. Finance-only roles get finance data with today=null/statusCounts={}/dailySales=[], and report-only roles get sales aggregates with finance=null. Neither aggregate permission grants raw order detail.
 
+Dashboard inventory counts each active product once across all warehouses in its organization. A combined quantity of 1–5 is low stock. A zero total or no balance rows means out of stock. Stock cost includes inventory held for inactive products and requires finance.view.
+
 The finite-price constraint is NOT VALID for existing products: new/changed rows reject NaN/nonfinite money while preexisting rows remain untouched for review. Validation of that constraint and classification of legacy rows are production preflight items, not operations performed here.
 
 ## Actual local evidence

@@ -321,6 +321,26 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       }
       assert.match(await page.locator('[data-core-report="inventory"]').textContent(), /500 мөр/u);
     });
+    await check('Dashboard and warehouse count active SKUs across all stock locations, including missing balances', async () => {
+      await database.query(`INSERT INTO public.products(organization_id, sku, name, is_active)
+        VALUES ($1, 'SYNTH-LOW', 'SYNTHETIC low', true),
+               ($1, 'SYNTH-EMPTY', 'SYNTHETIC empty', true),
+               ($1, 'SYNTH-ARCHIVED', 'SYNTHETIC archived', false)`, [org]);
+      await database.query(`INSERT INTO public.inventory_balances(organization_id, warehouse_id, product_id, quantity)
+        SELECT p.organization_id, w.id, p.id, 2
+        FROM public.products p CROSS JOIN (
+          SELECT id FROM public.warehouses WHERE organization_id = $1 ORDER BY id LIMIT 2
+        ) w
+        WHERE p.organization_id = $1 AND p.sku IN ('SYNTH-LOW', 'SYNTH-ARCHIVED')`, [org]);
+      await page.reload();
+      await page.waitForFunction(() => window.momoCoreUi?.snapshot?.status === 'ready');
+      await nav('dashboard');
+      // 8 and 507 units are healthy, 2 + 2 is low, and the empty SKU has zero.
+      assert.equal(await page.locator('#dashboard-low-stock').innerText(), '1');
+      await nav('warehouse');
+      assert.equal(await page.locator('#product-count').innerText(), '4');
+      assert.equal(await page.locator('#out-count').innerText(), '1');
+    });
     await check('Permission revocation is enforced by PostgREST/RPC despite stale UI grants', async () => {
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='products.manage'", [role]);
       const denial = await page.evaluate(async () => {

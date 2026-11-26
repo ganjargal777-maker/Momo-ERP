@@ -356,6 +356,29 @@ export async function runCoreProductionChecks({ t, admin, actor, rpc, withRestor
       await denied(()=>call(owner,'core_record_finance',{request_id:randomUUID(),entry_type:'income',amount:'NaN',description:'Invalid money'}));
       assert.equal(await count('public.products',"organization_id=$1 and sku='CORE-NAN'",[org]),0);
     });
+    await check('dashboard counts active SKUs by total quantity across warehouses and values all held stock', async () => {
+      const readInventory = async user => (await rpc(user, 'core_dashboard_summary', [])).inventory;
+      const ownBefore = await readInventory(owner);
+      const secondWarehouse = await call(foreign, 'core_save_warehouse', { name: 'Second foreign warehouse' });
+      const warehouseIds = [foreignWarehouse.id, secondWarehouse.id];
+      // The existing foreignProduct is active and has no balance row.
+      for (const [sku, active, quantities] of [
+        ['ONE', true, [1, 0]],
+        ['FIVE', true, [2, 3]],
+        ['SIX', true, [3, 3]],
+        ['ZERO', true, [0, 0]],
+        ['ARCHIVED', false, [4, 0]],
+      ]) {
+        const item = await call(foreign, 'core_save_product', { sku, name: sku, cost_price: 10, is_active: active });
+        await admin.query(
+          'insert into public.inventory_balances (organization_id, product_id, warehouse_id, quantity) ' +
+          'select $1, $2, warehouse_id, quantity from unnest($3::uuid[], $4::integer[]) as balance(warehouse_id, quantity)',
+          [foreignOrg, item.id, warehouseIds, quantities],
+        );
+      }
+      assert.deepEqual(await readInventory(foreign), { products: 5, lowStock: 2, outOfStock: 2, stockCost: 160 });
+      assert.deepEqual(await readInventory(owner), ownBefore, 'another tenant’s stock must not affect these metrics');
+    });
     await check('dashboard derives real totals, excludes marked demo rows, and separates cashflow from revenue',async()=>{
       const before=await rpc(owner,'core_dashboard_summary',[]);
       assert.equal(before.source,'supabase');assert.equal(before.today.deliveredRevenue,100);assert.equal(before.finance.income,80);assert.equal(before.finance.expense,20);assert.equal(before.finance.netCashflow,60);assert.equal(before.finance.receivable,20);
