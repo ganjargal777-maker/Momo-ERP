@@ -69,6 +69,28 @@
       if (!Array.isArray(data)) throw friendly({ code: 'invalid_response' });
       return { rows: data, total: Number.isSafeInteger(count) ? count : null, limited: count !== null && count > data.length };
     }
+    async loadOrderExport() {
+      const rows = [];
+      let before = null, total;
+      do {
+        if (!this.can('orders.read')) throw friendly({ code: '42501' });
+        // Keep the bigint cursor exact in JavaScript. Concurrent new orders
+        // above this cursor belong to the next export.
+        let query = this.client.from('orders')
+          .select('order_number::text,customer_name,phone_normalized,status,product_total,collect_amount,created_at',
+            before === null ? { count: 'exact' } : {})
+          .eq('organization_id', this.organizationId).eq('is_demo', false);
+        if (before !== null) query = query.lt('order_number', before);
+        const { data, error, count } = await query.order('order_number', { ascending: false }).limit(500);
+        if (error) throw friendly(error);
+        if (before === null) total = count;
+        if (!Array.isArray(data) || !Number.isSafeInteger(total) || total < 0) throw friendly({ code: 'invalid_response' });
+        if ((!data.length && rows.length < total) || rows.length + data.length > total) throw friendly({ code: '40001' });
+        rows.push(...data);
+        if (data.length) before = data[data.length - 1].order_number;
+      } while (rows.length < total);
+      return rows;
+    }
     async loadProductStock(products) {
       const ids = products.filter(product => product.is_active).map(product => product.id);
       if (!ids.length || !this.can('inventory.read') || !this.can('products.read')) return {};

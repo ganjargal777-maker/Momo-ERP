@@ -208,6 +208,12 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       await employeePage.waitForFunction(() => window.momoCoreUi?.snapshot?.status === 'ready');
       assert.equal(await employeePage.locator('.nav-item[data-view=settings]').isHidden(), true);
       assert.equal(await employeePage.evaluate(() => window.nexerpAuth.can('users.manage')), false);
+      assert.equal(await employeePage.locator('[data-core-report="orders"]').isDisabled(), true);
+      const exportDenied = await employeePage.evaluate(async () => {
+        try { await window.momoCoreUi.service.loadOrderExport(); return false; }
+        catch (error) { return error.code === '42501'; }
+      });
+      assert.equal(exportDenied, true);
       assert.equal(await employeePage.evaluate(() => window.momoCoreUi.snapshot.summary.finance), null);
       const login = await createClient(stack.apiUrl, stack.publicKey, { auth: { persistSession: false, autoRefreshToken: false } }).auth.signInWithPassword({ email: employeeEmail, password });
       assert.equal(login.error, null);
@@ -510,6 +516,37 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       const after = await balances();
       assert.deepEqual(after.filter(row => row.warehouse_id === warehouseId), [{ warehouse_id: warehouseId, quantity: 4 }]);
       assert.deepEqual(after.filter(row => row.warehouse_id !== warehouseId), before);
+    });
+    await check('Downloaded order CSV matches every permitted non-demo order across the 500-row boundary', async () => {
+      const otherOrg = randomUUID();
+      await database.query('INSERT INTO public.organizations(id,name,slug) VALUES($1,$2,$3)',
+        [otherOrg, 'SYNTHETIC export control', 'synthetic-export-' + otherOrg]);
+      // All bulk fixtures share a timestamp, including both sides of page boundaries.
+      await database.query(`INSERT INTO public.orders
+        (organization_id,customer_name,phone,phone_normalized,delivery_address,created_at,is_demo)
+        SELECT CASE WHEN i=1007 THEN $2::uuid ELSE $1::uuid END,
+          CASE WHEN i=1 THEN '=SYNTHETIC "quoted", customer' ELSE 'SYNTHETIC export ' || i END,
+          '00000009','00000009','SYNTHETIC address','2026-01-01T00:00:00Z',i=1006
+        FROM generate_series(1,1007) i`, [org, otherOrg]);
+      const expected = await database.query(`SELECT 'ORD-' || order_number AS label FROM public.orders
+        WHERE organization_id=$1 AND NOT is_demo ORDER BY order_number DESC`, [org]);
+      assert.ok(expected.rowCount > 1000);
+      await page.reload();
+      await page.waitForFunction(() => window.momoCoreUi?.snapshot?.limited.orders === true);
+      assert.equal(await page.evaluate(() => window.momoCoreUi.snapshot.orders.length), 500);
+      await nav('reports');
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.locator('[data-core-report="orders"]').click(),
+      ]);
+      assert.match(download.suggestedFilename(), /^momo-orders-\d{4}-\d{2}-\d{2}\.csv$/u);
+      const csv = await readFile(await download.path(), 'utf8');
+      const [header, ...records] = csv.replace(/^\uFEFF/u, '').split('\r\n');
+      assert.equal(header, '"order","customer","phone","status","total","collect","createdAt"');
+      const labels = records.map(row => /^"(ORD-\d+)",/u.exec(row)?.[1]);
+      assert.deepEqual(labels, expected.rows.map(row => row.label));
+      assert.ok(records.some(row => row.includes(`,"'=SYNTHETIC ""quoted"", customer","00000009",`)));
+      report.exportedOrderCount = labels.length;
     });
     await check('Permission revocation is enforced by PostgREST/RPC despite stale UI grants', async () => {
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='products.manage'", [role]);

@@ -39,9 +39,8 @@
       form.onsubmit = event => { event.preventDefault(); busy(form, async () => { await action(new FormData(form), identity(form)); close(); await refresh(); showToast('Мэдээлэл хадгалагдлаа.'); }); };
       modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
     };
-    function exportRows(rows, filename) {
+    function exportRows(rows, filename, keys = [...new Set(rows.flatMap(row => Object.keys(row)))]) {
       const cell = value => { let text = String(value ?? ''); if (/^[\s]*[=+\-@]/u.test(text)) text = "'" + text; return '"' + text.replaceAll('"', '""') + '"'; };
-      const keys = [...new Set(rows.flatMap(row => Object.keys(row)))];
       const csv = '\uFEFF' + [keys.map(cell).join(','), ...rows.map(row => keys.map(key => cell(row[key])).join(','))].join('\r\n');
       const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); link.download = filename; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     }
@@ -300,17 +299,38 @@
       q('#warehouse-list').innerHTML = state.warehouses.map(item => `<div class="inventory-item"><strong>${h(item.name)}</strong><span>${item.is_active ? 'Идэвхтэй' : 'Идэвхгүй'}</span>${can('inventory.manage') ? `<button data-core-warehouse="${h(item.id)}">Засах</button>` : ''}</div>`).join('') || '<p>Агуулах бүртгэгдээгүй эсвэл унших боломжгүй.</p>';
       document.querySelectorAll('[data-core-warehouse]').forEach(button => { button.onclick = () => editWarehouse(state.warehouses.find(item => item.id === button.dataset.coreWarehouse)); });
     }
+    let exportingOrders = false;
     renderMenus = function () {
       q('#report-grid').innerHTML = '<button data-core-report="orders">Захиалгын CSV</button><button data-core-report="deliveries">Хүргэлтийн CSV</button><button data-core-report="inventory">Үлдэгдлийн CSV</button><button data-core-report="finance">Мөнгөн урсгалын CSV</button>';
+      const orderExport = q('[data-core-report="orders"]');
+      orderExport.disabled = !can('orders.read') || exportingOrders;
+      orderExport.onclick = async () => {
+        if (exportingOrders) return;
+        exportingOrders = true;
+        orderExport.disabled = true;
+        try {
+          const orders = await service.loadOrderExport();
+          const rows = orders.map(item => ({
+            order: `ORD-${item.order_number}`, customer: item.customer_name, phone: item.phone_normalized,
+            status: format.orderLabels[item.status], total: item.product_total, collect: item.collect_amount, createdAt: item.created_at,
+          }));
+          exportRows(rows, `momo-orders-${new Date().toISOString().slice(0, 10)}.csv`,
+            ['order', 'customer', 'phone', 'status', 'total', 'collect', 'createdAt']);
+        } catch (error) {
+          showToast(error.message || 'Захиалгын тайланг татаж чадсангүй.', 'error');
+        } finally {
+          exportingOrders = false;
+          q('[data-core-report="orders"]').disabled = !can('orders.read');
+        }
+      };
       const inventoryExport = q('[data-core-report="inventory"]');
       if (state?.limited.balances) inventoryExport.textContent = `Үлдэгдлийн CSV (сүүлийн ${state.balances.length} мөр)`;
       inventoryExport.disabled = !can('inventory.read') || Boolean(state?.errors.balances);
-      document.querySelectorAll('[data-core-report]').forEach(button => { button.onclick = () => {
+      document.querySelectorAll('[data-core-report]:not([data-core-report="orders"])').forEach(button => { button.onclick = () => {
         const type = button.dataset.coreReport;
-        const permission = { orders: 'orders.read', deliveries: 'deliveries.read', inventory: 'inventory.read', finance: 'finance.view' }[type];
+        const permission = { deliveries: 'deliveries.read', inventory: 'inventory.read', finance: 'finance.view' }[type];
         if (!can(permission)) { showToast('Энэ мэдээллийг унших эрхгүй.', 'error'); return; }
-        const rows = { orders: orders.map(item => ({ order: item.displayId, customer: item.customer, phone: item.phone, status: item.statusLabel, total: item.productAmount, collect: item.amount, createdAt: item.created_at })),
-          deliveries: state.deliveries.map(item => ({ orderId: item.order_id, status: deliveryLabels[item.status], courierId: item.courier_id, deliveredAt: item.delivered_at })),
+        const rows = { deliveries: state.deliveries.map(item => ({ orderId: item.order_id, status: deliveryLabels[item.status], courierId: item.courier_id, deliveredAt: item.delivered_at })),
           inventory: state.balances.map(item => ({ warehouseId: item.warehouse_id, productId: item.product_id, quantity: item.quantity })),
           finance: state.finance.map(item => ({ type: item.entry_type, amount: item.amount, description: item.description, occurredAt: item.occurred_at })) }[type];
         exportRows(rows, `momo-${type}-${new Date().toISOString().slice(0, 10)}.csv`);
