@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAtUtc": "2026-11-26T18:03:03.817Z",
+  "checkedAtUtc": "2026-11-26T19:03:17.765Z",
   "scope": "real-local-Chromium-GoTrue-PostgREST-PG15-Mailpit",
   "checks": [
     {
@@ -68,6 +68,10 @@
       "status": "PASS"
     },
     {
+      "name": "Inventory picker posts an older SKU to the selected warehouse and preserves stock elsewhere",
+      "status": "PASS"
+    },
+    {
       "name": "Permission revocation is enforced by PostgREST/RPC despite stale UI grants",
       "status": "PASS"
     },
@@ -92,7 +96,7 @@
   "localInviteHandlerAdapter": true,
   "hostedEdgeGatewayVerified": false,
   "stack": {
-    "projectId": "momo-browser-58e75809-ab6",
+    "projectId": "momo-browser-a110ddd2-08b",
     "host": "127.0.0.1",
     "postgresMajor": 15,
     "auth": "real-local-GoTrue",
@@ -102,7 +106,7 @@
   "appliedMigrationCount": 15,
   "status": "PASS",
   "counts": {
-    "pass": 20,
+    "pass": 21,
     "fail": 0
   },
   "ownedStackCleaned": true,

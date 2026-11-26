@@ -34,7 +34,7 @@
     modal.querySelectorAll('[data-core-close]').forEach(button => { button.onclick = close; });
     modal.onclick = event => { if (event.target === modal) close(); };
     const openAction = (title, fields, action) => {
-      const form = q('#core-action-form'); form.reset(); delete form.dataset.requestId;
+      const form = q('#core-action-form'); form.reset(); form.onreset = null; delete form.dataset.requestId;
       set('#core-action-title', title); q('#core-action-fields').innerHTML = fields;
       form.onsubmit = event => { event.preventDefault(); busy(form, async () => { await action(new FormData(form), identity(form)); close(); await refresh(); showToast('Мэдээлэл хадгалагдлаа.'); }); };
       modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
@@ -141,7 +141,7 @@
       setOrderAmount(orderSelection ? salePrice(orderSelection) * Number(orderForm.elements.quantity.value || 1) : '');
     }
     orderForm.elements.quantity.oninput = updateOrderAmount;
-    function bindProductPicker(input, results, label, onSelection) {
+    function bindProductPicker(input, results, label, idField, onSelection = () => {}) {
       let revision = 0, timer;
       const form = input.form;
       function clear() {
@@ -149,19 +149,19 @@
         clearTimeout(timer);
         results.replaceChildren();
         results.classList.remove('open');
-        form.elements.productId.value = '';
+        idField.value = '';
         input.setCustomValidity('');
         set(label, 'Бараа сонгоогүй байна.');
         onSelection(null);
       }
       function pick(item) {
         clear();
-        form.elements.productId.value = item.id;
+        idField.value = item.id;
         input.value = item.name;
         set(label, `${item.name} · ${item.sku}`);
         onSelection(item);
       }
-      form.addEventListener('reset', clear);
+      form.onreset = clear;
       input.oninput = () => {
         clear();
         const search = input.value.trim(), request = revision;
@@ -182,11 +182,11 @@
       };
       return pick;
     }
-    const pickOrderProduct = bindProductPicker(orderProductSearch, orderProductResults, '#selected-order-product', item => {
+    const pickOrderProduct = bindProductPicker(orderProductSearch, orderProductResults, '#selected-order-product', orderForm.elements.productId, item => {
       orderSelection = item;
       updateOrderAmount();
     });
-    bindProductPicker(leadProductSearch, leadProductResults, '#selected-lead-product', () => {});
+    bindProductPicker(leadProductSearch, leadProductResults, '#selected-lead-product', leadForm.elements.productId);
     openProductModal = function (id) {
       editingProduct = id ? catalogRows.find(item => item.id === id) : null;
       if (id && !editingProduct) return;
@@ -320,7 +320,22 @@
       openAction(item ? 'Агуулах засах' : 'Агуулах нэмэх', `<label class="full">Нэр<input name="name" required maxlength="200" value="${h(item?.name)}"></label><label class="full"><input type="checkbox" name="is_active" ${item?.is_active !== false ? 'checked' : ''}> Идэвхтэй</label>`, data => service.saveWarehouse({ id: item?.id, expected_updated_at: item?.updated_at, name: data.get('name'), branch_id: item?.branch_id, is_active: data.get('is_active') === 'on' }));
     }
     q('#core-add-warehouse').onclick = () => editWarehouse();
-    q('#core-adjust-inventory').onclick = () => openAction('Нөөцийн хөдөлгөөн', `<label>Агуулах<select name="warehouse_id" required>${activeWarehouses().map(item => option(item.id, item.name)).join('')}</select></label><label>Бараа<select name="product_id" required>${products.map(item => option(item.id, item.name)).join('')}</select></label><label>Төрөл<select name="movement_type">${option('income', 'Орлого')}${option('adjustment', 'Тохируулга')}${option('return', 'Буцаалт')}</select></label><label>Өөрчлөх тоо<input type="number" name="quantity_delta" required step="1"></label><label class="full">Тэмдэглэл<textarea name="note" required></textarea></label>`, (data, requestId) => service.adjustInventory({ request_id: requestId, warehouse_id: data.get('warehouse_id'), product_id: data.get('product_id'), movement_type: data.get('movement_type'), quantity_delta: data.get('quantity_delta'), note: data.get('note') }));
+    q('#core-adjust-inventory').onclick = () => {
+      openAction('Нөөцийн хөдөлгөөн', `
+        <label>Агуулах<select name="warehouse_id" required>${activeWarehouses().map(item => option(item.id, item.name)).join('')}</select></label>
+        <label>Төрөл<select name="movement_type">${option('income', 'Орлого')}${option('adjustment', 'Тохируулга')}${option('return', 'Буцаалт')}</select></label>
+        <label class="full">Бараа хайх<input id="movementProductSearch" autocomplete="off" required placeholder="Барааны нэр эсвэл код"></label>
+        <div class="lead-product-results full" id="movement-product-results"></div>
+        <input type="hidden" name="product_id"><span class="picked-product full" id="selected-movement-product">Бараа сонгоогүй байна.</span>
+        <label>Өөрчлөх тоо<input type="number" name="quantity_delta" required step="1"></label>
+        <label class="full">Тэмдэглэл<textarea name="note" required></textarea></label>`,
+        (data, requestId) => service.adjustInventory({
+          request_id: requestId, warehouse_id: data.get('warehouse_id'), product_id: data.get('product_id'),
+          movement_type: data.get('movement_type'), quantity_delta: data.get('quantity_delta'), note: data.get('note')
+        }));
+      const input = q('#movementProductSearch');
+      bindProductPicker(input, q('#movement-product-results'), '#selected-movement-product', input.form.elements.product_id);
+    };
     q('#core-add-finance').onclick = () => openAction('Мөнгөн урсгал бүртгэх', `<label>Төрөл<select name="entry_type">${option('income', 'Орлого')}${option('expense', 'Зарлага')}</select></label><label>Дүн<input name="amount" type="number" min="0.01" step="0.01" required></label><label class="full">Захиалга (шаардлагагүй)<select name="order_id">${option('', 'Захиалгатай холбохгүй')}${orders.map(item => option(item.id, `${item.displayId} · ${item.customer}`)).join('')}</select></label><label class="full">Тайлбар<textarea name="description" required maxlength="1000"></textarea></label>`, (data, requestId) => service.recordFinance({ request_id: requestId, entry_type: data.get('entry_type'), amount: data.get('amount'), order_id: data.get('order_id'), description: data.get('description') }));
     q('#core-export-finance').onclick = () => q('[data-core-report="finance"]').click();
     q('#core-add-warehouse').hidden = !can('inventory.manage'); q('#core-adjust-inventory').hidden = !can('inventory.manage'); q('#core-add-finance').hidden = !can('finance.manage'); q('#add-product').hidden = !can('products.manage'); q('#open-lead').hidden = !can('leads.create');

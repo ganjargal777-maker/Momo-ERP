@@ -229,6 +229,8 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
     });
     await check('Inventory form changes durable stock, not a local counter', async () => {
       await nav('warehouse'); await page.locator('#core-adjust-inventory').click();
+      await page.locator('#movementProductSearch').fill('SYNTH-E2E-001');
+      await page.locator('#core-action-form [data-product-result]').click();
       await page.locator('#core-action-form [name=quantity_delta]').fill('10');
       await page.locator('#core-action-form [name=note]').fill('Synthetic stock receipt');
       await page.locator('#core-action-form [type=submit]').click();
@@ -465,6 +467,49 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       await page.waitForFunction(name => document.querySelector('#order-product-search').value === name, product.name);
       await submitOrder(3, leadPhone, savedLead.id);
       await page.waitForFunction(() => window.momoCoreUi.snapshot.orders.length === 3);
+    });
+    await check('Inventory picker posts an older SKU to the selected warehouse and preserves stock elsewhere', async () => {
+      const sku = 'SYNTH-E2E-001';
+      const productId = (await database.query('SELECT id FROM public.products WHERE organization_id=$1 AND sku=$2', [org, sku])).rows[0].id;
+      assert.equal(await page.evaluate(id => {
+        const { products, limited } = window.momoCoreUi.snapshot;
+        return limited.products && products.length === 500 && !products.some(product => product.id === id);
+      }, productId), true);
+      const balances = async () => (await database.query(`SELECT warehouse_id, quantity::int FROM public.inventory_balances
+        WHERE organization_id=$1 AND product_id=$2 ORDER BY warehouse_id`, [org, productId])).rows;
+      const before = await balances();
+      await nav('warehouse');
+      await page.locator('#core-adjust-inventory').click();
+      const form = page.locator('#core-action-form');
+      const warehouses = form.locator('[name=warehouse_id]');
+      const defaultWarehouse = await warehouses.inputValue();
+      const warehouseId = (await warehouses.locator('option').evaluateAll(options => options.map(option => option.value)))
+        .find(id => id && id !== defaultWarehouse && !before.some(balance => balance.warehouse_id === id));
+      assert.ok(warehouseId, 'A second synthetic warehouse should have no stock for this SKU');
+      await warehouses.selectOption(warehouseId);
+      const search = form.locator('#movementProductSearch');
+      const result = form.locator(`[data-product-result="${productId}"]`);
+      const selection = form.locator('[name=product_id]');
+      await search.fill(sku.toLowerCase());
+      await result.click();
+      assert.equal(await selection.inputValue(), productId);
+      const note = 'Synthetic receipt beyond the 500-product snapshot';
+      await form.locator('[name=quantity_delta]').fill('4');
+      await form.locator('[name=note]').fill(note);
+      await search.fill('SYNTHETIC-MISSING-SKU');
+      assert.equal(await selection.inputValue(), '');
+      await form.evaluate(element => element.requestSubmit());
+      assert.equal(await form.isVisible(), true);
+      await search.fill(sku);
+      await result.click();
+      await form.locator('[type=submit]').click();
+      await form.waitFor({ state: 'hidden' });
+      const movements = await database.query(`SELECT product_id, warehouse_id, quantity_delta::int, movement_type
+        FROM public.inventory_movements WHERE organization_id=$1 AND note=$2`, [org, note]);
+      assert.deepEqual(movements.rows, [{ product_id: productId, warehouse_id: warehouseId, quantity_delta: 4, movement_type: 'income' }]);
+      const after = await balances();
+      assert.deepEqual(after.filter(row => row.warehouse_id === warehouseId), [{ warehouse_id: warehouseId, quantity: 4 }]);
+      assert.deepEqual(after.filter(row => row.warehouse_id !== warehouseId), before);
     });
     await check('Permission revocation is enforced by PostgREST/RPC despite stale UI grants', async () => {
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='products.manage'", [role]);
