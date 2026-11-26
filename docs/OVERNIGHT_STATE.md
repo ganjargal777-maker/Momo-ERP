@@ -4,6 +4,29 @@ Updated: 2026-11-26, Asia/Ulaanbaatar. Owner requests hourly independent safe
 development until **2026-11-27 08:00 +08:00**; no production deployment, secret
 changes, paid service, database reset or real customer test data.
 
+## Dashboard SKU totals, run started 2026-11-26 23:56 +08:00
+
+Implementation and evidence commit `1e046ff` on `6f28334`. Readiness
+and invitation history were already merged at `d4ed605`. Dashboard and
+warehouse summary count each active product once across its organization's
+warehouses. Products with no balance rows count as out of stock. Finance
+valuation includes stock still held for archived products.
+
+- Local PostgreSQL 15 regression: 223 PASS / 0 FAIL / 2 SKIPPED.
+  Covers quantities 0/1/5/6, archived stock valuation and tenant isolation.
+  The standalone legacy entrypoint skipped and all six legacy checks ran in
+  the isolated suite. The own-assigned-only policy remains gated.
+- Local Chromium with real GoTrue, PostgREST, PG15 and Mailpit: 18 PASS /
+  0 FAIL / 0 SKIPPED. Four active SKUs displayed one low and one out of stock.
+  All 15 applicable migrations applied and the owned stack was removed.
+- Evidence: `docs/evidence/core-pg15-tests.tap`, `core-pg15-validation.json`
+  and `browser-erp-acceptance.json` in the same directory.
+
+Next: add server-backed catalog pagination with deterministic ordering and
+verify the next page of a synthetic catalog larger than 500 active products.
+Hosted acceptance and production rollout remain BLOCKED pending verified
+backup/restore, rollback and hosted acceptance access. Production writes: zero.
+
 ## Catalog stock — 2026-11-26 23:00 run, Asia/Ulaanbaatar
 
 Implementation and evidence commit `0c277ec` on verified merged base
