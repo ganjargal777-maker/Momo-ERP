@@ -330,17 +330,18 @@
         async () => (await service.loadDeliveryExport()).map(item => ({
           orderId: item.order_id, status: deliveryLabels[item.status], courierId: item.courier_id, deliveredAt: item.delivered_at,
         })));
+      bindReportExport('finance', 'finance.view', ['type', 'amount', 'description', 'occurredAt'],
+        async () => (await service.loadFinanceExport()).map(item => ({
+          type: item.entry_type, amount: item.amount, description: item.description, occurredAt: item.occurred_at,
+        })));
       const inventoryExport = q('[data-core-report="inventory"]');
       if (state?.limited.balances) inventoryExport.textContent = `Үлдэгдлийн CSV (сүүлийн ${state.balances.length} мөр)`;
       inventoryExport.disabled = !can('inventory.read') || Boolean(state?.errors.balances);
-      document.querySelectorAll('[data-core-report="inventory"], [data-core-report="finance"]').forEach(button => { button.onclick = () => {
-        const type = button.dataset.coreReport;
-        const permission = { inventory: 'inventory.read', finance: 'finance.view' }[type];
-        if (!can(permission)) { showToast('Энэ мэдээллийг унших эрхгүй.', 'error'); return; }
-        const rows = { inventory: state.balances.map(item => ({ warehouseId: item.warehouse_id, productId: item.product_id, quantity: item.quantity })),
-          finance: state.finance.map(item => ({ type: item.entry_type, amount: item.amount, description: item.description, occurredAt: item.occurred_at })) }[type];
-        exportRows(rows, `momo-${type}-${new Date().toISOString().slice(0, 10)}.csv`);
-      }; });
+      inventoryExport.onclick = () => {
+        if (!can('inventory.read')) return;
+        const rows = state.balances.map(item => ({ warehouseId: item.warehouse_id, productId: item.product_id, quantity: item.quantity }));
+        exportRows(rows, `momo-inventory-${new Date().toISOString().slice(0, 10)}.csv`);
+      };
     };
     function editWarehouse(item) {
       openAction(item ? 'Агуулах засах' : 'Агуулах нэмэх', `<label class="full">Нэр<input name="name" required maxlength="200" value="${h(item?.name)}"></label><label class="full"><input type="checkbox" name="is_active" ${item?.is_active !== false ? 'checked' : ''}> Идэвхтэй</label>`, data => service.saveWarehouse({ id: item?.id, expected_updated_at: item?.updated_at, name: data.get('name'), branch_id: item?.branch_id, is_active: data.get('is_active') === 'on' }));
@@ -363,6 +364,7 @@
       bindProductPicker(input, q('#movement-product-results'), '#selected-movement-product', input.form.elements.product_id);
     };
     q('#core-add-finance').onclick = () => openAction('Мөнгөн урсгал бүртгэх', `<label>Төрөл<select name="entry_type">${option('income', 'Орлого')}${option('expense', 'Зарлага')}</select></label><label>Дүн<input name="amount" type="number" min="0.01" step="0.01" required></label><label class="full">Захиалга (шаардлагагүй)<select name="order_id">${option('', 'Захиалгатай холбохгүй')}${orders.map(item => option(item.id, `${item.displayId} · ${item.customer}`)).join('')}</select></label><label class="full">Тайлбар<textarea name="description" required maxlength="1000"></textarea></label>`, (data, requestId) => service.recordFinance({ request_id: requestId, entry_type: data.get('entry_type'), amount: data.get('amount'), order_id: data.get('order_id'), description: data.get('description') }));
+    q('#core-export-finance').disabled = !can('finance.view');
     q('#core-export-finance').onclick = () => q('[data-core-report="finance"]').click();
     q('#core-add-warehouse').hidden = !can('inventory.manage'); q('#core-adjust-inventory').hidden = !can('inventory.manage'); q('#core-add-finance').hidden = !can('finance.manage'); q('#add-product').hidden = !can('products.manage'); q('#open-lead').hidden = !can('leads.create');
     // User/role management remains backed by its existing RPCs. Escape stored

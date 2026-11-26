@@ -220,6 +220,12 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
         catch (error) { return error.code === '42501'; }
       });
       assert.equal(deliveryExportDenied, true);
+      assert.equal(await employeePage.locator('[data-core-report="finance"]').isDisabled(), true);
+      const financeExportDenied = await employeePage.evaluate(async () => {
+        try { await window.momoCoreUi.service.loadFinanceExport(); return false; }
+        catch (error) { return error.code === '42501'; }
+      });
+      assert.equal(financeExportDenied, true);
       assert.equal(await employeePage.evaluate(() => window.momoCoreUi.snapshot.summary.finance), null);
       const login = await createClient(stack.apiUrl, stack.publicKey, { auth: { persistSession: false, autoRefreshToken: false } }).auth.signInWithPassword({ email: employeeEmail, password });
       assert.equal(login.error, null);
@@ -523,8 +529,8 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       assert.deepEqual(after.filter(row => row.warehouse_id === warehouseId), [{ warehouse_id: warehouseId, quantity: 4 }]);
       assert.deepEqual(after.filter(row => row.warehouse_id !== warehouseId), before);
     });
+    const otherOrg = randomUUID();
     await check('Downloaded order CSV matches every permitted non-demo order across the 500-row boundary', async () => {
-      const otherOrg = randomUUID();
       await database.query('INSERT INTO public.organizations(id,name,slug) VALUES($1,$2,$3)',
         [otherOrg, 'SYNTHETIC export control', 'synthetic-export-' + otherOrg]);
       // All bulk fixtures share a timestamp, including both sides of page boundaries.
@@ -603,6 +609,58 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       assert.equal(await countVisible(), report.exportedDeliveryCount);
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='deliveries.read'", [role]);
       assert.equal(await countVisible(), 0);
+    });
+    await check('Cashflow CSV matches all permitted non-demo receipts and expenses in ledger order', async () => {
+      const otherUser = await admin.auth.admin.createUser({ email: 'cashflow-control@example.invalid',
+        email_confirm: true, app_metadata: { organization_id: otherOrg } });
+      assert.equal(otherUser.error, null);
+      const otherUserId = otherUser.data.user.id;
+      await database.query('UPDATE public.profiles SET organization_id=$1 WHERE id=$2', [otherOrg, otherUserId]);
+      // The microsecond timestamp is identical on both sides of the page boundary.
+      await database.query(`INSERT INTO public.finance_entries
+        (organization_id, created_by, entry_type, amount, description, occurred_at, is_demo)
+        SELECT CASE WHEN i=1007 THEN $3::uuid ELSE $1::uuid END,
+          CASE WHEN i=1007 THEN $4::uuid ELSE $2::uuid END,
+          CASE WHEN i%2=0 THEN 'income' ELSE 'expense' END, i+0.25,
+          CASE WHEN i=1 THEN '=SYNTHETIC "quoted", receipt' ELSE 'SYNTHETIC cashflow ' || i END,
+          '2025-01-01T00:00:00.000123Z', i=1006 FROM generate_series(1,1007) i`, [org, user, otherOrg, otherUserId]);
+      await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='finance.manage'", [role]);
+      const expected = await database.query(`SELECT entry_type,amount,description,occurred_at FROM public.finance_entries
+        WHERE organization_id=$1 AND NOT is_demo ORDER BY occurred_at DESC,id DESC`, [org]);
+      assert.ok(expected.rowCount > 1000);
+      await page.reload();
+      await page.waitForFunction(() => window.momoCoreUi?.snapshot?.limited.finance === true);
+      assert.equal(await page.evaluate(() => window.momoCoreUi.snapshot.finance.length), 500);
+      await nav('reports');
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.locator('[data-core-report="finance"]').click(),
+      ]);
+      assert.match(download.suggestedFilename(), /^momo-finance-\d{4}-\d{2}-\d{2}\.csv$/u);
+      const csv = await readFile(await download.path(), 'utf8');
+      const [header, ...records] = csv.replace(/^\uFEFF/u, '').split('\r\n');
+      assert.equal(header, '"type","amount","description","occurredAt"');
+      assert.equal(records.length, expected.rowCount);
+      for (const [index, record] of records.entries()) {
+        const match = /^"(income|expense)","([\d.]+)","((?:[^"]|"")*)","([^"]+)"$/u.exec(record);
+        assert.ok(match, 'Each cashflow record has four quoted fields');
+        const row = expected.rows[index];
+        const description = row.description.startsWith('=') ? "'" + row.description : row.description;
+        assert.deepEqual([match[1], Number(match[2]), match[3].replaceAll('""', '"'), new Date(match[4]).toISOString()],
+          [row.entry_type, Number(row.amount), description, row.occurred_at.toISOString()]);
+      }
+      report.exportedFinanceCount = records.length;
+    });
+    await check('Revoking finance.view removes ledger access on the active authenticated session', async () => {
+      const countLedger = () => page.evaluate(async () => {
+        const { error, count } = await window.nexerpAuth.client.from('finance_entries')
+          .select('id', { count: 'exact', head: true }).eq('is_demo', false);
+        if (error) throw new Error(error.code);
+        return count;
+      });
+      assert.equal(await countLedger(), report.exportedFinanceCount);
+      await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='finance.view'", [role]);
+      assert.equal(await countLedger(), 0);
     });
     await check('Permission revocation is enforced by PostgREST/RPC despite stale UI grants', async () => {
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='products.manage'", [role]);

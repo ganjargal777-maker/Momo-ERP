@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAtUtc": "2026-11-26T21:05:31.450Z",
+  "checkedAtUtc": "2026-11-26T22:03:31.482Z",
   "scope": "real-local-Chromium-GoTrue-PostgREST-PG15-Mailpit",
   "checks": [
     {
@@ -84,6 +84,14 @@
       "status": "PASS"
     },
     {
+      "name": "Cashflow CSV matches all permitted non-demo receipts and expenses in ledger order",
+      "status": "PASS"
+    },
+    {
+      "name": "Revoking finance.view removes ledger access on the active authenticated session",
+      "status": "PASS"
+    },
+    {
       "name": "Permission revocation is enforced by PostgREST/RPC despite stale UI grants",
       "status": "PASS"
     },
@@ -108,7 +116,7 @@
   "localInviteHandlerAdapter": true,
   "hostedEdgeGatewayVerified": false,
   "stack": {
-    "projectId": "momo-browser-e064bc6c-cbd",
+    "projectId": "momo-browser-132f8f8c-17f",
     "host": "127.0.0.1",
     "postgresMajor": 15,
     "auth": "real-local-GoTrue",
@@ -118,9 +126,10 @@
   "appliedMigrationCount": 16,
   "exportedOrderCount": 1008,
   "exportedDeliveryCount": 1008,
+  "exportedFinanceCount": 1006,
   "status": "PASS",
   "counts": {
-    "pass": 24,
+    "pass": 26,
     "fail": 0
   },
   "ownedStackCleaned": true,
