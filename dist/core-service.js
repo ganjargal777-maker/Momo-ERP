@@ -61,6 +61,41 @@
       if (!Array.isArray(data)) throw friendly({ code: 'invalid_response' });
       return { rows: data, total: Number.isSafeInteger(count) ? count : null, limited: count !== null && count > data.length };
     }
+    async loadProductStock(products) {
+      const ids = products.filter(product => product.is_active).map(product => product.id);
+      if (!ids.length || !this.can('inventory.read') || !this.can('products.read')) return {};
+      const rows = await this.rpc('core_product_stock', { product_ids: ids });
+      if (!Array.isArray(rows) || rows.some(row => !Number.isSafeInteger(row?.quantity) || row.quantity < 0 || !UUID.test(row.product_id))) {
+        throw friendly({ code: 'invalid_response' });
+      }
+      return Object.fromEntries(rows.map(row => [row.product_id, row.quantity]));
+    }
+    async loadCatalogPage({ page = 1, pageSize = 24, search = '', categoryId = '' } = {}) {
+      if (!this.can('products.read')) throw friendly({ code: '42501' });
+      const offset = (page - 1) * pageSize;
+      if (!Number.isSafeInteger(page) || page < 1 || !Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 500 || !Number.isSafeInteger(offset + pageSize)) {
+        fail('Хуудасны дугаар эсвэл хэмжээ буруу байна.');
+      }
+      let query = this.client.from('products').select('*,category:categories(name)', { count: 'exact' })
+        .eq('organization_id', this.organizationId).eq('is_active', true);
+      if (categoryId === 'uncategorized') query = query.is('category_id', null);
+      else if (categoryId) query = query.eq('category_id', uuid(categoryId));
+      const term = text(search);
+      if (term) {
+        // PostgreSQL's (?q) treats the entire remaining pattern as literal text.
+        // Quote the value separately for PostgREST's logical filter grammar.
+        const literal = '"(?q)' + term.replace(/["\\]/gu, '\\$&') + '"';
+        query = query.or('name.imatch.' + literal + ',sku.imatch.' + literal);
+      }
+      const { data, count, error } = await query.order('name', { ascending: true })
+        .order('id', { ascending: true }).range(offset, offset + pageSize - 1);
+      if (error) throw friendly(error);
+      if (!Array.isArray(data) || !Number.isSafeInteger(count) || count < 0) throw friendly({ code: 'invalid_response' });
+      const result = { rows: data, total: count, productStock: {}, stockError: null };
+      try { result.productStock = await this.loadProductStock(data); }
+      catch (stockError) { result.stockError = { code: stockError.code, message: stockError.message }; }
+      return result;
+    }
     async loadSnapshot() {
       const definitions = [
         ['products', 'products.read', 'products', '*'],
@@ -88,16 +123,8 @@
         } catch (error) { snapshot.errors[key] = { code: error.code, message: error.message }; }
       }));
       snapshot.productStock = {};
-      const activeIds = snapshot.products.filter(product => product.is_active).map(product => product.id);
-      if (activeIds.length && this.can('inventory.read') && this.can('products.read')) {
-        try {
-          const rows = await this.rpc('core_product_stock', { product_ids: activeIds });
-          if (!Array.isArray(rows) || rows.some(row => !Number.isSafeInteger(row?.quantity) || row.quantity < 0 || !UUID.test(row.product_id))) {
-            throw friendly({ code: 'invalid_response' });
-          }
-          snapshot.productStock = Object.fromEntries(rows.map(row => [row.product_id, row.quantity]));
-        } catch (error) { snapshot.errors.productStock = { code: error.code, message: error.message }; }
-      }
+      try { snapshot.productStock = await this.loadProductStock(snapshot.products); }
+      catch (error) { snapshot.errors.productStock = { code: error.code, message: error.message }; }
       if (['dashboard.view', 'reports.view', 'finance.view'].some(permission => this.can(permission))) {
         try { snapshot.summary = await this.rpc('core_dashboard_summary'); }
         catch (error) { snapshot.errors.summary = { code: error.code, message: error.message }; }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAtUtc": "2026-11-26T15:58:50.947Z",
+  "checkedAtUtc": "2026-11-26T17:07:12.309Z",
   "scope": "real-local-Chromium-GoTrue-PostgREST-PG15-Mailpit",
   "checks": [
     {
@@ -60,6 +60,10 @@
       "status": "PASS"
     },
     {
+      "name": "Catalog pages and searches all 506 equal-name active SKUs with stable order and stock",
+      "status": "PASS"
+    },
+    {
       "name": "Permission revocation is enforced by PostgREST/RPC despite stale UI grants",
       "status": "PASS"
     },
@@ -84,7 +88,7 @@
   "localInviteHandlerAdapter": true,
   "hostedEdgeGatewayVerified": false,
   "stack": {
-    "projectId": "momo-browser-986b1fa7-0c3",
+    "projectId": "momo-browser-a3db8cb5-7f8",
     "host": "127.0.0.1",
     "postgresMajor": 15,
     "auth": "real-local-GoTrue",
@@ -94,7 +98,7 @@
   "appliedMigrationCount": 15,
   "status": "PASS",
   "counts": {
-    "pass": 18,
+    "pass": 19,
     "fail": 0
   },
   "ownedStackCleaned": true,

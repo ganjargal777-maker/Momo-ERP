@@ -19,7 +19,10 @@ function fixture({ permissions = [], rows = {}, errors = {}, rpcError, productSt
     constructor(table) { this.table = table; this.filters = []; queries.push(this); }
     select(columns, options) { this.columns = columns; this.options = options; return this; }
     eq(key, value) { this.filters.push([key, value]); return this; }
-    order(key) { this.sort = key; return this; }
+    order(key, options) { this.sort = key; (this.ordering ??= []).push([key, options.ascending]); return this; }
+    or(expression) { this.expression = expression; return this; }
+    is(key, value) { this.filters.push([key, 'is', value]); return this; }
+    range(first, last) { this.rangeValues = [first, last]; return this; }
     limit(limit) { this.limitValue = limit; return this; }
     then(resolve, reject) { return Promise.resolve({ data: rows[this.table] ?? [], count: (rows[this.table] ?? []).length, error: errors[this.table] }).then(resolve, reject); }
   }
@@ -90,6 +93,42 @@ test('unknown catalog stock remains unavailable even when a raw balance exists',
     assert.equal(snapshot.productStock[PRODUCT], undefined);
     if (scenario.rpcError || scenario.productStock.length) assert.equal(snapshot.status, 'partial');
   }
+});
+
+test('catalog pages query active tenant rows in stable order with exact count and page-scoped stock', async () => {
+  const rows = { products: [{ id: PRODUCT, is_active: true, category: { name: 'Synthetic' } }] };
+  const { service, queries, calls } = fixture({ rows, permissions: ['products.read', 'inventory.read'], productStock: [{ product_id: PRODUCT, quantity: 0 }] });
+  const page = await service.loadCatalogPage({ page: 22, pageSize: 24, search: 'a%_*,"\\)', categoryId: REQUEST });
+  const [query] = queries;
+  assert.deepEqual(query.filters, [['organization_id', ORG], ['is_active', true], ['category_id', REQUEST]]);
+  assert.deepEqual(query.ordering, [['name', true], ['id', true]]);
+  assert.deepEqual(query.rangeValues, [504, 527]);
+  assert.equal(query.options.count, 'exact');
+  assert.equal(query.expression, 'name.imatch."(?q)a%_*,\\"\\\\)",sku.imatch."(?q)a%_*,\\"\\\\)"');
+  assert.deepEqual(plain(page), { rows: rows.products, total: 1, productStock: { [PRODUCT]: 0 }, stockError: null });
+  assert.deepEqual(calls, [{ name: 'core_product_stock', parameters: { product_ids: [PRODUCT] } }]);
+});
+
+test('catalog preserves unknown stock, revoked access, null category and query errors', async () => {
+  const denied = fixture();
+  await assert.rejects(denied.service.loadCatalogPage(), { code: '42501' });
+  assert.equal(denied.queries.length, 0);
+  const rows = { products: [{ id: PRODUCT, is_active: true }] };
+  const restricted = fixture({ rows, permissions: ['products.read'] });
+  const page = await restricted.service.loadCatalogPage({ categoryId: 'uncategorized' });
+  assert.deepEqual(restricted.queries[0].filters.at(-1), ['category_id', 'is', null]);
+  assert.deepEqual(plain(page.productStock), {});
+  assert.equal(restricted.calls.length, 0);
+  for (const input of [{ page: 0 }, { pageSize: 501 }, { page: 1.5 }, { page: Number.MAX_SAFE_INTEGER }]) {
+    await assert.rejects(restricted.service.loadCatalogPage(input));
+  }
+  const failed = fixture({ rows, permissions: ['products.read', 'inventory.read'], rpcError: { code: '42501' } });
+  const partial = await failed.service.loadCatalogPage();
+  assert.deepEqual(plain(partial.rows), rows.products);
+  assert.equal(partial.stockError.code, '42501');
+  assert.deepEqual(plain(partial.productStock), {});
+  const stale = fixture({ permissions: ['products.read'], errors: { products: { code: 'PGRST103' } } });
+  await assert.rejects(stale.service.loadCatalogPage(), { code: 'PGRST103' });
 });
 
 test('all snapshot query sort fields exist in the actual SQL table schema', async () => {

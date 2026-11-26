@@ -45,11 +45,17 @@
       const csv = '\uFEFF' + [keys.map(cell).join(','), ...rows.map(row => keys.map(key => cell(row[key])).join(','))].join('\r\n');
       const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); link.download = filename; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     }
+    function displayProduct(item, stock, category) {
+      const discount = Number(item.discount_price), price = Number(item.sale_price);
+      return { ...item, price: discount > 0 && discount < price ? discount : price,
+        discountPrice: discount, cost: Number(item.cost_price), stock: stock[item.id] ?? null,
+        category: category ?? 'Ангилалгүй' };
+    }
     function mapRows() {
       const categories = new Map(state.categories.map(item => [item.id, item.name]));
       const pages = new Map(state.pages.map(item => [item.id, item.name]));
-      products = state.products.filter(item => item.is_active).map(item => ({ ...item, price: Number(item.discount_price) > 0 && Number(item.discount_price) < Number(item.sale_price) ? Number(item.discount_price) : Number(item.sale_price), discountPrice: Number(item.discount_price), cost: Number(item.cost_price),
-        stock: state.productStock[item.id] ?? null, category: categories.get(item.category_id) ?? 'Ангилалгүй' }));
+      products = state.products.filter(item => item.is_active).map(item =>
+        displayProduct(item, state.productStock, categories.get(item.category_id)));
       orders = state.orders.map(item => ({ ...item, databaseId: item.id, displayId: `ORD-${item.order_number}`, customer: item.customer_name, phone: item.phone_normalized,
         product: (item.order_items ?? []).map(line => `${line.products?.name ?? line.product_id} × ${line.quantity}`).join(', '), amount: Number(item.collect_amount),
         productAmount: Number(item.product_total), statusLabel: format.orderLabels[item.status], address: item.delivery_address, date: labelDate(item.created_at),
@@ -84,16 +90,45 @@
       renderOrders(orders.filter(item => (!status || item.statusLabel === status) && `${item.displayId} ${item.customer} ${item.phone} ${item.product} ${item.address}`.toLocaleLowerCase('mn').includes(search)));
     };
     q('#order-search').oninput = filter; q('#status-filter').onchange = filter;
-    renderProducts = function () {
-      const list = filteredProducts(), pages = Math.max(1, Math.ceil(list.length / productPageSize)); productPage = Math.min(productPage, pages);
-      q('#product-grid').innerHTML = list.slice((productPage - 1) * productPageSize, productPage * productPageSize).map(item => `<article class="product-card"><div class="product-body"><h3>${h(item.name)}</h3><p>${h(item.sku)}</p><div class="product-meta">${h(item.category)}</div><div class="product-price"><strong>${h(money(item.price))}</strong><span>${item.stock === null ? 'Үлдэгдэл харах эрхгүй/боломжгүй' : h(item.stock) + ' ш'}</span></div>${can('products.manage') ? `<button class="btn secondary" data-edit-product="${h(item.id)}">Засах</button><button class="btn secondary" data-archive-product="${h(item.id)}">Идэвхгүй болгох</button>` : ''}</div></article>`).join('') || `<p class="empty-products">${state?.errors.products ? 'Барааны мэдээлэл уншихад алдаа гарлаа.' : 'Бараа бүртгэгдээгүй.'}</p>`;
-      set('#catalog-count', `${state?.totals.products ?? list.length} бараа`); set('#product-page', `${productPage} / ${pages}`);
+    let catalogRows = [], catalogRequest = 0, editingProduct = null;
+    renderProducts = async function (page = 1) {
+      const request = ++catalogRequest;
+      productPage = page;
+      const grid = q('#product-grid');
+      catalogRows = [];
+      grid.textContent = 'Барааны мэдээллийг уншиж байна…';
+      set('#catalog-count', '—'); set('#product-page', '—');
+      q('#product-prev').disabled = q('#product-next').disabled = true;
+      if (!can('products.read')) { grid.textContent = 'Бараа харах эрхгүй.'; return; }
+      let result;
+      try {
+        result = await service.loadCatalogPage({ page, pageSize: productPageSize,
+          search: q('#product-search').value.trim(), categoryId: q('#category-filter').value });
+      } catch (error) {
+        if (request !== catalogRequest) return;
+        if (page > 1 && error.code === 'PGRST103') return renderProducts(1);
+        grid.textContent = error.message || 'Барааны мэдээлэл уншихад алдаа гарлаа.';
+        return;
+      }
+      if (request !== catalogRequest) return;
+      const pages = Math.max(1, Math.ceil(result.total / productPageSize));
+      if (page > pages) return renderProducts(pages);
+      catalogRows = result.rows.map(item => displayProduct(item, result.productStock, item.category?.name));
+      grid.innerHTML = catalogRows.map(item => `<article class="product-card"><div class="product-body"><h3>${h(item.name)}</h3><p>${h(item.sku)}</p><div class="product-meta">${h(item.category)}</div><div class="product-price"><strong>${h(money(item.price))}</strong><span>${item.stock === null ? 'Үлдэгдэл харах эрхгүй/боломжгүй' : h(item.stock) + ' ш'}</span></div>${can('products.manage') ? `<button class="btn secondary" data-edit-product="${h(item.id)}">Засах</button><button class="btn secondary" data-archive-product="${h(item.id)}">Идэвхгүй болгох</button>` : ''}</div></article>`).join('') || '<p class="empty-products">Бараа олдсонгүй.</p>';
+      set('#catalog-count', `${result.total} бараа`); set('#product-page', `${productPage} / ${pages}`);
       q('#product-prev').disabled = productPage === 1; q('#product-next').disabled = productPage === pages;
       document.querySelectorAll('[data-edit-product]').forEach(button => { button.onclick = () => openProductModal(button.dataset.editProduct); });
       document.querySelectorAll('[data-archive-product]').forEach(button => { button.onclick = async () => {
-        const item = state.products.find(product => product.id === button.dataset.archiveProduct);
+        const item = catalogRows.find(product => product.id === button.dataset.archiveProduct);
         button.disabled = true; try { await service.saveProduct({ ...item, expected_updated_at: item.updated_at, is_active: false }); await refresh(); showToast('Бараа идэвхгүй боллоо.'); } catch (error) { showToast(error.message, 'error'); button.disabled = false; }
       }; });
+    };
+    q('#product-prev').onclick = () => renderProducts(productPage - 1);
+    q('#product-next').onclick = () => renderProducts(productPage + 1);
+    q('#product-search').oninput = () => renderProducts(1);
+    q('#category-filter').onchange = () => renderProducts(1);
+
+    function renderInventory() {
       const inventoryProducts = products.filter(item => item.stock !== null).sort((a, b) => a.stock - b.stock);
       q('#inventory-list').innerHTML = inventoryProducts.slice(0, 30).map(item => `<div class="inventory-item"><div><strong>${h(item.name)}</strong><small>${h(item.sku)}</small></div><b>${h(item.stock)} ш</b></div>`).join('') || '<p>Үлдэгдлийн мэдээлэл алга эсвэл унших боломжгүй.</p>';
       set('#product-count', state?.summary?.inventory?.products ?? state?.totals.products); set('#out-count', state?.summary?.inventory?.outOfStock); set('#stock-value', state?.summary?.inventory?.stockCost == null ? '—' : money(state.summary.inventory.stockCost));
@@ -109,15 +144,27 @@
     };
     productSearch(orderProductSearch, orderProductResults, item => { orderForm.elements.productId.value = item.id; orderProductSearch.value = item.name; set('#selected-order-product', `${item.name} · ${item.sku}`); setOrderAmount(item.price * Number(orderForm.elements.quantity.value || 1)); });
     productSearch(leadProductSearch, leadProductResults, item => { leadForm.elements.productId.value = item.id; leadProductSearch.value = item.name; set('#selected-lead-product', item.name); });
-    const originalOpenProduct = openProductModal;
     openProductModal = function (id) {
-      originalOpenProduct(id); const item = state?.products.find(product => product.id === id);
-      productForm.elements.id.value = item?.id ?? ''; productForm.elements.category_id.value = item?.category_id ?? '';
-      if (item) productForm.elements.price.value = item.sale_price;
+      editingProduct = id ? catalogRows.find(item => item.id === id) : null;
+      if (id && !editingProduct) return;
+      const item = editingProduct;
+      productForm.reset();
+      const fields = productForm.elements;
+      if (item?.category_id && !Array.from(fields.category_id.options).some(entry => entry.value === item.category_id)) {
+        fields.category_id.add(new Option(item.category, item.category_id));
+      }
+      for (const [key, value] of Object.entries({ id, name: item?.name, sku: item?.sku,
+        category_id: item?.category_id, stock: item ? item.stock : 0, price: item?.sale_price ?? 0,
+        discountPrice: item?.discountPrice ?? 0, cost: item?.cost ?? 0 })) {
+        fields.namedItem(key).value = value ?? '';
+      }
+      set('#product-modal-title', id ? 'Бараа засах' : 'Шинэ бараа');
+      productModal.classList.add('open'); productModal.setAttribute('aria-hidden', 'false');
+      fields.namedItem('name').focus();
     };
     q('#add-product').onclick = () => openProductModal();
     productForm.onsubmit = event => { event.preventDefault(); busy(productForm, async () => {
-      const data = new FormData(productForm), previous = state.products.find(item => item.id === data.get('id'));
+      const data = new FormData(productForm), previous = editingProduct;
       await service.saveProduct({ id: previous?.id, expected_updated_at: previous?.updated_at, name: data.get('name'), sku: data.get('sku'),
         category_id: data.get('category_id'), sale_price: data.get('price'), discount_price: data.get('discountPrice') || 0, cost_price: data.get('cost') || 0, is_active: true });
       closeProductModal(); await refresh(); showToast('Бараа Supabase-д хадгалагдлаа.');
@@ -263,13 +310,18 @@
       try {
         state = await service.loadSnapshot(); window.momoCoreUi.snapshot = state;
         mapRows();
-        q('#category-filter').innerHTML = option('', 'Бүх ангилал') + [...new Set(products.map(item => item.category))].map(category => option(category, category)).join('');
+        const categoryFilter = q('#category-filter'), selectedCategory = categoryFilter.value;
+        categoryFilter.innerHTML = option('', 'Бүх ангилал') + option('uncategorized', 'Ангилалгүй')
+          + state.categories.map(item => option(item.id, item.name)).join('');
+        categoryFilter.value = selectedCategory;
+        if (categoryFilter.selectedIndex < 0) categoryFilter.value = '';
         productForm.elements.category_id.innerHTML = option('', 'Ангилалгүй') + state.categories.map(item => option(item.id, item.name)).join('');
         const pageOptions = option('', 'Гараар / Page сонгоогүй') + state.pages.filter(item => item.is_active).map(item => option(item.id, item.name)).join('');
         orderForm.elements.sourcePage.innerHTML = pageOptions; leadForm.elements.page.innerHTML = pageOptions;
         orderForm.elements.warehouse_id.innerHTML = option('', 'Агуулах сонгох') + orderWarehouses().map(item => option(item.id, item.name)).join('');
         q('#lead-page-filter').innerHTML = option('', 'Бүх Facebook Page') + state.pages.map(item => option(item.name, item.name)).join('');
-        renderOrders(); renderProducts(); renderLeads(); renderDelivery(); renderSummary(); renderMenus(); icons();
+        renderOrders(); renderInventory(); renderLeads(); renderDelivery(); renderSummary(); renderMenus(); icons();
+        renderProducts(productPage);
         const errors = Object.entries(state.errors);
         set('#core-data-status', errors.length ? `Зарим мэдээлэл уншигдсангүй: ${errors.map(([key]) => key).join(', ')}. ${errors[0][1].message}` : 'Supabase · бодит өгөгдөл · ' + labelDate(state.loadedAt));
         q('#core-data-status').setAttribute('role', errors.length ? 'alert' : 'status');

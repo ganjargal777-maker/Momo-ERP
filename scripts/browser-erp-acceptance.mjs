@@ -341,6 +341,70 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       assert.equal(await page.locator('#product-count').innerText(), '4');
       assert.equal(await page.locator('#out-count').innerText(), '1');
     });
+    await check('Catalog pages and searches all 506 equal-name active SKUs with stable order and stock', async () => {
+      const name = 'SYNTHETIC paging fixture';
+      const category = (await database.query('INSERT INTO public.categories(organization_id, name) VALUES ($1, $2) RETURNING id',
+        [org, 'SYNTHETIC paging category'])).rows[0].id;
+      await database.query(`INSERT INTO public.products(organization_id, sku, name, sale_price, discount_price)
+        SELECT $1, 'SYNTH-PAGE-' || lpad(n::text, 4, '0'), $2, 9200, 8700 FROM generate_series(1, 506) AS n`, [org, name]);
+      const renamed = 'MiXeD%_*,("Q\\Z")';
+      await database.query('INSERT INTO public.products(organization_id, sku, name) VALUES ($1, $2, $3)',
+        [org, 'SYNTH-PAGE-NEAR-MATCH', renamed.replace('%_*', 'ABC')]);
+      const expected = (await database.query(`SELECT id, sku FROM public.products
+        WHERE organization_id = $1 AND name = $2 ORDER BY name, id`, [org, name])).rows;
+      const last = expected.at(-1);
+      await database.query(`INSERT INTO public.inventory_balances(organization_id, warehouse_id, product_id, quantity)
+        SELECT $1, id, $2, 3 FROM public.warehouses WHERE organization_id = $1 ORDER BY id LIMIT 2`, [org, last.id]);
+      await page.reload();
+      await page.waitForFunction(() => window.momoCoreUi?.snapshot?.status === 'ready');
+      await nav('products');
+      const search = page.locator('#product-search');
+      const cards = page.locator('#product-grid .product-body > p');
+      const next = page.locator('#product-next'), previous = page.locator('#product-prev');
+      const assertPage = async rows => {
+        await page.waitForFunction(firstSku =>
+          document.querySelector('#product-grid .product-body > p')?.textContent === firstSku, rows[0].sku);
+        assert.deepEqual(await cards.allTextContents(), rows.map(row => row.sku));
+      };
+      await search.fill(name);
+      const size = 24;
+      for (let offset = 0; offset < expected.length; offset += size) {
+        if (offset > 0) await next.click();
+        await assertPage(expected.slice(offset, offset + size));
+        if (offset === 0) assert.equal(await previous.isDisabled(), true);
+      }
+      assert.equal(await next.isDisabled(), true);
+      const lastCard = page.locator('#product-grid .product-card').filter({ hasText: last.sku });
+      assert.equal(await lastCard.locator('.product-price span').innerText(), '6 ш');
+      await previous.click();
+      await assertPage(expected.slice(480, 504));
+      await next.click();
+      await lastCard.locator('[data-edit-product]').click();
+      const form = page.locator('#product-form');
+      assert.equal(await form.locator('[name=id]').inputValue(), last.id);
+      assert.equal(Number(await form.locator('[name=price]').inputValue()), 9200);
+      assert.equal(Number(await form.locator('[name=discountPrice]').inputValue()), 8700);
+      assert.equal(Number(await form.locator('[name=stock]').inputValue()), 6);
+      await form.locator('[name=category_id]').selectOption(category);
+      await form.locator('[name=name]').fill(renamed);
+      await form.locator('[type=submit]').click();
+      await form.waitFor({ state: 'hidden' });
+      const saved = await database.query('SELECT id, sku, name, category_id FROM public.products WHERE organization_id=$1 AND (sku=$2 OR name=$3)',
+        [org, last.sku, renamed]);
+      assert.deepEqual(saved.rows, [{ ...last, name: renamed, category_id: category }]);
+      await search.fill(last.sku);
+      await assertPage([last]);
+      assert.equal(await previous.isDisabled(), true);
+      assert.equal(await next.isDisabled(), true);
+      await search.fill('SYNTH-PAGE-NEAR-MATCH');
+      await assertPage([{ sku: 'SYNTH-PAGE-NEAR-MATCH' }]);
+      await search.fill(renamed.toLowerCase());
+      await assertPage([last]);
+      await search.fill('');
+      await page.waitForFunction(() => document.querySelectorAll('#product-grid .product-card').length === 24);
+      await page.locator('#category-filter').selectOption(category);
+      await assertPage([last]);
+    });
     await check('Permission revocation is enforced by PostgREST/RPC despite stale UI grants', async () => {
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='products.manage'", [role]);
       const denial = await page.evaluate(async () => {
