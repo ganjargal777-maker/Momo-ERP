@@ -11,11 +11,22 @@ major_version = 15
 [auth]
 enabled = true
 site_url = "https://erp.momoshop.mn"
-additional_redirect_urls = ["http://localhost:4173", "https://erp.momoshop.mn", "https://erp.momoshop.mn/?setup=1"]
+additional_redirect_urls = [
+  "http://localhost:4173",
+  "http://localhost:4173/?reset=1",
+  "https://erp.momoshop.mn",
+  "https://erp.momoshop.mn/?setup=1",
+  "https://erp.momoshop.mn/?reset=1"
+]
+# Invitation-only account provisioning. Keep the email/password provider enabled
+# separately; disabling the provider also prevents existing password logins.
 enable_signup = false
 
 [realtime]
 enabled = true
 
 [functions.invite-user]
+verify_jwt = true
+
+[functions.social-integration]
 verify_jwt = true

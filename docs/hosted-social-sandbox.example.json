@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "purpose": "isolated-synthetic-social-sandbox",
+  "projectRef": "sandboxxxxxxxxxxxxxx",
+  "browserOrigin": "http://localhost:4173",
+  "page": {
+    "erpPageId": "11111111-1111-4111-8111-111111111111",
+    "organizationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+    "externalPageId": "12345"
+  },
+  "flagsDisabledPageId": "33333333-3333-4333-8333-333333333333",
+  "negativeContextId": "00000000-0000-4000-8000-000000900001",
+  "negativeReplyId": "00000000-0000-4000-8000-000000900002",
+  "publishableKeyEnv": "MOMO_SANDBOX_PUBLISHABLE_KEY",
+  "actors": {
+    "readAllowed": {"subjectId":"00000000-0000-4000-8000-000000000101","organizationId":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","tokenEnv":"MOMO_SANDBOX_JWT_READ"},
+    "noPermission": {"subjectId":"00000000-0000-4000-8000-000000000102","organizationId":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","tokenEnv":"MOMO_SANDBOX_JWT_NO_PERMISSION"},
+    "inactive": {"subjectId":"00000000-0000-4000-8000-000000000103","organizationId":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","tokenEnv":"MOMO_SANDBOX_JWT_INACTIVE"},
+    "otherOrg": {"subjectId":"00000000-0000-4000-8000-000000000104","organizationId":"bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2","tokenEnv":"MOMO_SANDBOX_JWT_OTHER_ORG"},
+    "pageDenied": {"subjectId":"00000000-0000-4000-8000-000000000105","organizationId":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","tokenEnv":"MOMO_SANDBOX_JWT_PAGE_DENIED"},
+    "flagsDisabled": {"subjectId":"00000000-0000-4000-8000-000000000106","organizationId":"cccccccc-cccc-4ccc-8ccc-ccccccccccc3","tokenEnv":"MOMO_SANDBOX_JWT_FLAGS_DISABLED"}
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "checkedAtUtc": "2026-11-26T13:42:57.307Z",
+  "origin": "https://erp.momoshop.mn",
+  "expectedRef": "lxjkkqypiwnnrjmnpick",
+  "scope": "public-read-only-GET-no-authentication-or-database-writes",
+  "checks": {
+    "html": {
+      "status": 200,
+      "server": "Vercel",
+      "containsHardcodedSales": true,
+      "sdkPinned": false
+    },
+    "runtime": {
+      "status": 200,
+      "matchesProject": true,
+      "keyType": "publishable",
+      "cacheControl": "public, max-age=0, must-revalidate"
+    },
+    "publicAuthSettings": {
+      "status": 200,
+      "emailEnabled": true,
+      "signupDisabled": false
+    }
+  },
+  "mutations": 0,
+  "stillRequired": [
+    "Private Vercel env/build binding and deployment history",
+    "Hosted Auth redirect/SMTP configuration and approved synthetic-user acceptance",
+    "Verified backup/restore point before production rollout"
+  ]
+}

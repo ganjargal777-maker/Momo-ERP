@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-11-26T14:00:50.579Z",
+  "scope": "real-local-Chromium-GoTrue-PostgREST-PG15-Mailpit",
+  "checks": [
+    {
+      "name": "Dependency-ordered local migrations compile without production bootstrap data",
+      "status": "PASS"
+    },
+    {
+      "name": "Wrong password is rejected and submit recovers",
+      "status": "PASS"
+    },
+    {
+      "name": "Real Auth login and PostgREST profile/RBAC load show empty real dashboard",
+      "status": "PASS"
+    },
+    {
+      "name": "Warehouse and product forms persist to actual PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "Inventory form changes durable stock, not a local counter",
+      "status": "PASS"
+    },
+    {
+      "name": "Order form atomically writes order/items/delivery and reserves stock",
+      "status": "PASS"
+    },
+    {
+      "name": "Lead creation and call outcome forms persist actual customer numbers",
+      "status": "PASS"
+    },
+    {
+      "name": "Reload preserves actual records and ignores legacy demo localStorage",
+      "status": "PASS"
+    },
+    {
+      "name": "Delivery and cashflow forms update server-calculated dashboard",
+      "status": "PASS"
+    },
+    {
+      "name": "Permission revocation is enforced by PostgREST/RPC despite stale UI grants",
+      "status": "PASS"
+    },
+    {
+      "name": "Logout removes authorized shell and private client state",
+      "status": "PASS"
+    },
+    {
+      "name": "Password recovery email stays in Mailpit and reset completes through real Auth",
+      "status": "PASS"
+    },
+    {
+      "name": "No unhandled browser error or backend mutation mock",
+      "status": "PASS"
+    }
+  ],
+  "hostedProductionVerified": false,
+  "productionWrites": 0,
+  "externalEmails": 0,
+  "backendMocks": false,
+  "iconMockOnly": true,
+  "stack": {
+    "projectId": "momo-browser-4aff83ea-fe7",
+    "host": "127.0.0.1",
+    "postgresMajor": 15,
+    "auth": "real-local-GoTrue",
+    "rest": "real-local-PostgREST",
+    "mail": "local-Mailpit-no-external-email"
+  },
+  "appliedMigrationCount": 12,
+  "status": "PASS",
+  "counts": {
+    "pass": 13,
+    "fail": 0
+  },
+  "ownedStackCleaned": true,
+  "cleanupFailures": []
+}
