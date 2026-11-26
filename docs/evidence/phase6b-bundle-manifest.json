@@ -1,0 +1,131 @@
+{
+  "status": "PREPARED_NOTDEPLOYED",
+  "targetProjectRef": null,
+  "protectedProjectRefs": [
+    "lxjkkqypiwnnrjmnpick"
+  ],
+  "credentialsIncluded": false,
+  "sourceEvidence": {
+    "path": "docs/evidence/phase4-pg15-validation.json",
+    "sha256": "6386cf4bee0339361b2911d92d591eee7f0ce0ed13d3b9ad22ca3a2385821c0e"
+  },
+  "migrationOrder": [
+    "202609170001_core_schema.sql",
+    "202609170002_auth_rbac_rls.sql",
+    "202609180003_user_invitation_provisioning.sql",
+    "202609180004_create_custom_role.sql",
+    "202609180005_harden_user_role_visibility.sql",
+    "202609250001_role_management.sql",
+    "202611260001_momo_ai_social_phase2.sql",
+    "202611260002_multi_page_team_management.sql",
+    "202611260003_social_operations.sql",
+    "202611260004_social_real_data.sql",
+    "20261126111223_social_contract_alignment.sql"
+  ],
+  "localRehearsalDatabaseMajor": 15,
+  "hostedDatabaseMajorVerified": false,
+  "files": [
+    {
+      "path": "supabase/migrations/202609170001_core_schema.sql",
+      "kind": "verified_migration",
+      "bytes": 12796,
+      "sha256": "43296033ed61ea58f4d02b67f48721cf7594307f9db95f7a09c1a6677aa36845"
+    },
+    {
+      "path": "supabase/migrations/202609170002_auth_rbac_rls.sql",
+      "kind": "verified_migration",
+      "bytes": 16287,
+      "sha256": "068aefab6fbe66e18c9703c8764a6d50d20d0340a8e44a18920703315708ed38"
+    },
+    {
+      "path": "supabase/migrations/202609180003_user_invitation_provisioning.sql",
+      "kind": "verified_migration",
+      "bytes": 2970,
+      "sha256": "bd461dbe3fbf9013da451356d4d0bd885dcc467754fd301fce1f465c1cf6b705"
+    },
+    {
+      "path": "supabase/migrations/202609180004_create_custom_role.sql",
+      "kind": "verified_migration",
+      "bytes": 1786,
+      "sha256": "4482da46b456c356b5239dde66e02deaefdb19f4e8c45f20cd31b22fe69b2462"
+    },
+    {
+      "path": "supabase/migrations/202609180005_harden_user_role_visibility.sql",
+      "kind": "verified_migration",
+      "bytes": 1899,
+      "sha256": "ac67eedbe19161bd10df7390b4b914417b76121cad61f7cfd4870c973a1e7f3e"
+    },
+    {
+      "path": "supabase/migrations/202609250001_role_management.sql",
+      "kind": "verified_migration",
+      "bytes": 3287,
+      "sha256": "cf9009ef865fdb8095603ed16ffccfb1a7ce3f4de97efe1962d550c60e86ef25"
+    },
+    {
+      "path": "supabase/migrations/202611260001_momo_ai_social_phase2.sql",
+      "kind": "verified_migration",
+      "bytes": 4567,
+      "sha256": "e2d001eac57ab1ab0002061c00d13b42a95437a353466acaff9f7ee2c4e93be3"
+    },
+    {
+      "path": "supabase/migrations/202611260002_multi_page_team_management.sql",
+      "kind": "verified_migration",
+      "bytes": 9902,
+      "sha256": "4c5dace0846d2d6ebf1195d9ab262116d4dab111fb9aaabb6805e4b8ee093e22"
+    },
+    {
+      "path": "supabase/migrations/202611260003_social_operations.sql",
+      "kind": "verified_migration",
+      "bytes": 6282,
+      "sha256": "a1b93793118051e90d63e2915489165bcc1df344ffc4e76b2225f619b6d192ae"
+    },
+    {
+      "path": "supabase/migrations/202611260004_social_real_data.sql",
+      "kind": "verified_migration",
+      "bytes": 15580,
+      "sha256": "49361397f4a3740b3661dffef6998345c595ee4cba1818c51471f167ee0cb7ea"
+    },
+    {
+      "path": "supabase/migrations/20261126111223_social_contract_alignment.sql",
+      "kind": "verified_migration",
+      "bytes": 33892,
+      "sha256": "b9c3f3ab34ff82580f72ab654bd9d6bc21880f6559f33e11464d03eddaa628c7"
+    },
+    {
+      "path": "supabase/functions/social-integration/index.ts",
+      "kind": "function",
+      "bytes": 513,
+      "sha256": "a7f3c15405a7f5aba8a535638ee5c108e769c5a97eb333e88e0cab55dbbd68c3"
+    },
+    {
+      "path": "supabase/functions/_shared/social-contract.mjs",
+      "kind": "function",
+      "bytes": 40472,
+      "sha256": "9030e60090df59547ce48e12c54b32b24fd22998e0305689c7249e3d82e58856"
+    },
+    {
+      "path": "docs/hosted-social-sandbox.example.json",
+      "kind": "public_template",
+      "bytes": 1602,
+      "sha256": "553fbd36749e36ef8ed75e34ca076bbf6ccd04b28c50f35a7c8b74b89bbe86ff"
+    },
+    {
+      "path": ".env.hosted-sandbox.example",
+      "kind": "public_template",
+      "bytes": 933,
+      "sha256": "b75d357f71aad448c93ae16d7c3af3d295b12c1d13827b03570ddd63dc849f88"
+    },
+    {
+      "path": "MOMO_HOSTED_SANDBOX_READINESS.md",
+      "kind": "public_template",
+      "bytes": 26009,
+      "sha256": "acac76a524a382481443c9082946bc7af99f5552a8c3b3c0648479f92bd027e6"
+    },
+    {
+      "path": "supabase/config.toml",
+      "kind": "generated_local_config",
+      "bytes": 500,
+      "sha256": "0a7a2817479ec52e12d07aa7b14574f708164efd432df449596364851a9aad53"
+    }
+  ]
+}

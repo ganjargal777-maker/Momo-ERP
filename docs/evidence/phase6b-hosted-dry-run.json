@@ -1,0 +1,44 @@
+{
+  "status": "SKIPPED",
+  "reason": "explicit_execution_not_requested",
+  "stage": "PREPARED_NOT_RUN",
+  "networkRequests": 0,
+  "checks": [],
+  "hostedVerified": false,
+  "plan": {
+    "projectRef": "sandboxxxxxxxxxxxxxx",
+    "mode": "READ_ONLY",
+    "stage": "PREPARED_NOT_RUN",
+    "checks": [
+      "browser_options_preflight",
+      "synthetic_actor_auth_and_profiles",
+      "read_actor_write_permissions_disabled",
+      "organization_draft_send_flags_disabled",
+      "other_organization_read_flag_enabled",
+      "missing_jwt_401",
+      "malformed_jwt_401",
+      "inactive_profile_403",
+      "no_global_read_403",
+      "other_organization_page_403",
+      "page_permission_403",
+      "organization_read_flag_disabled_403",
+      "origin_forbidden_403",
+      "capabilities_identity_and_send_disabled",
+      "messenger_list_page_isolation",
+      "settings_automatic_send_disabled",
+      "reserved_context_absent",
+      "reserved_reply_absent",
+      "draft_denied",
+      "edit_denied",
+      "approve_denied",
+      "send_denied"
+    ],
+    "notCovered": [
+      "comments_or_real_Meta_delivery",
+      "durable_bot_outbox_idempotency",
+      "draft_edit_approve_success",
+      "send_success",
+      "permission_revocation_of_queued_v1_jobs"
+    ]
+  }
+}

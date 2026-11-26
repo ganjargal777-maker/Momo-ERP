@@ -1,0 +1,403 @@
+TAP version 13
+# Subtest: isolated PostgreSQL: RLS, primary/backup routing and concurrent assignment
+    # Subtest: actual social001–004 and alignment DDL roll back atomically before commit
+    ok 1 - actual social001–004 and alignment DDL roll back atomically before commit
+      ---
+      duration_ms: 44.9658
+      type: 'test'
+      ...
+    # Subtest: deliberate failed migration transaction leaves no social DDL or permission residue
+    ok 2 - deliberate failed migration transaction leaves no social DDL or permission residue
+      ---
+      duration_ms: 42.0006
+      type: 'test'
+      ...
+    # Subtest: core migration rollback removes finance, receipts and additive order columns atomically
+    ok 3 - core migration rollback removes finance, receipts and additive order columns atomically
+      ---
+      duration_ms: 25.3234
+      type: 'test'
+      ...
+    # Subtest: new invitation migration rollback restores provisioning/tenant guard definitions and service-only grants
+    ok 4 - new invitation migration rollback restores provisioning/tenant guard definitions and service-only grants
+      ---
+      duration_ms: 4.8922
+      type: 'test'
+      ...
+    # Subtest: Page/context gates reject outsiders, cross-organization access and unknown actions
+    ok 5 - Page/context gates reject outsiders, cross-organization access and unknown actions
+      ---
+      duration_ms: 147.3736
+      type: 'test'
+      ...
+    # Subtest: explicit denies override membership, including read prerequisite for reply/assign
+    ok 6 - explicit denies override membership, including read prerequisite for reply/assign
+      ---
+      duration_ms: 96.6982
+      type: 'test'
+      ...
+    # Subtest: safe registry RPC serves inbox-only Pages without exposing raw registry columns
+    ok 7 - safe registry RPC serves inbox-only Pages without exposing raw registry columns
+      ---
+      duration_ms: 71.4449
+      type: 'test'
+      ...
+    # Subtest: Phase 4 Page/team/access CRUD RPC signatures remain usable with RLS
+    ok 8 - Phase 4 Page/team/access CRUD RPC signatures remain usable with RLS
+      ---
+      duration_ms: 100.0746
+      type: 'test'
+      ...
+    # Subtest: inactive Page and inactive team do not grant access
+    ok 9 - inactive Page and inactive team do not grant access
+      ---
+      duration_ms: 55.127
+      type: 'test'
+      ...
+    # Subtest: empty/offline primary falls back to eligible backup without cross-team assignment
+    ok 10 - empty/offline primary falls back to eligible backup without cross-team assignment
+      ---
+      duration_ms: 68.5023
+      type: 'test'
+      ...
+    # Subtest: denied, stale, away and leave candidates are excluded
+    ok 11 - denied, stale, away and leave candidates are excluded
+      ---
+      duration_ms: 58.0527
+      type: 'test'
+      ...
+    # Subtest: candidate global inbox read revocation blocks automatic and manual assignment
+    ok 12 - candidate global inbox read revocation blocks automatic and manual assignment
+      ---
+      duration_ms: 126.0787
+      type: 'test'
+      ...
+    # Subtest: knowledge and saved-reply write grants never reveal another Page through SELECT
+    ok 13 - knowledge and saved-reply write grants never reveal another Page through SELECT
+      ---
+      duration_ms: 132.1795
+      type: 'test'
+      ...
+    # Subtest: caller global inbox read revocation blocks every assignment RPC before mutation
+    ok 14 - caller global inbox read revocation blocks every assignment RPC before mutation
+      ---
+      duration_ms: 163.0271
+      type: 'test'
+      ...
+    # Subtest: assign-only caller cannot bypass reassign permission by using assign on existing work
+    ok 15 - assign-only caller cannot bypass reassign permission by using assign on existing work
+      ---
+      duration_ms: 155.0064
+      type: 'test'
+      ...
+    # Subtest: concurrent duplicate assignment creates exactly one row and one workload increment
+    ok 16 - concurrent duplicate assignment creates exactly one row and one workload increment
+      ---
+      duration_ms: 119.9657
+      type: 'test'
+      ...
+    # Subtest: concurrent different conversations retain consistent workload and unique rows
+    ok 17 - concurrent different conversations retain consistent workload and unique rows
+      ---
+      duration_ms: 75.0747
+      type: 'test'
+      ...
+    # Subtest: same external conversation on different Pages remains separate
+    ok 18 - same external conversation on different Pages remains separate
+      ---
+      duration_ms: 95.2152
+      type: 'test'
+      ...
+    # Subtest: foreign Page assignment rows remain invisible to unrelated users
+    ok 19 - foreign Page assignment rows remain invisible to unrelated users
+      ---
+      duration_ms: 98.9893
+      type: 'test'
+      ...
+    # Subtest: direct assignment writes and workload counter tampering are rejected
+    ok 20 - direct assignment writes and workload counter tampering are rejected
+      ---
+      duration_ms: 91.7244
+      type: 'test'
+      ...
+    # Subtest: self presence heartbeat works without users.read and cannot forge freshness
+    ok 21 - self presence heartbeat works without users.read and cannot forge freshness
+      ---
+      duration_ms: 57.9597
+      type: 'test'
+      ...
+    # Subtest: cross-organization link writes are rejected for team managers
+    ok 22 - cross-organization link writes are rejected for team managers
+      ---
+      duration_ms: 65.4425
+      type: 'test'
+      ...
+    # Subtest: assignment/transfer cannot target unrelated Page teams or denied candidates
+    ok 23 - assignment/transfer cannot target unrelated Page teams or denied candidates
+      ---
+      duration_ms: 96.7183
+      type: 'test'
+      ...
+    # Subtest: read-only Page users cannot acquire a blocking claim lock
+    ok 24 - read-only Page users cannot acquire a blocking claim lock
+      ---
+      duration_ms: 80.0452
+      type: 'test'
+      ...
+    # Subtest: simultaneous claims accept one version and reject the stale contender
+    ok 25 - simultaneous claims accept one version and reject the stale contender
+      ---
+      duration_ms: 84.768
+      type: 'test'
+      ...
+    # Subtest: resolve is a no-op on current resolved version and cannot double-decrement
+    ok 26 - resolve is a no-op on current resolved version and cannot double-decrement
+      ---
+      duration_ms: 127.5421
+      type: 'test'
+      ...
+    # Subtest: Page capacity applies to distinct linked Pages including concurrent inserts
+    ok 27 - Page capacity applies to distinct linked Pages including concurrent inserts
+      ---
+      duration_ms: 39.9538
+      type: 'test'
+      ...
+    # Subtest: public wrappers are invoker and private subject evaluators are not callable by authenticated
+    ok 28 - public wrappers are invoker and private subject evaluators are not callable by authenticated
+      ---
+      duration_ms: 11.6279
+      type: 'test'
+      ...
+    # Subtest: feature flags remain off and operations have actor-scoped audit evidence
+    ok 29 - feature flags remain off and operations have actor-scoped audit evidence
+      ---
+      duration_ms: 1.568
+      type: 'test'
+      ...
+    # Subtest: social migrations001–004 were applied once in dependency order
+    ok 30 - social migrations001–004 were applied once in dependency order
+      ---
+      duration_ms: 1.6047
+      type: 'test'
+      ...
+    # Subtest: four concurrent assignment calls commit exactly one row, one audit and one workload increment
+    ok 31 - four concurrent assignment calls commit exactly one row, one audit and one workload increment
+      ---
+      duration_ms: 96.7293
+      type: 'test'
+      ...
+    # Subtest: Page and team CRUD updates/deletes preserve tenant references and authorized RPC behavior
+    ok 32 - Page and team CRUD updates/deletes preserve tenant references and authorized RPC behavior
+      ---
+      duration_ms: 156.9325
+      type: 'test'
+      ...
+    # Subtest: AI thread, messages and private saved reply persist across connections with owner/org RLS
+    ok 33 - AI thread, messages and private saved reply persist across connections with owner/org RLS
+      ---
+      duration_ms: 220.6803
+      type: 'test'
+      ...
+    # Subtest: synthetic fixture cleanup removes FK dependents, audit, profiles and organization without residue
+    ok 34 - synthetic fixture cleanup removes FK dependents, audit, profiles and organization without residue
+      ---
+      duration_ms: 27.4417
+      type: 'test'
+      ...
+    # Subtest: Auth trigger ignores user-editable organization metadata and pending user cannot enter ERP
+    ok 35 - Auth trigger ignores user-editable organization metadata and pending user cannot enter ERP
+      ---
+      duration_ms: 14.5874
+      type: 'test'
+      ...
+    # Subtest: invitation Auth creation ignores editable tenant claims until trusted provisioning binds active profile and role
+    ok 36 - invitation Auth creation ignores editable tenant claims until trusted provisioning binds active profile and role
+      ---
+      duration_ms: 39.5287
+      type: 'test'
+      ...
+    # Subtest: invitation provisioning rejects authenticated direct calls, invalid or disabled managers, foreign roles and actor organizations without mutation
+    ok 37 - invitation provisioning rejects authenticated direct calls, invalid or disabled managers, foreign roles and actor organizations without mutation
+      ---
+      duration_ms: 179.3381
+      type: 'test'
+      ...
+    # Subtest: trusted invitation cannot rebind an existing foreign organization profile or retain cross-tenant roles
+    ok 38 - trusted invitation cannot rebind an existing foreign organization profile or retain cross-tenant roles
+      ---
+      duration_ms: 23.274
+      type: 'test'
+      ...
+    # Subtest: concurrent invitations from two organizations bind one unassigned profile to exactly one tenant
+    ok 39 - concurrent invitations from two organizations bind one unassigned profile to exactly one tenant
+      ---
+      duration_ms: 21.5192
+      type: 'test'
+      ...
+    # Subtest: trusted FK cascade deletes an assigned membership while manual foreign assigner forgery remains denied
+    ok 40 - trusted FK cascade deletes an assigned membership while manual foreign assigner forgery remains denied
+      ---
+      duration_ms: 34.6283
+      type: 'test'
+      ...
+    # Subtest: staff cannot self-change status, privileged email or tenant
+    ok 41 - staff cannot self-change status, privileged email or tenant
+      ---
+      duration_ms: 56.1481
+      type: 'test'
+      ...
+    # Subtest: organization manager cannot read/write foreign role grants or cross-tenant memberships
+    ok 42 - organization manager cannot read/write foreign role grants or cross-tenant memberships
+      ---
+      duration_ms: 41.1514
+      type: 'test'
+      ...
+    # Subtest: product and warehouse CRUD RPCs derive org/actor and reject stale optimistic versions
+    ok 43 - product and warehouse CRUD RPCs derive org/actor and reject stale optimistic versions
+      ---
+      duration_ms: 99.4845
+      type: 'test'
+      ...
+    # Subtest: order-only operator gets minimal active warehouse options without inventory read/cost rights
+    ok 44 - order-only operator gets minimal active warehouse options without inventory read/cost rights
+      ---
+      duration_ms: 40.7087
+      type: 'test'
+      ...
+    # Subtest: same-org FK constraints reject known foreign product/category/warehouse IDs
+    ok 45 - same-org FK constraints reject known foreign product/category/warehouse IDs
+      ---
+      duration_ms: 71.195
+      type: 'test'
+      ...
+    # Subtest: four concurrent inventory retries add stock and movement exactly once
+    ok 46 - four concurrent inventory retries add stock and movement exactly once
+      ---
+      duration_ms: 57.5458
+      type: 'test'
+      ...
+    # Subtest: four concurrent order retries reserve stock and create order/items/delivery/audit only once
+    ok 47 - four concurrent order retries reserve stock and create order/items/delivery/audit only once
+      ---
+      duration_ms: 119.257
+      type: 'test'
+      ...
+    # Subtest: insufficient stock rolls back the entire order transaction without orphan rows
+    ok 48 - insufficient stock rolls back the entire order transaction without orphan rows
+      ---
+      duration_ms: 18.7701
+      type: 'test'
+      ...
+    # Subtest: two concurrent orders cannot oversell the same stock
+    ok 49 - two concurrent orders cannot oversell the same stock
+      ---
+      duration_ms: 56.4227
+      type: 'test'
+      ...
+    # Subtest: cancellation requires permission, restores reservation once, and stale retry cannot restock
+    ok 50 - cancellation requires permission, restores reservation once, and stale retry cannot restock
+      ---
+      duration_ms: 78.9833
+      type: 'test'
+      ...
+    # Subtest: lead creation/call logging/conversion persist atomically and cannot convert twice
+    ok 51 - lead creation/call logging/conversion persist atomically and cannot convert twice
+      ---
+      duration_ms: 104.3157
+      type: 'test'
+      ...
+    # Subtest: delivery uses optimistic lock, rejects foreign courier and updates delivered order state
+    ok 52 - delivery uses optimistic lock, rejects foreign courier and updates delivered order state
+      ---
+      duration_ms: 51.7289
+      type: 'test'
+      ...
+    # Subtest: cash ledger uses named finance permission and stable idempotency without duplicate income
+    ok 53 - cash ledger uses named finance permission and stable idempotency without duplicate income
+      ---
+      duration_ms: 69.1251
+      type: 'test'
+      ...
+    # Subtest: NaN money cannot corrupt product valuation or cashflow
+    ok 54 - NaN money cannot corrupt product valuation or cashflow
+      ---
+      duration_ms: 39.1864
+      type: 'test'
+      ...
+    # Subtest: dashboard derives real totals, excludes marked demo rows, and separates cashflow from revenue
+    ok 55 - dashboard derives real totals, excludes marked demo rows, and separates cashflow from revenue
+      ---
+      duration_ms: 86.7214
+      type: 'test'
+      ...
+    # Subtest: finance-only and reports-only roles receive only their authorized aggregate sections
+    ok 56 - finance-only and reports-only roles receive only their authorized aggregate sections
+      ---
+      duration_ms: 56.7291
+      type: 'test'
+      ...
+    # Subtest: raw stock/order/cash writes and private helpers are inaccessible even with users.manage
+    ok 57 - raw stock/order/cash writes and private helpers are inaccessible even with users.manage
+      ---
+      duration_ms: 44.6954
+      type: 'test'
+      ...
+    # Subtest: full core backup restores synthetic order, inventory, cash, audit and idempotency into a fresh DB
+    ok 58 - full core backup restores synthetic order, inventory, cash, audit and idempotency into a fresh DB
+      ---
+      duration_ms: 1228.7434
+      type: 'test'
+      ...
+    # Subtest: disabled actor loses core read/mutation and cannot self-reactivate
+    ok 59 - disabled actor loses core read/mutation and cannot self-reactivate
+      ---
+      duration_ms: 41.4493
+      type: 'test'
+      ...
+    # Subtest: core synthetic fixture cleanup leaves no core tenant, auth user, cash, receipt or audit rows
+    ok 60 - core synthetic fixture cleanup leaves no core tenant, auth user, cash, receipt or audit rows
+      ---
+      duration_ms: 2.6567
+      type: 'test'
+      ...
+    # Subtest: current Page-wide policy is observed without inventing assignee-only protection
+    ok 61 - current Page-wide policy is observed without inventing assignee-only protection
+      ---
+      duration_ms: 0.1968
+      type: 'test'
+      ...
+    # Subtest: own-assigned-only restriction is outside the existing authorized contract
+    ok 62 - own-assigned-only restriction is outside the existing authorized contract # SKIP Not implemented; user requested reporting this gap without changing policy
+      ---
+      duration_ms: 0.0893
+      type: 'test'
+      ...
+    # Subtest: pre-alignment backup restores committed migration baseline into a new PostgreSQL15 database
+    ok 63 - pre-alignment backup restores committed migration baseline into a new PostgreSQL15 database
+      ---
+      duration_ms: 801.2171
+      type: 'test'
+      ...
+    # Subtest: legacy Phase4 compatibility suite runs against this newly allocated PostgreSQL15 database
+    ok 64 - legacy Phase4 compatibility suite runs against this newly allocated PostgreSQL15 database
+      ---
+      duration_ms: 572.1901
+      type: 'test'
+      ...
+    1..64
+ok 1 - isolated PostgreSQL: RLS, primary/backup routing and concurrent assignment
+  ---
+  duration_ms: 9823.0324
+  type: 'test'
+  ...
+# Real database: PostgreSQL 15.20; fresh Docker loopback-only cluster.
+# Legacy Phase4 suite: 6 pass, 0 fail, 0 skip; separate synthetic organization cleaned.
+1..1
+# tests 65
+# suites 0
+# pass 64
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 9939.4377

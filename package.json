@@ -2,6 +2,20 @@
   "name": "momo-erp",
   "private": true,
   "scripts": {
-    "build": "node scripts/build-runtime-config.mjs"
+    "build": "node scripts/build-deployment.mjs",
+    "test": "node --test test/*.test.mjs",
+    "supabase:local:prepare": "node scripts/prepare-local-social.mjs",
+    "test:db": "node --test test/social-db.integration.test.mjs",
+    "test:rls:local": "node --test test/social-rls.local.test.mjs",
+    "test:pg15": "node scripts/validate-social-pg15.mjs",
+    "prepare:hosted-social": "node scripts/prepare-hosted-social-sandbox.mjs",
+    "test:hosted-social": "node scripts/validate-hosted-social-sandbox.mjs",
+    "test:browser": "node scripts/browser-erp-acceptance.mjs"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "2.112.3",
+    "pg": "8.16.3",
+    "playwright-core": "1.64.1",
+    "supabase": "3.4.0"
   }
 }

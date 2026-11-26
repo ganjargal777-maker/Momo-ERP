@@ -6,3 +6,9 @@
 supabase/.temp/
 node_modules/
 dist/runtime-config.js
+
+# Public empty template only; filled .env.* files remain ignored.
+!.env.hosted-sandbox.example
+.local-browser-stack/
+build/
+.build-stage-*/

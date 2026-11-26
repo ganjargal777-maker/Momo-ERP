@@ -1,0 +1,120 @@
+{
+  "syntheticOnly": true,
+  "remoteChanges": false,
+  "migrations": [
+    {
+      "name": "202609170001_core_schema.sql",
+      "sha256": "43296033ed61ea58f4d02b67f48721cf7594307f9db95f7a09c1a6677aa36845"
+    },
+    {
+      "name": "202609170002_auth_rbac_rls.sql",
+      "sha256": "068aefab6fbe66e18c9703c8764a6d50d20d0340a8e44a18920703315708ed38"
+    },
+    {
+      "name": "202609180003_user_invitation_provisioning.sql",
+      "sha256": "bd461dbe3fbf9013da451356d4d0bd885dcc467754fd301fce1f465c1cf6b705"
+    },
+    {
+      "name": "202609180004_create_custom_role.sql",
+      "sha256": "4482da46b456c356b5239dde66e02deaefdb19f4e8c45f20cd31b22fe69b2462"
+    },
+    {
+      "name": "202609180005_harden_user_role_visibility.sql",
+      "sha256": "ac67eedbe19161bd10df7390b4b914417b76121cad61f7cfd4870c973a1e7f3e"
+    },
+    {
+      "name": "202609250001_role_management.sql",
+      "sha256": "cf9009ef865fdb8095603ed16ffccfb1a7ce3f4de97efe1962d550c60e86ef25"
+    },
+    {
+      "name": "202611260001_momo_ai_social_phase2.sql",
+      "sha256": "708d9e69dd842b728e7085ecca179c928c1cde67eb755db27ec550d076bad6bd"
+    },
+    {
+      "name": "202611260002_multi_page_team_management.sql",
+      "sha256": "1c2762abe1dda0f2dd3cf5c5688c180a9a1fed31c074914212ce9a5c2ed43f4b"
+    },
+    {
+      "name": "202611260003_social_operations.sql",
+      "sha256": "89acaeebff2d4fd13391ddeb6278766a098cef8f8373310d64744cba20bbc736"
+    },
+    {
+      "name": "202611260004_social_real_data.sql",
+      "sha256": "87a9285a05273ab7e7ed4cb36b5d9fdd572232382cf4b4c918c18a115e137a97"
+    },
+    {
+      "name": "20261126111223_social_contract_alignment.sql",
+      "sha256": "dc00e11af9dd72d6110966811a20dce7a0db44a3f7b1ac32adbda72bf4f9dff4"
+    },
+    {
+      "name": "20261126133809_core_production_readiness.sql",
+      "sha256": "4c63257b3ab5eb7bf63bde3f1f3eb87faa6e53f0c791cd8896b64504a6495fc9"
+    },
+    {
+      "name": "20261126142430_invitation_tenant_and_cleanup_guards.sql",
+      "sha256": "0a32e70773ee8b04125aadc1a8a4cc78e1c38caf6412ef30133ed080ee62f5a2"
+    }
+  ],
+  "checks": {},
+  "postgres": {
+    "serverVersion": "15.20",
+    "serverVersionNumber": 150020,
+    "host": "127.0.0.1",
+    "port": 61059,
+    "mode": "docker",
+    "imageTag": "public.ecr.aws/supabase/postgres:15.20.0.004",
+    "imageId": "sha256:49653bf383f8e932839ae2b4723c5d7b367b00b5f507a24267eee39352030e58",
+    "containerName": "momo-phase4-pg15-e742e5bb-591"
+  },
+  "transactionRollback": {
+    "files": [
+      "202611260001_momo_ai_social_phase2.sql",
+      "202611260002_multi_page_team_management.sql",
+      "202611260003_social_operations.sql",
+      "202611260004_social_real_data.sql",
+      "20261126111223_social_contract_alignment.sql"
+    ],
+    "transactionalRollback": true,
+    "downMigrationImplemented": false
+  },
+  "coreBackupRestore": {
+    "status": "PASS",
+    "freshDatabase": true,
+    "syntheticDataAndReceiptsPreserved": true
+  },
+  "coreProduction": {
+    "status": "PASS",
+    "realPostgres": true,
+    "syntheticOnly": true
+  },
+  "ownAssignedOnly": {
+    "requestedPolicy": "only_own_assigned_conversations",
+    "status": "SKIPPED",
+    "assignedUserCanRead": true,
+    "differentAuthorizedPageMemberCanRead": true,
+    "explanation": "Current assignments_read is Page-wide; there is no assignee-only predicate.",
+    "assignmentId": "9c8b15c2-7e31-4aca-954a-762143358944",
+    "assigneeId": "00000000-0000-4000-8000-000000000013",
+    "observingUserId": "00000000-0000-4000-8000-000000000014",
+    "implemented": false,
+    "observedStrictPolicyStatus": "FAIL",
+    "reason": "User selected validation of existing Page-wide policy; do not introduce assignee-only restrictions."
+  },
+  "backupRestore": {
+    "status": "PASS",
+    "source": "pre-alignment committed phases001–004",
+    "target": "fresh database in owned synthetic container",
+    "catalogMatchesBaseline": true,
+    "inPlaceDownMigration": false
+  },
+  "legacyCompatibility": {
+    "status": "PASS",
+    "tests": 6,
+    "skipped": 0
+  },
+  "cleanup": {
+    "containerRemoved": true,
+    "networkRemoved": true,
+    "persistentVolumeUsed": false
+  }
+}

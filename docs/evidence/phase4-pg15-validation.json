@@ -1,0 +1,153 @@
+{
+  "syntheticOnly": true,
+  "remoteChanges": false,
+  "migrations": [
+    {
+      "name": "202609170001_core_schema.sql",
+      "sha256": "43296033ed61ea58f4d02b67f48721cf7594307f9db95f7a09c1a6677aa36845"
+    },
+    {
+      "name": "202609170002_auth_rbac_rls.sql",
+      "sha256": "068aefab6fbe66e18c9703c8764a6d50d20d0340a8e44a18920703315708ed38"
+    },
+    {
+      "name": "202609180003_user_invitation_provisioning.sql",
+      "sha256": "bd461dbe3fbf9013da451356d4d0bd885dcc467754fd301fce1f465c1cf6b705"
+    },
+    {
+      "name": "202609180004_create_custom_role.sql",
+      "sha256": "4482da46b456c356b5239dde66e02deaefdb19f4e8c45f20cd31b22fe69b2462"
+    },
+    {
+      "name": "202609180005_harden_user_role_visibility.sql",
+      "sha256": "ac67eedbe19161bd10df7390b4b914417b76121cad61f7cfd4870c973a1e7f3e"
+    },
+    {
+      "name": "202609250001_role_management.sql",
+      "sha256": "cf9009ef865fdb8095603ed16ffccfb1a7ce3f4de97efe1962d550c60e86ef25"
+    },
+    {
+      "name": "202611260001_momo_ai_social_phase2.sql",
+      "sha256": "e2d001eac57ab1ab0002061c00d13b42a95437a353466acaff9f7ee2c4e93be3"
+    },
+    {
+      "name": "202611260002_multi_page_team_management.sql",
+      "sha256": "4c5dace0846d2d6ebf1195d9ab262116d4dab111fb9aaabb6805e4b8ee093e22"
+    },
+    {
+      "name": "202611260003_social_operations.sql",
+      "sha256": "a1b93793118051e90d63e2915489165bcc1df344ffc4e76b2225f619b6d192ae"
+    },
+    {
+      "name": "202611260004_social_real_data.sql",
+      "sha256": "49361397f4a3740b3661dffef6998345c595ee4cba1818c51471f167ee0cb7ea"
+    },
+    {
+      "name": "20261126111223_social_contract_alignment.sql",
+      "sha256": "b9c3f3ab34ff82580f72ab654bd9d6bc21880f6559f33e11464d03eddaa628c7"
+    }
+  ],
+  "checks": {
+    "migrationOrder": "PASS",
+    "pageTeamCrudRpc": "PASS",
+    "organizationPageRls": "PASS",
+    "primaryBackupRouting": "PASS",
+    "ownAssignedOnly": "SKIPPED",
+    "fourConcurrentAssignments": "PASS",
+    "lockAndOptimisticVersion": "PASS",
+    "gatewaySendIdempotency": "PASS_MOCK",
+    "postgresAuditPersistence": "PASS",
+    "durableBotOutboxAndMetaDelivery": "NOT_RUN",
+    "aiPersistenceAndOwnerOrgRls": "PASS",
+    "transactionRollback": "PASS",
+    "committedCheckpointRestoreToFreshDatabase": "PASS",
+    "syntheticCleanup": "PASS"
+  },
+  "postgres": {
+    "serverVersion": "15.20",
+    "serverVersionNumber": 150020,
+    "host": "127.0.0.1",
+    "port": 63588,
+    "mode": "docker",
+    "imageTag": "public.ecr.aws/supabase/postgres:15.20.0.004",
+    "imageId": "sha256:49653bf383f8e932839ae2b4723c5d7b367b00b5f507a24267eee39352030e58",
+    "containerName": "momo-phase4-pg15-48a07823-d19"
+  },
+  "transactionRollback": {
+    "files": [
+      "202611260001_momo_ai_social_phase2.sql",
+      "202611260002_multi_page_team_management.sql",
+      "202611260003_social_operations.sql",
+      "202611260004_social_real_data.sql",
+      "20261126111223_social_contract_alignment.sql"
+    ],
+    "transactionalRollback": true,
+    "downMigrationImplemented": false
+  },
+  "ownAssignedOnly": {
+    "requestedPolicy": "only_own_assigned_conversations",
+    "status": "SKIPPED",
+    "assignedUserCanRead": true,
+    "differentAuthorizedPageMemberCanRead": true,
+    "explanation": "Current assignments_read is Page-wide; there is no assignee-only predicate.",
+    "assignmentId": "408f3c01-e9d9-4f3d-aaa0-7b433e2e74af",
+    "assigneeId": "00000000-0000-4000-8000-000000000013",
+    "observingUserId": "00000000-0000-4000-8000-000000000014",
+    "implemented": false,
+    "observedStrictPolicyStatus": "FAIL",
+    "reason": "User selected validation of existing Page-wide policy; do not introduce assignee-only restrictions."
+  },
+  "backupRestore": {
+    "status": "PASS",
+    "source": "pre-alignment committed phases001–004",
+    "target": "fresh database in owned synthetic container",
+    "catalogMatchesBaseline": true,
+    "inPlaceDownMigration": false
+  },
+  "legacyCompatibility": {
+    "status": "PASS",
+    "tests": 6,
+    "skipped": 0
+  },
+  "cleanup": {
+    "containerRemoved": true,
+    "networkRemoved": true,
+    "persistentVolumeUsed": false
+  },
+  "validatedOn": "2026-11-26",
+  "timeZone": "Asia/Ulaanbaatar",
+  "tooling": {
+    "dockerEngine": "29.9.3",
+    "supabaseCli": "3.4.0",
+    "node": "24.16.0"
+  },
+  "regression": {
+    "command": "npm run test:pg15",
+    "total": 90,
+    "pass": 88,
+    "fail": 0,
+    "skipped": 2,
+    "ms": 8067,
+    "nestedLegacy": {
+      "pass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "includedAsOneParentCheck": true
+    }
+  },
+  "build": {
+    "status": "PASS",
+    "mode": "exact package/build script in isolated Temp without .env.local",
+    "syntheticOnly": true,
+    "artifactSha256": "e3fb889173f365440109e558bb121750d0d336f4f0adbcb254362f17352a1fe5",
+    "actualFrontendConfigWrites": 0
+  },
+  "finalVerification": {
+    "sourceFiles": 7,
+    "migrationHashes": 11,
+    "remainingOwnedContainers": 0,
+    "remainingOwnedNetworks": 0,
+    "missingDockerFailsClosed": true,
+    "remoteDockerRefused": true
+  }
+}

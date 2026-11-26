@@ -1,0 +1,170 @@
+{
+  "preparedOn": "2026-11-26",
+  "timeZone": "Asia/Ulaanbaatar",
+  "phase": "6B",
+  "status": "PREPARED_NOTDEPLOYED",
+  "hosted": {
+    "status": "NOT_RUN",
+    "realNetworkRequests": 0,
+    "projectCreated": false,
+    "credentialsProvisioned": false,
+    "deploymentPerformed": false
+  },
+  "billing": {
+    "organization": "Momoshop",
+    "plan": "free",
+    "quotedMonthlyProjectCostUSD": 0,
+    "visibleActiveProjects": 1,
+    "publishedFreeActiveProjectLimit": 2,
+    "limitScope": "Across organizations where the account is Owner/Administrator",
+    "creationStatus": "STOPPED_BY_USER_FREE_SLOT_GUARD",
+    "sharedOrganizationUsageQuotas": true,
+    "quotaReserved": false,
+    "additionalPaidResourcesCreated": false
+  },
+  "regression": {
+    "command": "npm run test:pg15",
+    "total": 114,
+    "pass": 112,
+    "fail": 0,
+    "skipped": 2,
+    "ms": 7922,
+    "postgresVersion": "15.20",
+    "nestedLegacy": {
+      "status": "PASS",
+      "tests": 6,
+      "skipped": 0
+    }
+  },
+  "offline": {
+    "edgeContractConfigTests": 27,
+    "hostedProbeTests": 12,
+    "bundleTests": 7,
+    "status": "PASS"
+  },
+  "dryRun": {
+    "status": "SKIPPED",
+    "networkRequests": 0,
+    "hostedVerified": false,
+    "manifestIsExample": true
+  },
+  "bundle": {
+    "status": "PREPARED_NOTDEPLOYED",
+    "outputDir": "C:\\Users\\begii\\AppData\\Local\\Temp\\momo-erp-social-sandbox-deployment-20261126-6a61c089d3a749928558afe147ad7d59",
+    "migrations": 11,
+    "sourceFileCount": 17,
+    "manifestSha256": "33b4ac223ed3e81c169b8ccaeacef283bc3dc7e4650880e247fd3e2a7d4880dd",
+    "targetProjectRef": null,
+    "credentialsIncluded": false
+  },
+  "sourceFiles": [
+    {
+      "file": "supabase/functions/_shared/social-contract.mjs",
+      "sha256": "9030e60090df59547ce48e12c54b32b24fd22998e0305689c7249e3d82e58856"
+    },
+    {
+      "file": "test/social-adapter.test.mjs",
+      "sha256": "cefd09e376a3327fb8528fc905a21947e6f535d57ade9edba934499fea602b96"
+    },
+    {
+      "file": "scripts/hosted-social-probe.mjs",
+      "sha256": "ae807187c66571f9cdbccc9fbda0ecc53c54329e0a60adcd6abbc26073e8d077"
+    },
+    {
+      "file": "scripts/validate-hosted-social-sandbox.mjs",
+      "sha256": "2a32c256e27acf2811b5660d48a9ec1e979f1290361609994c2fa394e6e7f0b0"
+    },
+    {
+      "file": "test/hosted-social-probe.test.mjs",
+      "sha256": "222452d446d455edb423854ce77d1f04e343d89f656b98f1b381d9ea181e0345"
+    },
+    {
+      "file": "docs/hosted-social-sandbox.example.json",
+      "sha256": "553fbd36749e36ef8ed75e34ca076bbf6ccd04b28c50f35a7c8b74b89bbe86ff"
+    },
+    {
+      "file": "scripts/prepare-hosted-social-sandbox.mjs",
+      "sha256": "d837f4c49419bceec05e2171d0a88fe19fc43220d2b774fd1e2bd8f12a38c835"
+    },
+    {
+      "file": "test/hosted-social-bundle.test.mjs",
+      "sha256": "d47f9fd20ae9b86c4c63ce1b5f50a3d0598c0c8cd6cebdfb198b26e488430d0b"
+    },
+    {
+      "file": ".env.hosted-sandbox.example",
+      "sha256": "b75d357f71aad448c93ae16d7c3af3d295b12c1d13827b03570ddd63dc849f88"
+    },
+    {
+      "file": "MOMO_HOSTED_SANDBOX_READINESS.md",
+      "sha256": "acac76a524a382481443c9082946bc7af99f5552a8c3b3c0648479f92bd027e6"
+    },
+    {
+      "file": ".gitignore",
+      "sha256": "3d8dbedb71a127c51e62ce2bbf9d12c9863aee0b66cd56a130a7a18a927a1a34"
+    },
+    {
+      "file": "package.json",
+      "sha256": "7119c75ea5ebbdd39a21b9c0e583474a32d95ddcbbd0b43dda6b7db065805e9c"
+    }
+  ],
+  "migrationHashes": [
+    {
+      "name": "202609170001_core_schema.sql",
+      "sha256": "43296033ed61ea58f4d02b67f48721cf7594307f9db95f7a09c1a6677aa36845"
+    },
+    {
+      "name": "202609170002_auth_rbac_rls.sql",
+      "sha256": "068aefab6fbe66e18c9703c8764a6d50d20d0340a8e44a18920703315708ed38"
+    },
+    {
+      "name": "202609180003_user_invitation_provisioning.sql",
+      "sha256": "bd461dbe3fbf9013da451356d4d0bd885dcc467754fd301fce1f465c1cf6b705"
+    },
+    {
+      "name": "202609180004_create_custom_role.sql",
+      "sha256": "4482da46b456c356b5239dde66e02deaefdb19f4e8c45f20cd31b22fe69b2462"
+    },
+    {
+      "name": "202609180005_harden_user_role_visibility.sql",
+      "sha256": "ac67eedbe19161bd10df7390b4b914417b76121cad61f7cfd4870c973a1e7f3e"
+    },
+    {
+      "name": "202609250001_role_management.sql",
+      "sha256": "cf9009ef865fdb8095603ed16ffccfb1a7ce3f4de97efe1962d550c60e86ef25"
+    },
+    {
+      "name": "202611260001_momo_ai_social_phase2.sql",
+      "sha256": "e2d001eac57ab1ab0002061c00d13b42a95437a353466acaff9f7ee2c4e93be3"
+    },
+    {
+      "name": "202611260002_multi_page_team_management.sql",
+      "sha256": "4c5dace0846d2d6ebf1195d9ab262116d4dab111fb9aaabb6805e4b8ee093e22"
+    },
+    {
+      "name": "202611260003_social_operations.sql",
+      "sha256": "a1b93793118051e90d63e2915489165bcc1df344ffc4e76b2225f619b6d192ae"
+    },
+    {
+      "name": "202611260004_social_real_data.sql",
+      "sha256": "49361397f4a3740b3661dffef6998345c595ee4cba1818c51471f167ee0cb7ea"
+    },
+    {
+      "name": "20261126111223_social_contract_alignment.sql",
+      "sha256": "b9c3f3ab34ff82580f72ab654bd9d6bc21880f6559f33e11464d03eddaa628c7"
+    }
+  ],
+  "cleanup": {
+    "containerRemoved": true,
+    "networkRemoved": true,
+    "persistentVolumeUsed": false
+  },
+  "production": {
+    "databaseWrites": 0,
+    "authChanges": 0,
+    "environmentWrites": 0,
+    "functionDeployments": 0,
+    "vercelChanges": 0,
+    "botRepositoryWrites": 0,
+    "commitOrPush": false
+  }
+}
