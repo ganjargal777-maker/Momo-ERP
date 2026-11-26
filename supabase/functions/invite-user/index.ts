@@ -1,5 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
+import { inviteRedirectUrl, isValidStartDate } from "./invitation.mjs";
+
 const allowedOrigins = new Set([
   "https://erp.momoshop.mn",
   "http://localhost:4173",
@@ -58,7 +60,11 @@ Deno.serve(async (request: Request) => {
 
   let body: Record<string, unknown>;
   try {
-    body = await request.json();
+    const input = await request.json();
+    if (input === null || typeof input !== "object" || Array.isArray(input)) {
+      return json(origin, 400, { error: "Хүсэлтийн өгөгдөл буруу байна." });
+    }
+    body = input;
   } catch {
     return json(origin, 400, { error: "Хүсэлтийн өгөгдөл буруу байна." });
   }
@@ -70,16 +76,15 @@ Deno.serve(async (request: Request) => {
   const department = requiredText(body.department, 120);
   const position = requiredText(body.position, 120);
   const roleId = typeof body.roleId === "string" ? body.roleId : "";
-  const startDate = body.startDate === "" || body.startDate == null ? null : String(body.startDate);
+  const startDate = body.startDate || null;
   const active = body.active !== false;
   const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json(origin, 400, { error: "Цахим хаяг буруу байна." });
   if (!firstName || !lastName || !department || !position) return json(origin, 400, { error: "Заавал бөглөх талбаруудыг бүрэн оруулна уу." });
   if (!/^\d{8}$/.test(phone)) return json(origin, 400, { error: "Утасны дугаар 8 оронтой байна." });
   if (!uuidPattern.test(roleId)) return json(origin, 400, { error: "Хандах эрхийн сонголт буруу байна." });
-  if (startDate && !datePattern.test(startDate)) return json(origin, 400, { error: "Ажилд орсон огноо буруу байна." });
+  if (!isValidStartDate(body.startDate)) return json(origin, 400, { error: "Ажилд орсон огноо буруу байна." });
 
   const { data: role, error: roleError } = await callerClient
     .from("roles")
@@ -97,8 +102,14 @@ Deno.serve(async (request: Request) => {
   const { data: duplicateProfile } = await adminClient.from("profiles").select("id").ilike("email", email).maybeSingle();
   if (duplicateProfile) return json(origin, 409, { error: "Энэ цахим хаягтай хэрэглэгч бүртгэлтэй байна." });
 
+  let redirectTo: string;
+  try {
+    redirectTo = inviteRedirectUrl(Deno.env.get("ERP_INVITE_REDIRECT_URL"));
+  } catch {
+    return json(origin, 500, { error: "Урилгын буцах хаягийн тохиргоо буруу байна." });
+  }
   const { data: invitation, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
-    redirectTo: "https://erp.momoshop.mn/?setup=1",
+    redirectTo,
     data: {
       organization_id: callerProfile.organization_id,
       first_name: firstName,

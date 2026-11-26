@@ -11,7 +11,7 @@ major_version = 15
 [auth]
 enabled = true
 site_url = "https://erp.momoshop.mn"
-additional_redirect_urls = ["http://localhost:4173", "https://erp.momoshop.mn", "https://erp.momoshop.mn/?setup=1"]
+additional_redirect_urls = ["http://localhost:4173", "http://localhost:4173/?setup=1", "https://erp.momoshop.mn", "https://erp.momoshop.mn/?setup=1"]
 enable_signup = false
 
 [realtime]
