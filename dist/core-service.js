@@ -87,6 +87,17 @@
           snapshot.limited[key] = result.limited;
         } catch (error) { snapshot.errors[key] = { code: error.code, message: error.message }; }
       }));
+      snapshot.productStock = {};
+      const activeIds = snapshot.products.filter(product => product.is_active).map(product => product.id);
+      if (activeIds.length && this.can('inventory.read') && this.can('products.read')) {
+        try {
+          const rows = await this.rpc('core_product_stock', { product_ids: activeIds });
+          if (!Array.isArray(rows) || rows.some(row => !Number.isSafeInteger(row?.quantity) || row.quantity < 0 || !UUID.test(row.product_id))) {
+            throw friendly({ code: 'invalid_response' });
+          }
+          snapshot.productStock = Object.fromEntries(rows.map(row => [row.product_id, row.quantity]));
+        } catch (error) { snapshot.errors.productStock = { code: error.code, message: error.message }; }
+      }
       if (['dashboard.view', 'reports.view', 'finance.view'].some(permission => this.can(permission))) {
         try { snapshot.summary = await this.rpc('core_dashboard_summary'); }
         catch (error) { snapshot.errors.summary = { code: error.code, message: error.message }; }

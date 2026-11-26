@@ -48,9 +48,8 @@
     function mapRows() {
       const categories = new Map(state.categories.map(item => [item.id, item.name]));
       const pages = new Map(state.pages.map(item => [item.id, item.name]));
-      const byProduct = new Map(); state.balances.forEach(item => byProduct.set(item.product_id, (byProduct.get(item.product_id) ?? 0) + Number(item.quantity)));
       products = state.products.filter(item => item.is_active).map(item => ({ ...item, price: Number(item.discount_price) > 0 && Number(item.discount_price) < Number(item.sale_price) ? Number(item.discount_price) : Number(item.sale_price), discountPrice: Number(item.discount_price), cost: Number(item.cost_price),
-        stock: state.errors.balances || !can('inventory.read') ? null : byProduct.get(item.id) ?? 0, category: categories.get(item.category_id) ?? 'Ангилалгүй' }));
+        stock: state.productStock[item.id] ?? null, category: categories.get(item.category_id) ?? 'Ангилалгүй' }));
       orders = state.orders.map(item => ({ ...item, databaseId: item.id, displayId: `ORD-${item.order_number}`, customer: item.customer_name, phone: item.phone_normalized,
         product: (item.order_items ?? []).map(line => `${line.products?.name ?? line.product_id} × ${line.quantity}`).join(', '), amount: Number(item.collect_amount),
         productAmount: Number(item.product_total), statusLabel: format.orderLabels[item.status], address: item.delivery_address, date: labelDate(item.created_at),
@@ -95,7 +94,7 @@
         const item = state.products.find(product => product.id === button.dataset.archiveProduct);
         button.disabled = true; try { await service.saveProduct({ ...item, expected_updated_at: item.updated_at, is_active: false }); await refresh(); showToast('Бараа идэвхгүй боллоо.'); } catch (error) { showToast(error.message, 'error'); button.disabled = false; }
       }; });
-      const inventoryProducts = state?.errors.balances ? [] : products.filter(item => item.stock !== null).sort((a, b) => a.stock - b.stock);
+      const inventoryProducts = products.filter(item => item.stock !== null).sort((a, b) => a.stock - b.stock);
       q('#inventory-list').innerHTML = inventoryProducts.slice(0, 30).map(item => `<div class="inventory-item"><div><strong>${h(item.name)}</strong><small>${h(item.sku)}</small></div><b>${h(item.stock)} ш</b></div>`).join('') || '<p>Үлдэгдлийн мэдээлэл алга эсвэл унших боломжгүй.</p>';
       set('#product-count', state?.summary?.inventory?.products ?? state?.totals.products); set('#out-count', state?.summary?.inventory?.outOfStock); set('#stock-value', state?.summary?.inventory?.stockCost == null ? '—' : money(state.summary.inventory.stockCost));
     };
@@ -212,6 +211,9 @@
     }
     renderMenus = function () {
       q('#report-grid').innerHTML = '<button data-core-report="orders">Захиалгын CSV</button><button data-core-report="deliveries">Хүргэлтийн CSV</button><button data-core-report="inventory">Үлдэгдлийн CSV</button><button data-core-report="finance">Мөнгөн урсгалын CSV</button>';
+      const inventoryExport = q('[data-core-report="inventory"]');
+      if (state?.limited.balances) inventoryExport.textContent = `Үлдэгдлийн CSV (сүүлийн ${state.balances.length} мөр)`;
+      inventoryExport.disabled = !can('inventory.read') || Boolean(state?.errors.balances);
       document.querySelectorAll('[data-core-report]').forEach(button => { button.onclick = () => {
         const type = button.dataset.coreReport;
         const permission = { orders: 'orders.read', deliveries: 'deliveries.read', inventory: 'inventory.read', finance: 'finance.view' }[type];

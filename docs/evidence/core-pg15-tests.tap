@@ -2,1332 +2,1356 @@ TAP version 13
 # Subtest: active authenticated profile loads app once and exposes only assigned permissions
 ok 1 - active authenticated profile loads app once and exposes only assigned permissions
   ---
-  duration_ms: 15.3752
+  duration_ms: 16.5805
   type: 'test'
   ...
 # Subtest: invalid login and thrown network errors show safe errors and release submit button
 ok 2 - invalid login and thrown network errors show safe errors and release submit button
   ---
-  duration_ms: 27.7799
+  duration_ms: 17.567
   type: 'test'
   ...
 # Subtest: concurrent login submit is deduplicated while the first request is pending
 ok 3 - concurrent login submit is deduplicated while the first request is pending
   ---
-  duration_ms: 5.3041
+  duration_ms: 16.7444
   type: 'test'
   ...
 # Subtest: reset request uses same-origin explicit recovery marker and non-enumerating success
 ok 4 - reset request uses same-origin explicit recovery marker and non-enumerating success
   ---
-  duration_ms: 6.6269
+  duration_ms: 11.5744
   type: 'test'
   ...
 # Subtest: reset/update network failures recover their form without printing provider secrets
 ok 5 - reset/update network failures recover their form without printing provider secrets
   ---
-  duration_ms: 7.4025
+  duration_ms: 8.2923
   type: 'test'
   ...
 # Subtest: recovery event cancels a pending ordinary authorization before any app is shown
 ok 6 - recovery event cancels a pending ordinary authorization before any app is shown
   ---
-  duration_ms: 27.0556
+  duration_ms: 26.0336
   type: 'test'
   ...
 # Subtest: explicit reset marker waits for password update before loading app; mismatch never calls update
 ok 7 - explicit reset marker waits for password update before loading app; mismatch never calls update
   ---
-  duration_ms: 16.6017
+  duration_ms: 17.4998
   type: 'test'
   ...
 # Subtest: expired recovery link shows login and a bounded error without loading app
 ok 8 - expired recovery link shows login and a bounded error without loading app
   ---
-  duration_ms: 13.8159
+  duration_ms: 6.6977
   type: 'test'
   ...
 # Subtest: SIGNED_OUT clears authorization and reloads private app state
 ok 9 - SIGNED_OUT clears authorization and reloads private app state
   ---
-  duration_ms: 19.7829
+  duration_ms: 25.1716
   type: 'test'
   ...
 # Subtest: late getSession or deferred SIGNED_IN cannot restore a signed-out user
 ok 10 - late getSession or deferred SIGNED_IN cannot restore a signed-out user
   ---
-  duration_ms: 12.6083
+  duration_ms: 9.9717
   type: 'test'
   ...
 # Subtest: late initial session failure cannot hide a subsequent successful login
 ok 11 - late initial session failure cannot hide a subsequent successful login
   ---
-  duration_ms: 13.2987
+  duration_ms: 11.0993
   type: 'test'
   ...
 # Subtest: manual logout plus SIGNED_OUT event schedules one reload and cannot reauthorize before navigation
 ok 12 - manual logout plus SIGNED_OUT event schedules one reload and cannot reauthorize before navigation
   ---
-  duration_ms: 38.8773
+  duration_ms: 34.1807
   type: 'test'
   ...
 # Subtest: inactive or role-less users remain denied with no private application
 ok 13 - inactive or role-less users remain denied with no private application
   ---
-  duration_ms: 15.5638
+  duration_ms: 20.1549
   type: 'test'
   ...
 # Subtest: missing/privileged frontend config fails closed before SDK construction
 ok 14 - missing/privileged frontend config fails closed before SDK construction
   ---
-  duration_ms: 26.8399
+  duration_ms: 56.0123
   type: 'test'
   ...
 # Subtest: authenticated function transport retains structured safe errors and does not accept a path
 ok 15 - authenticated function transport retains structured safe errors and does not accept a path
   ---
-  duration_ms: 36.8913
+  duration_ms: 54.8542
   type: 'test'
   ...
 # Subtest: deploy artifact excludes legacy catalogs/server files and replaces only owned build output
 ok 16 - deploy artifact excludes legacy catalogs/server files and replaces only owned build output
   ---
-  duration_ms: 111.778
+  duration_ms: 135.9386
   type: 'test'
   ...
 # Subtest: core service requires a real organization context and never falls back to local demo state
 ok 17 - core service requires a real organization context and never falls back to local demo state
   ---
-  duration_ms: 3.5302
+  duration_ms: 3.3384
   type: 'test'
   ...
 # Subtest: permission-aware loading performs no table or summary requests without grants
 ok 18 - permission-aware loading performs no table or summary requests without grants
   ---
-  duration_ms: 3.3569
+  duration_ms: 3.5567
   type: 'test'
   ...
 # Subtest: production reads enforce organization, explicit demo exclusion and safe Page columns
 ok 19 - production reads enforce organization, explicit demo exclusion and safe Page columns
   ---
-  duration_ms: 3.4448
+  duration_ms: 4.1199
   type: 'test'
   ...
 # Subtest: order creator can obtain safe warehouse options without reading inventory balances or costs
 ok 20 - order creator can obtain safe warehouse options without reading inventory balances or costs
   ---
-  duration_ms: 1.2279
+  duration_ms: 1.5822
+  type: 'test'
+  ...
+# Subtest: catalog requests stock for active products with both grants and keeps a confirmed zero
+ok 21 - catalog requests stock for active products with both grants and keeps a confirmed zero
+  ---
+  duration_ms: 4.2316
+  type: 'test'
+  ...
+# Subtest: unknown catalog stock remains unavailable even when a raw balance exists
+ok 22 - unknown catalog stock remains unavailable even when a raw balance exists
+  ---
+  duration_ms: 7.2126
   type: 'test'
   ...
 # Subtest: all snapshot query sort fields exist in the actual SQL table schema
-ok 21 - all snapshot query sort fields exist in the actual SQL table schema
+ok 23 - all snapshot query sort fields exist in the actual SQL table schema
   ---
-  duration_ms: 3.4273
+  duration_ms: 3.4444
   type: 'test'
   ...
 # Subtest: missing migration and failed reads remain visible rather than producing successful zero metrics
-ok 22 - missing migration and failed reads remain visible rather than producing successful zero metrics
+ok 24 - missing migration and failed reads remain visible rather than producing successful zero metrics
   ---
-  duration_ms: 1.471
+  duration_ms: 1.5732
   type: 'test'
   ...
 # Subtest: create-order wire contract sends stable identity and verified IDs without caller totals/actor/org
-ok 23 - create-order wire contract sends stable identity and verified IDs without caller totals/actor/org
+ok 25 - create-order wire contract sends stable identity and verified IDs without caller totals/actor/org
   ---
-  duration_ms: 1.8304
+  duration_ms: 2.6213
   type: 'test'
   ...
 # Subtest: invalid order phone/UUID/quantity and missing warehouse never reach RPC
-ok 24 - invalid order phone/UUID/quantity and missing warehouse never reach RPC
+ok 26 - invalid order phone/UUID/quantity and missing warehouse never reach RPC
   ---
-  duration_ms: 1.3266
+  duration_ms: 1.7811
   type: 'test'
   ...
 # Subtest: product edits retain exact server timestamp precision and cannot silently edit stock
-ok 25 - product edits retain exact server timestamp precision and cannot silently edit stock
+ok 27 - product edits retain exact server timestamp precision and cannot silently edit stock
   ---
-  duration_ms: 1.6476
+  duration_ms: 1.8343
   type: 'test'
   ...
 # Subtest: order update and cancellation use existing status enum and optimistic timestamp
-ok 26 - order update and cancellation use existing status enum and optimistic timestamp
+ok 28 - order update and cancellation use existing status enum and optimistic timestamp
   ---
-  duration_ms: 1.8914
+  duration_ms: 1.432
   type: 'test'
   ...
 # Subtest: lead batching and call updates persist via RPC; converted status requires actual order creation
-ok 27 - lead batching and call updates persist via RPC; converted status requires actual order creation
+ok 29 - lead batching and call updates persist via RPC; converted status requires actual order creation
   ---
-  duration_ms: 1.6469
+  duration_ms: 1.4255
   type: 'test'
   ...
 # Subtest: inventory movement requires nonzero integer delta and retains operation id on retry
-ok 28 - inventory movement requires nonzero integer delta and retains operation id on retry
+ok 30 - inventory movement requires nonzero integer delta and retains operation id on retry
   ---
-  duration_ms: 1.333
+  duration_ms: 1.5947
   type: 'test'
   ...
 # Subtest: finance cash entries are explicit idempotent records and never inferred from an order total
-ok 29 - finance cash entries are explicit idempotent records and never inferred from an order total
+ok 31 - finance cash entries are explicit idempotent records and never inferred from an order total
   ---
-  duration_ms: 1.2458
+  duration_ms: 1.6368
   type: 'test'
   ...
 # Subtest: backend errors are actionable and sanitized; migration absence is never represented as saved
-ok 30 - backend errors are actionable and sanitized; migration absence is never represented as saved
+ok 32 - backend errors are actionable and sanitized; migration absence is never represented as saved
   ---
-  duration_ms: 1.9599
+  duration_ms: 1.793
   type: 'test'
   ...
 # Subtest: offline bundle copies exactly curated verified sources, generated config and public examples
-ok 31 - offline bundle copies exactly curated verified sources, generated config and public examples
+ok 33 - offline bundle copies exactly curated verified sources, generated config and public examples
   ---
-  duration_ms: 246.6988
+  duration_ms: 350.274
   type: 'test'
   ...
 # Subtest: migration hash drift and missing required files fail before an output directory is created
-ok 32 - migration hash drift and missing required files fail before an output directory is created
+ok 34 - migration hash drift and missing required files fail before an output directory is created
   ---
-  duration_ms: 86.1309
+  duration_ms: 122.4761
   type: 'test'
   ...
 # Subtest: evidence cannot introduce arbitrary, reordered or missing migration entries
-ok 33 - evidence cannot introduce arbitrary, reordered or missing migration entries
+ok 35 - evidence cannot introduce arbitrary, reordered or missing migration entries
   ---
-  duration_ms: 39.9856
+  duration_ms: 55.1431
   type: 'test'
   ...
 # Subtest: optional public templates may be absent without copying any unlisted substitute
-ok 34 - optional public templates may be absent without copying any unlisted substitute
+ok 36 - optional public templates may be absent without copying any unlisted substitute
   ---
-  duration_ms: 66.5744
+  duration_ms: 78.2156
   type: 'test'
   ...
 # Subtest: existing output, source/bot descendants and ancestors are refused without overwriting data
-ok 35 - existing output, source/bot descendants and ancestors are refused without overwriting data
+ok 37 - existing output, source/bot descendants and ancestors are refused without overwriting data
   ---
-  duration_ms: 38.8
+  duration_ms: 33.4865
   type: 'test'
   ...
 # Subtest: public examples with credential-like values fail rather than publishing them
-ok 36 - public examples with credential-like values fail rather than publishing them
+ok 38 - public examples with credential-like values fail rather than publishing them
   ---
-  duration_ms: 59.8119
+  duration_ms: 64.286
   type: 'test'
   ...
 # Subtest: CLI produces a fresh offline Temp artifact and rejects target/deployment options
-ok 37 - CLI produces a fresh offline Temp artifact and rejects target/deployment options
+ok 39 - CLI produces a fresh offline Temp artifact and rejects target/deployment options
   ---
-  duration_ms: 229.4836
+  duration_ms: 256.0944
   type: 'test'
   ...
 # Subtest: valid manifest produces a credential-free prepared plan; default and missing authorization never fetch
-ok 38 - valid manifest produces a credential-free prepared plan; default and missing authorization never fetch
+ok 40 - valid manifest produces a credential-free prepared plan; default and missing authorization never fetch
   ---
-  duration_ms: 4.0871
+  duration_ms: 4.1915
   type: 'test'
   ...
 # Subtest: protected production project, inline credentials, production browser and invalid fixture layout fail before fetch
-ok 39 - protected production project, inline credentials, production browser and invalid fixture layout fail before fetch
+ok 41 - protected production project, inline credentials, production browser and invalid fixture layout fail before fetch
   ---
-  duration_ms: 1.2025
+  duration_ms: 1.3764
   type: 'test'
   ...
 # Subtest: missing/secret project key, expired, anonymous and foreign-issuer actor tokens cannot reach network
-ok 40 - missing/secret project key, expired, anonymous and foreign-issuer actor tokens cannot reach network
+ok 42 - missing/secret project key, expired, anonymous and foreign-issuer actor tokens cannot reach network
   ---
-  duration_ms: 3.6547
+  duration_ms: 3.5491
   type: 'test'
   ...
 # Subtest: mocked hosted sequence verifies GoTrue/profile/organization/Page/flags and only denied mutation calls
-ok 41 - mocked hosted sequence verifies GoTrue/profile/organization/Page/flags and only denied mutation calls
+ok 43 - mocked hosted sequence verifies GoTrue/profile/organization/Page/flags and only denied mutation calls
   ---
-  duration_ms: 68.1439
+  duration_ms: 75.1172
   type: 'test'
   ...
 # Subtest: authoritative identity mismatch, foreign Page list and automatic sending true fail closed
-ok 42 - authoritative identity mismatch, foreign Page list and automatic sending true fail closed
+ok 44 - authoritative identity mismatch, foreign Page list and automatic sending true fail closed
   ---
-  duration_ms: 29.522
+  duration_ms: 31.8987
   type: 'test'
   ...
 # Subtest: unexpected mutation permission or existing reserved reply prevents all negative mutation posts
-ok 43 - unexpected mutation permission or existing reserved reply prevents all negative mutation posts
+ok 45 - unexpected mutation permission or existing reserved reply prevents all negative mutation posts
   ---
-  duration_ms: 20.2294
+  duration_ms: 28.8462
   type: 'test'
   ...
 # Subtest: response redirects, invalid JSON and oversized body are bounded with no raw payload in report
-ok 44 - response redirects, invalid JSON and oversized body are bounded with no raw payload in report
+ok 46 - response redirects, invalid JSON and oversized body are bounded with no raw payload in report
   ---
-  duration_ms: 2.2095
+  duration_ms: 2.0898
   type: 'test'
   ...
 # Subtest: request deadline covers a hanging fetch or hanging response stream without retry
-ok 45 - request deadline covers a hanging fetch or hanging response stream without retry
+ok 47 - request deadline covers a hanging fetch or hanging response stream without retry
   ---
-  duration_ms: 36.0295
+  duration_ms: 35.9761
   type: 'test'
   ...
 # Subtest: changed grants during the run fail before a later denied action can be sent
-ok 46 - changed grants during the run fail before a later denied action can be sent
+ok 48 - changed grants during the run fail before a later denied action can be sent
   ---
-  duration_ms: 19.4453
+  duration_ms: 16.2707
   type: 'test'
   ...
 # Subtest: missing actor token is skipped and missing audit acknowledgement fails read-only acceptance
-ok 47 - missing actor token is skipped and missing audit acknowledgement fails read-only acceptance
+ok 49 - missing actor token is skipped and missing audit acknowledgement fails read-only acceptance
   ---
-  duration_ms: 9.5885
+  duration_ms: 8.6644
   type: 'test'
   ...
 # Subtest: browser OPTIONS is credential-free and requires exact CORS methods and headers
-ok 48 - browser OPTIONS is credential-free and requires exact CORS methods and headers
+ok 50 - browser OPTIONS is credential-free and requires exact CORS methods and headers
   ---
-  duration_ms: 18.3371
+  duration_ms: 24.2833
   type: 'test'
   ...
 # Subtest: other-organization isolation probe requires its own read feature flag enabled
-ok 49 - other-organization isolation probe requires its own read feature flag enabled
+ok 51 - other-organization isolation probe requires its own read feature flag enabled
   ---
-  duration_ms: 4.0639
+  duration_ms: 5.0687
   type: 'test'
   ...
 # Subtest: invitations default to the existing hosted setup page
-ok 50 - invitations default to the existing hosted setup page
+ok 52 - invitations default to the existing hosted setup page
   ---
-  duration_ms: 1.3617
+  duration_ms: 1.1126
   type: 'test'
   ...
 # Subtest: the existing local setup callback remains allowed by helper and source Auth
-ok 51 - the existing local setup callback remains allowed by helper and source Auth
+ok 53 - the existing local setup callback remains allowed by helper and source Auth
   ---
-  duration_ms: 15.6795
+  duration_ms: 14.8328
   type: 'test'
   ...
 # Subtest: server-configured dynamic loopback ports support isolated real browser acceptance
-ok 52 - server-configured dynamic loopback ports support isolated real browser acceptance
+ok 54 - server-configured dynamic loopback ports support isolated real browser acceptance
   ---
-  duration_ms: 0.4184
+  duration_ms: 0.4219
   type: 'test'
   ...
 # Subtest: callback validation rejects arbitrary hosts, extra query/path and noncanonical URL controls
-ok 53 - callback validation rejects arbitrary hosts, extra query/path and noncanonical URL controls
+ok 55 - callback validation rejects arbitrary hosts, extra query/path and noncanonical URL controls
   ---
-  duration_ms: 1.0822
+  duration_ms: 1.3028
   type: 'test'
   ...
 # Subtest: start date accepts omitted dates and real calendar dates including leap days
-ok 54 - start date accepts omitted dates and real calendar dates including leap days
+ok 56 - start date accepts omitted dates and real calendar dates including leap days
   ---
-  duration_ms: 1.5645
+  duration_ms: 1.8494
   type: 'test'
   ...
 # Subtest: start date rejects impossible dates and non-string fields before sending mail
-ok 55 - start date rejects impossible dates and non-string fields before sending mail
+ok 57 - start date rejects impossible dates and non-string fields before sending mail
   ---
-  duration_ms: 0.3843
+  duration_ms: 0.3069
   type: 'test'
   ...
 # Subtest: malformed bodies and impossible dates stop before invite or provision
-ok 56 - malformed bodies and impossible dates stop before invite or provision
+ok 58 - malformed bodies and impossible dates stop before invite or provision
   ---
-  duration_ms: 56.3216
+  duration_ms: 56.6142
   type: 'test'
   ...
 # Subtest: unknown/malformed server callback fails closed before SDK clients or email
-ok 57 - unknown/malformed server callback fails closed before SDK clients or email
+ok 59 - unknown/malformed server callback fails closed before SDK clients or email
   ---
-  duration_ms: 5.5703
+  duration_ms: 7.3863
   type: 'test'
   ...
 # Subtest: dynamic loopback callback origin is allowed only when it is server-configured
-ok 58 - dynamic loopback callback origin is allowed only when it is server-configured
+ok 60 - dynamic loopback callback origin is allowed only when it is server-configured
   ---
-  duration_ms: 2.9097
+  duration_ms: 2.6064
   type: 'test'
   ...
 # Subtest: unknown origins and preflight are denied without CORS fallback or SDK calls
-ok 59 - unknown origins and preflight are denied without CORS fallback or SDK calls
+ok 61 - unknown origins and preflight are denied without CORS fallback or SDK calls
   ---
-  duration_ms: 1.0566
+  duration_ms: 1.0563
   type: 'test'
   ...
 # Subtest: missing/bad/anonymous sessions, inactive profiles and missing permissions cannot invite
-ok 60 - missing/bad/anonymous sessions, inactive profiles and missing permissions cannot invite
+ok 62 - missing/bad/anonymous sessions, inactive profiles and missing permissions cannot invite
   ---
-  duration_ms: 3.1793
+  duration_ms: 3.6528
   type: 'test'
   ...
 # Subtest: role stays same-organization and lookup failures cannot bypass preconditions
-ok 61 - role stays same-organization and lookup failures cannot bypass preconditions
+ok 63 - role stays same-organization and lookup failures cannot bypass preconditions
   ---
-  duration_ms: 2.1426
+  duration_ms: 3.1839
   type: 'test'
   ...
 # Subtest: valid invite ignores body callback/org overrides and provisions exact date and active flag
-ok 62 - valid invite ignores body callback/org overrides and provisions exact date and active flag
+ok 64 - valid invite ignores body callback/org overrides and provisions exact date and active flag
   ---
-  duration_ms: 0.8435
+  duration_ms: 1.1177
   type: 'test'
   ...
 # Subtest: missing callback preserves canonical hosted default while Origin never chooses destination
-ok 63 - missing callback preserves canonical hosted default while Origin never chooses destination
+ok 65 - missing callback preserves canonical hosted default while Origin never chooses destination
   ---
-  duration_ms: 0.5754
+  duration_ms: 0.7564
   type: 'test'
   ...
 # Subtest: duplicate accounts and provider rate/rejection messages remain bounded and sanitized
-ok 64 - duplicate accounts and provider rate/rejection messages remain bounded and sanitized
+ok 66 - duplicate accounts and provider rate/rejection messages remain bounded and sanitized
   ---
-  duration_ms: 2.5655
+  duration_ms: 2.9842
   type: 'test'
   ...
 # Subtest: confirmed SQL rejection retains Auth invitation for reconciliation without claiming cancellation
-ok 65 - confirmed SQL rejection retains Auth invitation for reconciliation without claiming cancellation
+ok 67 - confirmed SQL rejection retains Auth invitation for reconciliation without claiming cancellation
   ---
-  duration_ms: 3.693
+  duration_ms: 4.6535
   type: 'test'
   ...
 # Subtest: returned RPC transport/gateway/malformed results remain unknown and never delete Auth user
-ok 66 - returned RPC transport/gateway/malformed results remain unknown and never delete Auth user
+ok 68 - returned RPC transport/gateway/malformed results remain unknown and never delete Auth user
   ---
-  duration_ms: 6.8412
+  duration_ms: 7.7313
   type: 'test'
   ...
 # Subtest: success requires confirmed void RPC response rather than absence of an error property
-ok 67 - success requires confirmed void RPC response rather than absence of an error property
+ok 69 - success requires confirmed void RPC response rather than absence of an error property
   ---
-  duration_ms: 2.0478
+  duration_ms: 2.1063
   type: 'test'
   ...
 # Subtest: returned Auth network/gateway errors and missing user cannot claim email was not sent
-ok 68 - returned Auth network/gateway errors and missing user cannot claim email was not sent
+ok 70 - returned Auth network/gateway errors and missing user cannot claim email was not sent
   ---
-  duration_ms: 2.5189
+  duration_ms: 2.4025
   type: 'test'
   ...
 # Subtest: concurrent cross-org attempts reusing an unconfirmed Auth ID cannot delete the first employee
-ok 69 - concurrent cross-org attempts reusing an unconfirmed Auth ID cannot delete the first employee
+ok 71 - concurrent cross-org attempts reusing an unconfirmed Auth ID cannot delete the first employee
   ---
-  duration_ms: 1.1286
+  duration_ms: 1.0541
   type: 'test'
   ...
 # Subtest: thrown SDK failures never leak credentials; uncertain provision does not delete possibly committed user
-ok 70 - thrown SDK failures never leak credentials; uncertain provision does not delete possibly committed user
+ok 72 - thrown SDK failures never leak credentials; uncertain provision does not delete possibly committed user
   ---
-  duration_ms: 4.4147
+  duration_ms: 3.2077
   type: 'test'
   ...
 # Subtest: oversized and malformed JSON bodies do not send an invitation
-ok 71 - oversized and malformed JSON bodies do not send an invitation
+ok 73 - oversized and malformed JSON bodies do not send an invitation
   ---
-  duration_ms: 1.6507
+  duration_ms: 1.4272
   type: 'test'
   ...
 # Subtest: bounded read timeout prevents later invite; in-flight invitation timeout remains explicitly uncertain
-ok 72 - bounded read timeout prevents later invite; in-flight invitation timeout remains explicitly uncertain
+ok 74 - bounded read timeout prevents later invite; in-flight invitation timeout remains explicitly uncertain
   ---
-  duration_ms: 47.7733
+  duration_ms: 27.2642
   type: 'test'
   ...
 # Subtest: Edge entrypoint pins SDK and delegates to the tested factory without logging raw SDK objects
-ok 73 - Edge entrypoint pins SDK and delegates to the tested factory without logging raw SDK objects
+ok 75 - Edge entrypoint pins SDK and delegates to the tested factory without logging raw SDK objects
   ---
-  duration_ms: 3.9951
+  duration_ms: 6.1525
   type: 'test'
   ...
 # Subtest: rejects remote/default Docker targets before any command
-ok 74 - rejects remote/default Docker targets before any command
+ok 76 - rejects remote/default Docker targets before any command
   ---
-  duration_ms: 2.7681
+  duration_ms: 2.3814
   type: 'test'
   ...
 # Subtest: fresh owned PG15 lifecycle pins cached image, loopback, tmpfs and label-verified cleanup
-ok 75 - fresh owned PG15 lifecycle pins cached image, loopback, tmpfs and label-verified cleanup
+ok 77 - fresh owned PG15 lifecycle pins cached image, loopback, tmpfs and label-verified cleanup
   ---
-  duration_ms: 3.6987
+  duration_ms: 4.3607
   type: 'test'
   ...
 # Subtest: wrong server major fails and cleans up only its own resources
-ok 76 - wrong server major fails and cleans up only its own resources
+ok 78 - wrong server major fails and cleans up only its own resources
   ---
-  duration_ms: 2.7028
+  duration_ms: 1.2256
   type: 'test'
   ...
 # Subtest: non-loopback published port fails and cleans up
-ok 77 - non-loopback published port fails and cleans up
+ok 79 - non-loopback published port fails and cleans up
   ---
-  duration_ms: 1.0358
+  duration_ms: 1.0354
   type: 'test'
   ...
 # Subtest: changed ownership refuses utility calls and destructive cleanup
-ok 78 - changed ownership refuses utility calls and destructive cleanup
+ok 80 - changed ownership refuses utility calls and destructive cleanup
   ---
-  duration_ms: 1.0941
+  duration_ms: 1.0161
   type: 'test'
   ...
 # Subtest: readiness deadline cleans up the fresh test container
-ok 79 - readiness deadline cleans up the fresh test container
+ok 81 - readiness deadline cleans up the fresh test container
   ---
-  duration_ms: 0.9164
+  duration_ms: 0.9119
   type: 'test'
   ...
 # Subtest: invalid bridge gateway fails before startup and cleans up only its network
-ok 80 - invalid bridge gateway fails before startup and cleans up only its network
+ok 82 - invalid bridge gateway fails before startup and cleans up only its network
   ---
-  duration_ms: 4.8034
+  duration_ms: 5.5276
   type: 'test'
   ...
 # Subtest: actual bot v1 shape maps only to review, not core order RPC arguments or production accounting
-ok 81 - actual bot v1 shape maps only to review, not core order RPC arguments or production accounting
+ok 83 - actual bot v1 shape maps only to review, not core order RPC arguments or production accounting
   ---
-  duration_ms: 18.5089
+  duration_ms: 19.9941
   type: 'test'
   ...
 # Subtest: product text/code is not an authorized product UUID, price, warehouse or stock fact
-ok 82 - product text/code is not an authorized product UUID, price, warehouse or stock fact
+ok 84 - product text/code is not an authorized product UUID, price, warehouse or stock fact
   ---
-  duration_ms: 1.8796
+  duration_ms: 2.2992
   type: 'test'
   ...
 # Subtest: unknown, zero, insufficient and stale facts remain distinct without invented values
-ok 83 - unknown, zero, insufficient and stale facts remain distinct without invented values
+ok 85 - unknown, zero, insufficient and stale facts remain distinct without invented values
   ---
-  duration_ms: 10.7674
+  duration_ms: 2.2421
   type: 'test'
   ...
 # Subtest: same-org active Page authorization is required and numeric Meta ID cannot replace registry UUID
-ok 84 - same-org active Page authorization is required and numeric Meta ID cannot replace registry UUID
+ok 86 - same-org active Page authorization is required and numeric Meta ID cannot replace registry UUID
   ---
-  duration_ms: 2.33
+  duration_ms: 2.0353
   type: 'test'
   ...
 # Subtest: foreign organization catalog data is rejected instead of used as a lookup shortcut
-ok 85 - foreign organization catalog data is rejected instead of used as a lookup shortcut
+ok 87 - foreign organization catalog data is rejected instead of used as a lookup shortcut
   ---
-  duration_ms: 0.7027
+  duration_ms: 0.7695
   type: 'test'
   ...
 # Subtest: incomplete/attachment/human cases stay review-blocked even if bot complete says true
-ok 86 - incomplete/attachment/human cases stay review-blocked even if bot complete says true
+ok 88 - incomplete/attachment/human cases stay review-blocked even if bot complete says true
   ---
-  duration_ms: 2.0696
+  duration_ms: 2.9689
   type: 'test'
   ...
 # Subtest: source event key is stable across actors and separates organization/Page/message identity
-ok 87 - source event key is stable across actors and separates organization/Page/message identity
+ok 89 - source event key is stable across actors and separates organization/Page/message identity
   ---
-  duration_ms: 3.3224
+  duration_ms: 5.261
   type: 'test'
   ...
 # Subtest: unknown/unsafe schemas and nonzero side effects cannot be accepted as dry-run
-ok 88 - unknown/unsafe schemas and nonzero side effects cannot be accepted as dry-run
+ok 90 - unknown/unsafe schemas and nonzero side effects cannot be accepted as dry-run
   ---
-  duration_ms: 0.8416
+  duration_ms: 0.9457
   type: 'test'
   ...
 # Subtest: real local bot mapper output is accepted without changing the bot repository
-ok 89 - real local bot mapper output is accepted without changing the bot repository
+ok 91 - real local bot mapper output is accepted without changing the bot repository
   ---
-  duration_ms: 16.2797
+  duration_ms: 29.8873
   type: 'test'
   ...
 # Subtest: runtime configuration accepts public publishable/anon keys and canonical HTTPS origins
-ok 90 - runtime configuration accepts public publishable/anon keys and canonical HTTPS origins
+ok 92 - runtime configuration accepts public publishable/anon keys and canonical HTTPS origins
   ---
-  duration_ms: 2.9526
+  duration_ms: 2.829
   type: 'test'
   ...
 # Subtest: Vercel public aliases work and runtime values override local configuration
-ok 91 - Vercel public aliases work and runtime values override local configuration
+ok 93 - Vercel public aliases work and runtime values override local configuration
   ---
-  duration_ms: 1.0127
+  duration_ms: 1.0882
   type: 'test'
   ...
 # Subtest: runtime configuration rejects missing, malformed, redirected or insecure URL configuration
-ok 92 - runtime configuration rejects missing, malformed, redirected or insecure URL configuration
+ok 94 - runtime configuration rejects missing, malformed, redirected or insecure URL configuration
   ---
-  duration_ms: 0.6682
+  duration_ms: 0.5928
   type: 'test'
   ...
 # Subtest: server-side secrets and foreign-project legacy keys cannot be emitted to the browser
-ok 93 - server-side secrets and foreign-project legacy keys cannot be emitted to the browser
+ok 95 - server-side secrets and foreign-project legacy keys cannot be emitted to the browser
   ---
-  duration_ms: 0.649
+  duration_ms: 0.6436
   type: 'test'
   ...
 # Subtest: explicit expected project binding prevents deploying a valid public key to the wrong project
-ok 94 - explicit expected project binding prevents deploying a valid public key to the wrong project
+ok 96 - explicit expected project binding prevents deploying a valid public key to the wrong project
   ---
-  duration_ms: 0.4825
+  duration_ms: 0.4697
   type: 'test'
   ...
 # Subtest: dotenv parser strips paired quotes and ignores comments without reading server configuration
-ok 95 - dotenv parser strips paired quotes and ignores comments without reading server configuration
+ok 97 - dotenv parser strips paired quotes and ignores comments without reading server configuration
   ---
-  duration_ms: 0.4839
+  duration_ms: 0.5947
   type: 'test'
   ...
 # Subtest: build emits only validated public fields from an isolated synthetic local file
-ok 96 - build emits only validated public fields from an isolated synthetic local file
+ok 98 - build emits only validated public fields from an isolated synthetic local file
   ---
-  duration_ms: 11.3447
+  duration_ms: 35.0869
   type: 'test'
   ...
 # Subtest: source Auth redirect allowlist admits the exact frontend recovery URL while global signup stays disabled
-ok 97 - source Auth redirect allowlist admits the exact frontend recovery URL while global signup stays disabled
+ok 99 - source Auth redirect allowlist admits the exact frontend recovery URL while global signup stays disabled
   ---
-  duration_ms: 1.4756
+  duration_ms: 1.7312
   type: 'test'
   ...
 # Subtest: authentication, active org, explicit Page and disabled flags fail closed before provider
-ok 98 - authentication, active org, explicit Page and disabled flags fail closed before provider
+ok 100 - authentication, active org, explicit Page and disabled flags fail closed before provider
   ---
-  duration_ms: 61.566
+  duration_ms: 70.8931
   type: 'test'
   ...
 # Subtest: each social action has both global and Page-action authorization; no pages.read dependency
-ok 99 - each social action has both global and Page-action authorization; no pages.read dependency
+ok 101 - each social action has both global and Page-action authorization; no pages.read dependency
   ---
-  duration_ms: 5.8552
+  duration_ms: 8.5231
   type: 'test'
   ...
 # Subtest: reply and assign grants without Page read never fetch private context or perform mutations
-ok 100 - reply and assign grants without Page read never fetch private context or perform mutations
+ok 102 - reply and assign grants without Page read never fetch private context or perform mutations
   ---
-  duration_ms: 3.8115
+  duration_ms: 4.4993
   type: 'test'
   ...
 # Subtest: closing/reopening needs effective Page reply and bot metadata cannot assign ERP agents
-ok 101 - closing/reopening needs effective Page reply and bot metadata cannot assign ERP agents
+ok 103 - closing/reopening needs effective Page reply and bot metadata cannot assign ERP agents
   ---
-  duration_ms: 5.0399
+  duration_ms: 11.1831
   type: 'test'
   ...
 # Subtest: safe SQL authorization and concurrency codes retain status without reflecting SQL details
-ok 102 - safe SQL authorization and concurrency codes retain status without reflecting SQL details
+ok 104 - safe SQL authorization and concurrency codes retain status without reflecting SQL details
   ---
-  duration_ms: 10.4353
+  duration_ms: 22.2348
   type: 'test'
   ...
 # Subtest: stateful mock workflow stores edits/approval, queues then polls sent and replays one stable key
-ok 103 - stateful mock workflow stores edits/approval, queues then polls sent and replays one stable key
+ok 105 - stateful mock workflow stores edits/approval, queues then polls sent and replays one stable key
   ---
-  duration_ms: 29.4275
+  duration_ms: 52.8509
   type: 'test'
   ...
 # Subtest: two Page runtimes isolate identical local IDs and equal idempotency keys
-ok 104 - two Page runtimes isolate identical local IDs and equal idempotency keys
+ok 106 - two Page runtimes isolate identical local IDs and equal idempotency keys
   ---
-  duration_ms: 17.7311
+  duration_ms: 24.8708
   type: 'test'
   ...
 # Subtest: comments, Messenger history, reply polling and filters map to existing v1 routes
-ok 105 - comments, Messenger history, reply polling and filters map to existing v1 routes
+ok 107 - comments, Messenger history, reply polling and filters map to existing v1 routes
   ---
-  duration_ms: 9.0728
+  duration_ms: 14.5835
   type: 'test'
   ...
 # Subtest: required versions/stable send key/strict body reject injection and client-authored reply state
-ok 106 - required versions/stable send key/strict body reject injection and client-authored reply state
+ok 108 - required versions/stable send key/strict body reject injection and client-authored reply state
   ---
-  duration_ms: 8.1141
+  duration_ms: 20.0359
   type: 'test'
   ...
 # Subtest: source changes supersede stored approvals and never trust submitted reply text
-ok 107 - source changes supersede stored approvals and never trust submitted reply text
+ok 109 - source changes supersede stored approvals and never trust submitted reply text
   ---
-  duration_ms: 10.7411
+  duration_ms: 17.3162
   type: 'test'
   ...
 # Subtest: revoked Page grants and feature flags deny retries before cached send results can replay
-ok 108 - revoked Page grants and feature flags deny retries before cached send results can replay
+ok 110 - revoked Page grants and feature flags deny retries before cached send results can replay
   ---
-  duration_ms: 7.9669
+  duration_ms: 10.9018
   type: 'test'
   ...
 # Subtest: registry is trusted env only: no fallback for foreign Page/org, v2, unlisted origin or missing binding
-ok 109 - registry is trusted env only: no fallback for foreign Page/org, v2, unlisted origin or missing binding
+ok 111 - registry is trusted env only: no fallback for foreign Page/org, v2, unlisted origin or missing binding
   ---
-  duration_ms: 3.9571
+  duration_ms: 8.9359
   type: 'test'
   ...
 # Subtest: legacy single-runtime config requires three explicit identity pins and matching capabilities
-ok 110 - legacy single-runtime config requires three explicit identity pins and matching capabilities
+ok 112 - legacy single-runtime config requires three explicit identity pins and matching capabilities
   ---
-  duration_ms: 2.3781
+  duration_ms: 2.9249
   type: 'test'
   ...
 # Subtest: a foreign-page resource is blocked before mutation even if a runtime replies 200
-ok 111 - a foreign-page resource is blocked before mutation even if a runtime replies 200
+ok 113 - a foreign-page resource is blocked before mutation even if a runtime replies 200
   ---
-  duration_ms: 1.2268
+  duration_ms: 1.3951
   type: 'test'
   ...
 # Subtest: upstream status/code/requestId and retry-after survive while messages and credentials are masked
-ok 112 - upstream status/code/requestId and retry-after survive while messages and credentials are masked
+ok 114 - upstream status/code/requestId and retry-after survive while messages and credentials are masked
   ---
-  duration_ms: 4.4426
+  duration_ms: 9.7523
   type: 'test'
   ...
 # Subtest: redirect, invalid JSON, oversized/chunked response and total request deadline are bounded
-ok 113 - redirect, invalid JSON, oversized/chunked response and total request deadline are bounded
+ok 115 - redirect, invalid JSON, oversized/chunked response and total request deadline are bounded
   ---
-  duration_ms: 74.1754
+  duration_ms: 73.4412
   type: 'test'
   ...
 # Subtest: default 8 MiB gateway cap accepts a legitimate UTF-8 thread larger than 300 KiB
-ok 114 - default 8 MiB gateway cap accepts a legitimate UTF-8 thread larger than 300 KiB
+ok 116 - default 8 MiB gateway cap accepts a legitimate UTF-8 thread larger than 300 KiB
   ---
-  duration_ms: 6.7091
+  duration_ms: 9.4183
   type: 'test'
   ...
 # Subtest: grant or flag revoked during audit wait blocks the external mutation after preflight
-ok 115 - grant or flag revoked during audit wait blocks the external mutation after preflight
+ok 117 - grant or flag revoked during audit wait blocks the external mutation after preflight
   ---
-  duration_ms: 2.8578
+  duration_ms: 4.744
   type: 'test'
   ...
 # Subtest: mandatory mutation audit failure blocks provider write and audit never carries body/token
-ok 116 - mandatory mutation audit failure blocks provider write and audit never carries body/token
+ok 118 - mandatory mutation audit failure blocks provider write and audit never carries body/token
   ---
-  duration_ms: 0.8059
+  duration_ms: 1.8338
   type: 'test'
   ...
 # Subtest: a send timeout after upstream acceptance exposes unknown outcome and keeps the same replay operation
-ok 117 - a send timeout after upstream acceptance exposes unknown outcome and keeps the same replay operation
+ok 119 - a send timeout after upstream acceptance exposes unknown outcome and keeps the same replay operation
   ---
-  duration_ms: 51.5606
+  duration_ms: 53.9563
   type: 'test'
   ...
 # Subtest: failure to audit a known bot response preserves queue acknowledgement and idempotent replay
-ok 118 - failure to audit a known bot response preserves queue acknowledgement and idempotent replay
+ok 120 - failure to audit a known bot response preserves queue acknowledgement and idempotent replay
   ---
-  duration_ms: 6.5508
+  duration_ms: 6.1695
   type: 'test'
   ...
 # Subtest: assistant requires ERP read grant, organization-scopes facts and leaves missing stock unknown
-ok 119 - assistant requires ERP read grant, organization-scopes facts and leaves missing stock unknown
+ok 121 - assistant requires ERP read grant, organization-scopes facts and leaves missing stock unknown
   ---
-  duration_ms: 2.4263
+  duration_ms: 3.2982
   type: 'test'
   ...
 # Subtest: hosted runtime publishable map supplies the default public key without a legacy key
-ok 120 - hosted runtime publishable map supplies the default public key without a legacy key
+ok 122 - hosted runtime publishable map supplies the default public key without a legacy key
   ---
-  duration_ms: 2.4908
+  duration_ms: 1.9493
   type: 'test'
   ...
 # Subtest: an invalid present modern public key map never falls back to the valid legacy anon key
-ok 121 - an invalid present modern public key map never falls back to the valid legacy anon key
+ok 123 - an invalid present modern public key map never falls back to the valid legacy anon key
   ---
-  duration_ms: 4.3191
+  duration_ms: 2.5811
   type: 'test'
   ...
 # Subtest: legacy public anon compatibility rejects privileged keys rather than creating a privileged client
-ok 122 - legacy public anon compatibility rejects privileged keys rather than creating a privileged client
+ok 124 - legacy public anon compatibility rejects privileged keys rather than creating a privileged client
   ---
-  duration_ms: 2.6715
+  duration_ms: 3.1934
   type: 'test'
   ...
 # Subtest: sandbox CORS exact origins replace production defaults and update between requests
-ok 123 - sandbox CORS exact origins replace production defaults and update between requests
+ok 125 - sandbox CORS exact origins replace production defaults and update between requests
   ---
-  duration_ms: 2.0594
+  duration_ms: 3.1113
   type: 'test'
   ...
 # Subtest: malformed CORS configuration fails closed before authentication without production-origin fallback
-ok 124 - malformed CORS configuration fails closed before authentication without production-origin fallback
+ok 126 - malformed CORS configuration fails closed before authentication without production-origin fallback
   ---
-  duration_ms: 7.788
+  duration_ms: 8.5225
   type: 'test'
   ...
 # Subtest: requires ERP registry Page UUID and pins every social request to selected Page/resource
-ok 125 - requires ERP registry Page UUID and pins every social request to selected Page/resource
+ok 127 - requires ERP registry Page UUID and pins every social request to selected Page/resource
   ---
-  duration_ms: 4.6649
+  duration_ms: 4.8077
   type: 'test'
   ...
 # Subtest: late old-Page response is rejected after switching; mismatched response Page is rejected
-ok 126 - late old-Page response is rejected after switching; mismatched response Page is rejected
+ok 128 - late old-Page response is rejected after switching; mismatched response Page is rejected
   ---
-  duration_ms: 2.4467
+  duration_ms: 2.443
   type: 'test'
   ...
 # Subtest: send double-click shares one in-flight operation and never promotes queued to sent
-ok 127 - send double-click shares one in-flight operation and never promotes queued to sent
+ok 129 - send double-click shares one in-flight operation and never promotes queued to sent
   ---
-  duration_ms: 1.9957
+  duration_ms: 1.8756
   type: 'test'
   ...
 # Subtest: stable send key survives timeout/recreated session and separates Page/resource/version
-ok 128 - stable send key survives timeout/recreated session and separates Page/resource/version
+ok 130 - stable send key survives timeout/recreated session and separates Page/resource/version
   ---
-  duration_ms: 3.2262
+  duration_ms: 4.8798
   type: 'test'
   ...
 # Subtest: unavailable or corrupted operation storage fails closed before send
-ok 129 - unavailable or corrupted operation storage fails closed before send
+ok 131 - unavailable or corrupted operation storage fails closed before send
   ---
-  duration_ms: 5.8305
+  duration_ms: 5.9031
   type: 'test'
   ...
 # Subtest: polling waits for actual reply states and stops on Page switch
-ok 130 - polling waits for actual reply states and stops on Page switch
+ok 132 - polling waits for actual reply states and stops on Page switch
   ---
-  duration_ms: 2.7525
+  duration_ms: 2.8018
   type: 'test'
   ...
 # Subtest: SDK transport retains structured upstream error status/code/requestId/retryAfter
-ok 131 - SDK transport retains structured upstream error status/code/requestId/retryAfter
+ok 133 - SDK transport retains structured upstream error status/code/requestId/retryAfter
   ---
-  duration_ms: 35.6469
+  duration_ms: 41.6806
   type: 'test'
   ...
 # Subtest: SDK success preserves envelope without using browser-side bot credentials
-ok 132 - SDK success preserves envelope without using browser-side bot credentials
+ok 134 - SDK success preserves envelope without using browser-side bot credentials
   ---
-  duration_ms: 1.3788
+  duration_ms: 1.5093
   type: 'test'
   ...
 # Subtest: existing Page/team/access/assignment CRUD RPC mapping remains distinct from bot context
-ok 133 - existing Page/team/access/assignment CRUD RPC mapping remains distinct from bot context
+ok 135 - existing Page/team/access/assignment CRUD RPC mapping remains distinct from bot context
   ---
-  duration_ms: 1.3864
+  duration_ms: 1.9434
   type: 'test'
   ...
 # Subtest: presence heartbeat writes own status/timestamp and never writes workload counter
-ok 134 - presence heartbeat writes own status/timestamp and never writes workload counter
+ok 136 - presence heartbeat writes own status/timestamp and never writes workload counter
   ---
-  duration_ms: 2.3873
+  duration_ms: 3.1779
   type: 'test'
   ...
 # Subtest: workspace uses safe Page registry RPC and never selects raw Page rows
-ok 135 - workspace uses safe Page registry RPC and never selects raw Page rows
+ok 137 - workspace uses safe Page registry RPC and never selects raw Page rows
   ---
-  duration_ms: 1.8731
+  duration_ms: 2.4054
   type: 'test'
   ...
 # Subtest: AI-only staff skip Page registry RPC while saved replies, AI history and catalog remain usable
-ok 136 - AI-only staff skip Page registry RPC while saved replies, AI history and catalog remain usable
+ok 138 - AI-only staff skip Page registry RPC while saved replies, AI history and catalog remain usable
   ---
-  duration_ms: 1.6033
+  duration_ms: 2.0912
   type: 'test'
   ...
 # Subtest: authorized Page registry errors remain visible instead of becoming an empty Page list
-ok 137 - authorized Page registry errors remain visible instead of becoming an empty Page list
+ok 139 - authorized Page registry errors remain visible instead of becoming an empty Page list
   ---
-  duration_ms: 0.969
+  duration_ms: 1.554
   type: 'test'
   ...
 # Subtest: Phase 4 real local database RLS and concurrency
-ok 138 - Phase 4 real local database RLS and concurrency # SKIP LOCAL_DB_URL must be an explicit loopback PostgreSQL URL without query overrides
+ok 140 - Phase 4 real local database RLS and concurrency # SKIP LOCAL_DB_URL must be an explicit loopback PostgreSQL URL without query overrides
   ---
-  duration_ms: 0.6831
+  duration_ms: 1.7326
   type: 'test'
   ...
 # Subtest: isolated PostgreSQL: RLS, primary/backup routing and concurrent assignment
     # Subtest: actual social001–004 and alignment DDL roll back atomically before commit
     ok 1 - actual social001–004 and alignment DDL roll back atomically before commit
       ---
-      duration_ms: 49.7721
+      duration_ms: 48.5206
       type: 'test'
       ...
     # Subtest: deliberate failed migration transaction leaves no social DDL or permission residue
     ok 2 - deliberate failed migration transaction leaves no social DDL or permission residue
       ---
-      duration_ms: 43.5998
+      duration_ms: 46.0653
       type: 'test'
       ...
     # Subtest: core migration rollback removes finance, receipts and additive order columns atomically
     ok 3 - core migration rollback removes finance, receipts and additive order columns atomically
       ---
-      duration_ms: 21.5737
+      duration_ms: 27.4787
       type: 'test'
       ...
     # Subtest: new invitation migration rollback restores provisioning/tenant guard definitions and service-only grants
     ok 4 - new invitation migration rollback restores provisioning/tenant guard definitions and service-only grants
       ---
-      duration_ms: 5.2738
+      duration_ms: 6.6963
       type: 'test'
       ...
     # Subtest: Page/context gates reject outsiders, cross-organization access and unknown actions
     ok 5 - Page/context gates reject outsiders, cross-organization access and unknown actions
       ---
-      duration_ms: 121.4036
+      duration_ms: 139.3179
       type: 'test'
       ...
     # Subtest: explicit denies override membership, including read prerequisite for reply/assign
     ok 6 - explicit denies override membership, including read prerequisite for reply/assign
       ---
-      duration_ms: 94.224
+      duration_ms: 122.814
       type: 'test'
       ...
     # Subtest: safe registry RPC serves inbox-only Pages without exposing raw registry columns
     ok 7 - safe registry RPC serves inbox-only Pages without exposing raw registry columns
       ---
-      duration_ms: 66.5855
+      duration_ms: 86.9524
       type: 'test'
       ...
     # Subtest: Phase 4 Page/team/access CRUD RPC signatures remain usable with RLS
     ok 8 - Phase 4 Page/team/access CRUD RPC signatures remain usable with RLS
       ---
-      duration_ms: 103.3068
+      duration_ms: 105.9792
       type: 'test'
       ...
     # Subtest: inactive Page and inactive team do not grant access
     ok 9 - inactive Page and inactive team do not grant access
       ---
-      duration_ms: 54.307
+      duration_ms: 55.3417
       type: 'test'
       ...
     # Subtest: empty/offline primary falls back to eligible backup without cross-team assignment
     ok 10 - empty/offline primary falls back to eligible backup without cross-team assignment
       ---
-      duration_ms: 63.3314
+      duration_ms: 86.8694
       type: 'test'
       ...
     # Subtest: denied, stale, away and leave candidates are excluded
     ok 11 - denied, stale, away and leave candidates are excluded
       ---
-      duration_ms: 56.2907
+      duration_ms: 80.9706
       type: 'test'
       ...
     # Subtest: candidate global inbox read revocation blocks automatic and manual assignment
     ok 12 - candidate global inbox read revocation blocks automatic and manual assignment
       ---
-      duration_ms: 123.5375
+      duration_ms: 124.6149
       type: 'test'
       ...
     # Subtest: knowledge and saved-reply write grants never reveal another Page through SELECT
     ok 13 - knowledge and saved-reply write grants never reveal another Page through SELECT
       ---
-      duration_ms: 128.1135
+      duration_ms: 143.6163
       type: 'test'
       ...
     # Subtest: caller global inbox read revocation blocks every assignment RPC before mutation
     ok 14 - caller global inbox read revocation blocks every assignment RPC before mutation
       ---
-      duration_ms: 141.1975
+      duration_ms: 155.4055
       type: 'test'
       ...
     # Subtest: assign-only caller cannot bypass reassign permission by using assign on existing work
     ok 15 - assign-only caller cannot bypass reassign permission by using assign on existing work
       ---
-      duration_ms: 151.016
+      duration_ms: 161.2901
       type: 'test'
       ...
     # Subtest: concurrent duplicate assignment creates exactly one row and one workload increment
     ok 16 - concurrent duplicate assignment creates exactly one row and one workload increment
       ---
-      duration_ms: 117.5352
+      duration_ms: 114.8922
       type: 'test'
       ...
     # Subtest: concurrent different conversations retain consistent workload and unique rows
     ok 17 - concurrent different conversations retain consistent workload and unique rows
       ---
-      duration_ms: 75.1949
+      duration_ms: 84.728
       type: 'test'
       ...
     # Subtest: same external conversation on different Pages remains separate
     ok 18 - same external conversation on different Pages remains separate
       ---
-      duration_ms: 91.1806
+      duration_ms: 108.2546
       type: 'test'
       ...
     # Subtest: foreign Page assignment rows remain invisible to unrelated users
     ok 19 - foreign Page assignment rows remain invisible to unrelated users
       ---
-      duration_ms: 99.7215
+      duration_ms: 149.4977
       type: 'test'
       ...
     # Subtest: direct assignment writes and workload counter tampering are rejected
     ok 20 - direct assignment writes and workload counter tampering are rejected
       ---
-      duration_ms: 85.8796
+      duration_ms: 114.2874
       type: 'test'
       ...
     # Subtest: self presence heartbeat works without users.read and cannot forge freshness
     ok 21 - self presence heartbeat works without users.read and cannot forge freshness
       ---
-      duration_ms: 54.0531
+      duration_ms: 78.6914
       type: 'test'
       ...
     # Subtest: cross-organization link writes are rejected for team managers
     ok 22 - cross-organization link writes are rejected for team managers
       ---
-      duration_ms: 66.3027
+      duration_ms: 85.5038
       type: 'test'
       ...
     # Subtest: assignment/transfer cannot target unrelated Page teams or denied candidates
     ok 23 - assignment/transfer cannot target unrelated Page teams or denied candidates
       ---
-      duration_ms: 103.9927
+      duration_ms: 100.5153
       type: 'test'
       ...
     # Subtest: read-only Page users cannot acquire a blocking claim lock
     ok 24 - read-only Page users cannot acquire a blocking claim lock
       ---
-      duration_ms: 77.9214
+      duration_ms: 86.9998
       type: 'test'
       ...
     # Subtest: simultaneous claims accept one version and reject the stale contender
     ok 25 - simultaneous claims accept one version and reject the stale contender
       ---
-      duration_ms: 85.4075
+      duration_ms: 98.5822
       type: 'test'
       ...
     # Subtest: resolve is a no-op on current resolved version and cannot double-decrement
     ok 26 - resolve is a no-op on current resolved version and cannot double-decrement
       ---
-      duration_ms: 120.6484
+      duration_ms: 119.3131
       type: 'test'
       ...
     # Subtest: Page capacity applies to distinct linked Pages including concurrent inserts
     ok 27 - Page capacity applies to distinct linked Pages including concurrent inserts
       ---
-      duration_ms: 45.6715
+      duration_ms: 38.7988
       type: 'test'
       ...
     # Subtest: public wrappers are invoker and private subject evaluators are not callable by authenticated
     ok 28 - public wrappers are invoker and private subject evaluators are not callable by authenticated
       ---
-      duration_ms: 11.8345
+      duration_ms: 11.8169
       type: 'test'
       ...
     # Subtest: feature flags remain off and operations have actor-scoped audit evidence
     ok 29 - feature flags remain off and operations have actor-scoped audit evidence
       ---
-      duration_ms: 1.5626
+      duration_ms: 1.5597
       type: 'test'
       ...
     # Subtest: social migrations001–004 were applied once in dependency order
     ok 30 - social migrations001–004 were applied once in dependency order
       ---
-      duration_ms: 1.1884
+      duration_ms: 1.1142
       type: 'test'
       ...
     # Subtest: four concurrent assignment calls commit exactly one row, one audit and one workload increment
     ok 31 - four concurrent assignment calls commit exactly one row, one audit and one workload increment
       ---
-      duration_ms: 97.8978
+      duration_ms: 98.6207
       type: 'test'
       ...
     # Subtest: Page and team CRUD updates/deletes preserve tenant references and authorized RPC behavior
     ok 32 - Page and team CRUD updates/deletes preserve tenant references and authorized RPC behavior
       ---
-      duration_ms: 159.2638
+      duration_ms: 167.1964
       type: 'test'
       ...
     # Subtest: AI thread, messages and private saved reply persist across connections with owner/org RLS
     ok 33 - AI thread, messages and private saved reply persist across connections with owner/org RLS
       ---
-      duration_ms: 214.7284
+      duration_ms: 225.4766
       type: 'test'
       ...
     # Subtest: synthetic fixture cleanup removes FK dependents, audit, profiles and organization without residue
     ok 34 - synthetic fixture cleanup removes FK dependents, audit, profiles and organization without residue
       ---
-      duration_ms: 20.713
+      duration_ms: 20.751
       type: 'test'
       ...
     # Subtest: Auth trigger ignores user-editable organization metadata and pending user cannot enter ERP
     ok 35 - Auth trigger ignores user-editable organization metadata and pending user cannot enter ERP
       ---
-      duration_ms: 14.8648
+      duration_ms: 16.8549
       type: 'test'
       ...
     # Subtest: invitation Auth creation ignores editable tenant claims until trusted provisioning binds active profile and role
     ok 36 - invitation Auth creation ignores editable tenant claims until trusted provisioning binds active profile and role
       ---
-      duration_ms: 41.2494
+      duration_ms: 41.8129
       type: 'test'
       ...
     # Subtest: invitation provisioning rejects authenticated direct calls, invalid or disabled managers, foreign roles and actor organizations without mutation
     ok 37 - invitation provisioning rejects authenticated direct calls, invalid or disabled managers, foreign roles and actor organizations without mutation
       ---
-      duration_ms: 170.7412
+      duration_ms: 171.3981
       type: 'test'
       ...
     # Subtest: trusted invitation cannot rebind an existing foreign organization profile or retain cross-tenant roles
     ok 38 - trusted invitation cannot rebind an existing foreign organization profile or retain cross-tenant roles
       ---
-      duration_ms: 22.2148
+      duration_ms: 21.3253
       type: 'test'
       ...
     # Subtest: concurrent invitations from two organizations bind one unassigned profile to exactly one tenant
     ok 39 - concurrent invitations from two organizations bind one unassigned profile to exactly one tenant
       ---
-      duration_ms: 21.9814
+      duration_ms: 21.5612
       type: 'test'
       ...
     # Subtest: trusted FK cascade deletes an assigned membership while manual foreign assigner forgery remains denied
     ok 40 - trusted FK cascade deletes an assigned membership while manual foreign assigner forgery remains denied
       ---
-      duration_ms: 31.9382
+      duration_ms: 32.7354
       type: 'test'
       ...
     # Subtest: staff cannot self-change status, privileged email or tenant
     ok 41 - staff cannot self-change status, privileged email or tenant
       ---
-      duration_ms: 52.8092
+      duration_ms: 58.4658
       type: 'test'
       ...
     # Subtest: organization manager cannot read/write foreign role grants or cross-tenant memberships
     ok 42 - organization manager cannot read/write foreign role grants or cross-tenant memberships
       ---
-      duration_ms: 42.8971
+      duration_ms: 45.0722
       type: 'test'
       ...
     # Subtest: product and warehouse CRUD RPCs derive org/actor and reject stale optimistic versions
     ok 43 - product and warehouse CRUD RPCs derive org/actor and reject stale optimistic versions
       ---
-      duration_ms: 103.8442
+      duration_ms: 95.3289
       type: 'test'
       ...
     # Subtest: order-only operator gets minimal active warehouse options without inventory read/cost rights
     ok 44 - order-only operator gets minimal active warehouse options without inventory read/cost rights
       ---
-      duration_ms: 39.0425
+      duration_ms: 47.0941
       type: 'test'
       ...
     # Subtest: same-org FK constraints reject known foreign product/category/warehouse IDs
     ok 45 - same-org FK constraints reject known foreign product/category/warehouse IDs
       ---
-      duration_ms: 71.4756
+      duration_ms: 77.0928
       type: 'test'
       ...
     # Subtest: four concurrent inventory retries add stock and movement exactly once
     ok 46 - four concurrent inventory retries add stock and movement exactly once
       ---
-      duration_ms: 57.5557
+      duration_ms: 52.2975
+      type: 'test'
+      ...
+    # Subtest: catalog stock groups all warehouses and returns zero only for visible active products without balances
+    ok 47 - catalog stock groups all warehouses and returns zero only for visible active products without balances
+      ---
+      duration_ms: 139.9571
+      type: 'test'
+      ...
+    # Subtest: catalog stock requires both read permissions and denies anonymous execution
+    ok 48 - catalog stock requires both read permissions and denies anonymous execution
+      ---
+      duration_ms: 29.1901
       type: 'test'
       ...
     # Subtest: four concurrent order retries reserve stock and create order/items/delivery/audit only once
-    ok 47 - four concurrent order retries reserve stock and create order/items/delivery/audit only once
+    ok 49 - four concurrent order retries reserve stock and create order/items/delivery/audit only once
       ---
-      duration_ms: 129.3688
+      duration_ms: 120.9579
       type: 'test'
       ...
     # Subtest: insufficient stock rolls back the entire order transaction without orphan rows
-    ok 48 - insufficient stock rolls back the entire order transaction without orphan rows
+    ok 50 - insufficient stock rolls back the entire order transaction without orphan rows
       ---
-      duration_ms: 20.1157
+      duration_ms: 22.0269
       type: 'test'
       ...
     # Subtest: two concurrent orders cannot oversell the same stock
-    ok 49 - two concurrent orders cannot oversell the same stock
+    ok 51 - two concurrent orders cannot oversell the same stock
       ---
-      duration_ms: 58.251
+      duration_ms: 58.484
       type: 'test'
       ...
     # Subtest: cancellation requires permission, restores reservation once, and stale retry cannot restock
-    ok 50 - cancellation requires permission, restores reservation once, and stale retry cannot restock
+    ok 52 - cancellation requires permission, restores reservation once, and stale retry cannot restock
       ---
-      duration_ms: 82.9007
+      duration_ms: 90.4581
       type: 'test'
       ...
     # Subtest: lead creation/call logging/conversion persist atomically and cannot convert twice
-    ok 51 - lead creation/call logging/conversion persist atomically and cannot convert twice
+    ok 53 - lead creation/call logging/conversion persist atomically and cannot convert twice
       ---
-      duration_ms: 102.0547
+      duration_ms: 115.6889
       type: 'test'
       ...
     # Subtest: delivery uses optimistic lock, rejects foreign courier and updates delivered order state
-    ok 52 - delivery uses optimistic lock, rejects foreign courier and updates delivered order state
+    ok 54 - delivery uses optimistic lock, rejects foreign courier and updates delivered order state
       ---
-      duration_ms: 50.5641
+      duration_ms: 50.3807
       type: 'test'
       ...
     # Subtest: cash ledger uses named finance permission and stable idempotency without duplicate income
-    ok 53 - cash ledger uses named finance permission and stable idempotency without duplicate income
+    ok 55 - cash ledger uses named finance permission and stable idempotency without duplicate income
       ---
-      duration_ms: 69.9009
+      duration_ms: 69.5766
       type: 'test'
       ...
     # Subtest: NaN money cannot corrupt product valuation or cashflow
-    ok 54 - NaN money cannot corrupt product valuation or cashflow
+    ok 56 - NaN money cannot corrupt product valuation or cashflow
       ---
-      duration_ms: 31.7331
+      duration_ms: 36.5872
       type: 'test'
       ...
     # Subtest: dashboard derives real totals, excludes marked demo rows, and separates cashflow from revenue
-    ok 55 - dashboard derives real totals, excludes marked demo rows, and separates cashflow from revenue
+    ok 57 - dashboard derives real totals, excludes marked demo rows, and separates cashflow from revenue
       ---
-      duration_ms: 90.9577
+      duration_ms: 87.6809
       type: 'test'
       ...
     # Subtest: finance-only and reports-only roles receive only their authorized aggregate sections
-    ok 56 - finance-only and reports-only roles receive only their authorized aggregate sections
+    ok 58 - finance-only and reports-only roles receive only their authorized aggregate sections
       ---
-      duration_ms: 63.7701
+      duration_ms: 62.3564
       type: 'test'
       ...
     # Subtest: raw stock/order/cash writes and private helpers are inaccessible even with users.manage
-    ok 57 - raw stock/order/cash writes and private helpers are inaccessible even with users.manage
+    ok 59 - raw stock/order/cash writes and private helpers are inaccessible even with users.manage
       ---
-      duration_ms: 50.1795
+      duration_ms: 56.0155
       type: 'test'
       ...
     # Subtest: full core backup restores synthetic order, inventory, cash, audit and idempotency into a fresh DB
-    ok 58 - full core backup restores synthetic order, inventory, cash, audit and idempotency into a fresh DB
+    ok 60 - full core backup restores synthetic order, inventory, cash, audit and idempotency into a fresh DB
       ---
-      duration_ms: 1191.3594
+      duration_ms: 749.491
       type: 'test'
       ...
     # Subtest: disabled actor loses core read/mutation and cannot self-reactivate
-    ok 59 - disabled actor loses core read/mutation and cannot self-reactivate
+    ok 61 - disabled actor loses core read/mutation and cannot self-reactivate
       ---
-      duration_ms: 45.5683
+      duration_ms: 67.2535
       type: 'test'
       ...
     # Subtest: core synthetic fixture cleanup leaves no core tenant, auth user, cash, receipt or audit rows
-    ok 60 - core synthetic fixture cleanup leaves no core tenant, auth user, cash, receipt or audit rows
+    ok 62 - core synthetic fixture cleanup leaves no core tenant, auth user, cash, receipt or audit rows
       ---
-      duration_ms: 2.0596
+      duration_ms: 2.4571
       type: 'test'
       ...
     # Subtest: current Page-wide policy is observed without inventing assignee-only protection
-    ok 61 - current Page-wide policy is observed without inventing assignee-only protection
+    ok 63 - current Page-wide policy is observed without inventing assignee-only protection
       ---
-      duration_ms: 0.2192
+      duration_ms: 0.2132
       type: 'test'
       ...
     # Subtest: own-assigned-only restriction is outside the existing authorized contract
-    ok 62 - own-assigned-only restriction is outside the existing authorized contract # SKIP Not implemented; user requested reporting this gap without changing policy
+    ok 64 - own-assigned-only restriction is outside the existing authorized contract # SKIP Not implemented; user requested reporting this gap without changing policy
       ---
-      duration_ms: 0.0537
+      duration_ms: 0.0558
       type: 'test'
       ...
     # Subtest: pre-alignment backup restores committed migration baseline into a new PostgreSQL15 database
-    ok 63 - pre-alignment backup restores committed migration baseline into a new PostgreSQL15 database
+    ok 65 - pre-alignment backup restores committed migration baseline into a new PostgreSQL15 database
       ---
-      duration_ms: 463.7068
+      duration_ms: 563.9583
       type: 'test'
       ...
     # Subtest: legacy Phase4 compatibility suite runs against this newly allocated PostgreSQL15 database
-    ok 64 - legacy Phase4 compatibility suite runs against this newly allocated PostgreSQL15 database
+    ok 66 - legacy Phase4 compatibility suite runs against this newly allocated PostgreSQL15 database
       ---
-      duration_ms: 554.5057
+      duration_ms: 641.3003
       type: 'test'
       ...
-    1..64
-ok 139 - isolated PostgreSQL: RLS, primary/backup routing and concurrent assignment
+    1..66
+ok 141 - isolated PostgreSQL: RLS, primary/backup routing and concurrent assignment
   ---
-  duration_ms: 9446.8077
+  duration_ms: 9822.14
   type: 'test'
   ...
 # Real database: PostgreSQL 15.20; fresh Docker loopback-only cluster.
 # Legacy Phase4 suite: 6 pass, 0 fail, 0 skip; separate synthetic organization cleaned.
 # Subtest: UI never calls social Edge until an explicit ERP Page is selected, then scopes list/detail and clears old thread
-ok 140 - UI never calls social Edge until an explicit ERP Page is selected, then scopes list/detail and clears old thread
+ok 142 - UI never calls social Edge until an explicit ERP Page is selected, then scopes list/detail and clears old thread
   ---
-  duration_ms: 17.5726
+  duration_ms: 22.0902
   type: 'test'
   ...
 # Subtest: UI human edit invalidates approval, sends stable operation once, and polls server-held mock state
-ok 141 - UI human edit invalidates approval, sends stable operation once, and polls server-held mock state
+ok 143 - UI human edit invalidates approval, sends stable operation once, and polls server-held mock state
   ---
-  duration_ms: 8.3
+  duration_ms: 8.3688
   type: 'test'
   ...
 # Subtest: feature-off UI does not fetch inbox and leaves grounded assistant shell intact
-ok 142 - feature-off UI does not fetch inbox and leaves grounded assistant shell intact
+ok 144 - feature-off UI does not fetch inbox and leaves grounded assistant shell intact
   ---
-  duration_ms: 2.3957
+  duration_ms: 2.665
   type: 'test'
   ...
 # Subtest: online presence heartbeats every minute and cleans up across pagehide/pageshow
-ok 143 - online presence heartbeats every minute and cleans up across pagehide/pageshow
+ok 145 - online presence heartbeats every minute and cleans up across pagehide/pageshow
   ---
-  duration_ms: 3.4558
+  duration_ms: 3.9471
   type: 'test'
   ...
 # Subtest: read-only staff cannot claim a five-minute lock even when an assignment exists
-ok 144 - read-only staff cannot claim a five-minute lock even when an assignment exists
+ok 146 - read-only staff cannot claim a five-minute lock even when an assignment exists
   ---
-  duration_ms: 7.4054
+  duration_ms: 11.4297
   type: 'test'
   ...
 # Subtest: manual assign never creates a hidden smart assignment; explicit Smart button performs only that operation
-ok 145 - manual assign never creates a hidden smart assignment; explicit Smart button performs only that operation
+ok 147 - manual assign never creates a hidden smart assignment; explicit Smart button performs only that operation
   ---
-  duration_ms: 6.5727
+  duration_ms: 7.3243
   type: 'test'
   ...
 # Subtest: assign-only user can assign an existing unassigned row using exact selected Page backup team
-ok 146 - assign-only user can assign an existing unassigned row using exact selected Page backup team
+ok 148 - assign-only user can assign an existing unassigned row using exact selected Page backup team
   ---
-  duration_ms: 4.4304
+  duration_ms: 5.7446
   type: 'test'
   ...
 # Subtest: reassignment needs separate permission and never falls back to assign or a hidden smart operation
-ok 147 - reassignment needs separate permission and never falls back to assign or a hidden smart operation
+ok 149 - reassignment needs separate permission and never falls back to assign or a hidden smart operation
   ---
-  duration_ms: 8.5215
+  duration_ms: 9.5166
   type: 'test'
   ...
 # Subtest: explicit caller Page assign deny blocks routing despite global assign permission
-ok 148 - explicit caller Page assign deny blocks routing despite global assign permission
+ok 150 - explicit caller Page assign deny blocks routing despite global assign permission
   ---
-  duration_ms: 3.6352
+  duration_ms: 6.0831
   type: 'test'
   ...
 # Subtest: explicit local mock Smart assignment never borrows a different Page team when no team is mapped
-ok 149 - explicit local mock Smart assignment never borrows a different Page team when no team is mapped
+ok 151 - explicit local mock Smart assignment never borrows a different Page team when no team is mapped
   ---
-  duration_ms: 3.8413
+  duration_ms: 6.634
   type: 'test'
   ...
 # Subtest: late initial user snapshot cannot overwrite the newer post-invitation refresh
-ok 150 - late initial user snapshot cannot overwrite the newer post-invitation refresh
+ok 152 - late initial user snapshot cannot overwrite the newer post-invitation refresh
   ---
-  duration_ms: 3.7886
+  duration_ms: 4.2227
   type: 'test'
   ...
 # Subtest: authorization context replacement prevents previous actor data from rendering
-ok 151 - authorization context replacement prevents previous actor data from rendering
+ok 153 - authorization context replacement prevents previous actor data from rendering
   ---
-  duration_ms: 1.3678
+  duration_ms: 1.4674
   type: 'test'
   ...
 # Subtest: mutating the captured actor organization also invalidates the response
-ok 152 - mutating the captured actor organization also invalidates the response
+ok 154 - mutating the captured actor organization also invalidates the response
   ---
-  duration_ms: 1.1979
+  duration_ms: 1.4359
   type: 'test'
   ...
 # Subtest: current refresh failure is visible and preserves the known snapshot without inventing a new user
-ok 153 - current refresh failure is visible and preserves the known snapshot without inventing a new user
+ok 155 - current refresh failure is visible and preserves the known snapshot without inventing a new user
   ---
-  duration_ms: 1.3023
+  duration_ms: 1.6825
   type: 'test'
   ...
 # Subtest: failure of a superseded load does not replace newer success with a stale error
-ok 154 - failure of a superseded load does not replace newer success with a stale error
+ok 156 - failure of a superseded load does not replace newer success with a stale error
   ---
-  duration_ms: 2.5005
+  duration_ms: 3.0236
   type: 'test'
   ...
 # Subtest: invite double-submit remains one POST; accepted invite plus refresh failure shows a precise partial-success warning
-ok 155 - invite double-submit remains one POST; accepted invite plus refresh failure shows a precise partial-success warning
+ok 157 - invite double-submit remains one POST; accepted invite plus refresh failure shows a precise partial-success warning
   ---
-  duration_ms: 1.6557
+  duration_ms: 2.9277
   type: 'test'
   ...
 # Subtest: an invitation completion from the previous authorization context cannot reset a new actor form
-ok 156 - an invitation completion from the previous authorization context cannot reset a new actor form
+ok 158 - an invitation completion from the previous authorization context cannot reset a new actor form
   ---
-  duration_ms: 1.0325
+  duration_ms: 1.3581
   type: 'test'
   ...
-1..156
-# tests 220
+1..158
+# tests 224
 # suites 0
-# pass 218
+# pass 222
 # fail 0
 # cancelled 0
 # skipped 2
 # todo 0
-# duration_ms 9788.9961
+# duration_ms 10259.9097

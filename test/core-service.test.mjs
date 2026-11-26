@@ -13,7 +13,7 @@ const REQUEST = '10000000-0000-4000-8000-000000000004';
 const ORDER = '10000000-0000-4000-8000-000000000005';
 const TIME = '2026-11-26T12:00:00.123456+00:00';
 const plain = value => JSON.parse(JSON.stringify(value));
-function fixture({ permissions = [], rows = {}, errors = {}, rpcError, summary = {}, orderOptions = { warehouses: [] } } = {}) {
+function fixture({ permissions = [], rows = {}, errors = {}, rpcError, productStock = [], summary = {}, orderOptions = { warehouses: [] } } = {}) {
   const calls = [], queries = [];
   class Query {
     constructor(table) { this.table = table; this.filters = []; queries.push(this); }
@@ -25,6 +25,7 @@ function fixture({ permissions = [], rows = {}, errors = {}, rpcError, summary =
   }
   const client = { from: table => new Query(table), rpc: async (name, parameters) => {
     calls.push({ name, parameters: plain(parameters ?? {}) });
+    if (name === 'core_product_stock' && !rpcError) return { data: productStock };
     return rpcError ? { error: rpcError } : { data: name === 'core_dashboard_summary' ? summary : name === 'core_order_options' ? orderOptions : { id: PRODUCT, saved: true } };
   } };
   const window = {};
@@ -64,6 +65,31 @@ test('order creator can obtain safe warehouse options without reading inventory 
   assert.deepEqual(plain(snapshot.orderOptions.warehouses), [{ id: WAREHOUSE, name: 'Synthetic warehouse' }]);
   assert.equal(queries.length, 0); assert.equal(calls.length, 1); assert.equal(calls[0].name, 'core_order_options');
   assert.equal(snapshot.summary, null);
+});
+
+test('catalog requests stock for active products with both grants and keeps a confirmed zero', async () => {
+  const rows = { products: [{ id: PRODUCT, is_active: true }, { id: ORDER, is_active: false }] };
+  const permissions = ['products.read', 'inventory.read'];
+  const { service, calls } = fixture({ rows, permissions, productStock: [{ product_id: PRODUCT, quantity: 0 }] });
+  const snapshot = await service.loadSnapshot();
+  assert.deepEqual(calls, [{ name: 'core_product_stock', parameters: { product_ids: [PRODUCT] } }]);
+  assert.equal(snapshot.productStock[PRODUCT], 0);
+  for (const permission of permissions) {
+    const restricted = fixture({ rows, permissions: [permission] });
+    assert.deepEqual(plain((await restricted.service.loadSnapshot()).productStock), {});
+    assert.equal(restricted.calls.length, 0);
+  }
+});
+
+test('unknown catalog stock remains unavailable even when a raw balance exists', async () => {
+  const rows = { products: [{ id: PRODUCT, is_active: true }], inventory_balances: [{ product_id: PRODUCT, quantity: 9 }] };
+  for (const scenario of [{ productStock: [] }, { rpcError: { code: 'PGRST202' } },
+    { productStock: [{ product_id: PRODUCT, quantity: Number.MAX_SAFE_INTEGER + 1 }] }]) {
+    const { service } = fixture({ rows, permissions: ['products.read', 'inventory.read'], ...scenario });
+    const snapshot = await service.loadSnapshot();
+    assert.equal(snapshot.productStock[PRODUCT], undefined);
+    if (scenario.rpcError || scenario.productStock.length) assert.equal(snapshot.status, 'partial');
+  }
 });
 
 test('all snapshot query sort fields exist in the actual SQL table schema', async () => {

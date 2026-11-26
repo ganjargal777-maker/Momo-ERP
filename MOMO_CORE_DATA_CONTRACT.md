@@ -17,6 +17,7 @@
 | --- | --- | --- |
 | Бараа/ангилал | `products`, `categories` | `products.read` |
 | Нөөц/агуулах | `warehouses`, `inventory_balances`, `inventory_movements` | `inventory.read` |
+| Каталог дахь барааны нийт үлдэгдэл | `core_product_stock(product_ids)` нь хүссэн идэвхтэй бараа бүрийн бүх агуулахын үлдэгдлийг нийлбэрлэнэ. RPC алдаа эсвэл үр дүнд тухайн бараа байхгүй бол үлдэгдэл тодорхойгүй гэж харуулна. | `products.read` + `inventory.read` |
 | Захиалга | `orders`, nested `order_items`/product name/SKU | `orders.read` |
 | Дугаар/залгалт | `leads`, `call_logs` | `leads.read` |
 | Хүргэлт | `deliveries` | `deliveries.read` |

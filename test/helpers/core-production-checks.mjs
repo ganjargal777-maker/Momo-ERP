@@ -60,6 +60,8 @@ export async function runCoreProductionChecks({ t, admin, actor, rpc, withRestor
   const count = async (table, where, params) => Number((await admin.query(`select count(*) n from ${table} where ${where}`, params)).rows[0].n);
   const call = (user, name, payload) => rpc(user, name, [payload]);
   const balance = async (id = product.id) => Number((await admin.query('select quantity from public.inventory_balances where warehouse_id=$1 and product_id=$2', [warehouse.id, id])).rows[0]?.quantity ?? 0);
+  const catalogStock = (user, ids) => actor(user, client =>
+    client.query('select * from public.core_product_stock($1::uuid[])', [ids]).then(result => result.rows));
   const denied = fn => assert.rejects(fn, error => ['42501', '23514', '22023', 'P0002'].includes(error.code));
   let failedChecks=0;
   const check=async(name,options,fn)=>{
@@ -256,6 +258,32 @@ export async function runCoreProductionChecks({ t, admin, actor, rpc, withRestor
       await assert.rejects(()=>call(owner,'core_adjust_inventory',{...payload,quantity_delta:20}),e=>e.code==='23505');
       await denied(()=>call(reader,'core_adjust_inventory',{...payload,request_id:randomUUID()}));
     });
+    await check('catalog stock groups all warehouses and returns zero only for visible active products without balances', async () => {
+      const secondWarehouse = await call(owner, 'core_save_warehouse', { name: 'Secondary synthetic warehouse' });
+      const empty = await call(owner, 'core_save_product', { sku: 'EMPTY', name: 'No balances yet' });
+      const inactive = await call(owner, 'core_save_product', { sku: 'INACTIVE', name: 'Archived', is_active: false });
+      await call(owner, 'core_adjust_inventory', { request_id: randomUUID(), warehouse_id: secondWarehouse.id,
+        product_id: product.id, quantity_delta: 7, movement_type: 'income' });
+      const ids = [product.id, product.id, empty.id, inactive.id, foreignProduct.id, randomUUID()];
+      const rows = await catalogStock(reader, ids);
+      assert.equal(rows.length, 2);
+      assert.deepEqual(Object.fromEntries(rows.map(row => [row.product_id, Number(row.quantity)])), {
+        [product.id]: stock + 7, [empty.id]: 0,
+      });
+      assert.deepEqual(await catalogStock(reader, []), []);
+      assert.equal((await catalogStock(reader, Array(500).fill(product.id))).length, 1);
+      await assert.rejects(() => catalogStock(reader, Array(501).fill(product.id)), { code: '22023' });
+    });
+    await check('catalog stock requires both read permissions and denies anonymous execution', async () => {
+      assert.equal((await admin.query("select has_function_privilege('anon','public.core_product_stock(uuid[])','execute') allowed")).rows[0].allowed, false);
+      await assert.rejects(() => catalogStock(operator, [product.id]), { code: '42501' });
+      await admin.query("delete from public.role_permissions where role_id=$1 and permission_code='products.read'", [readRole]);
+      try {
+        await assert.rejects(() => catalogStock(reader, [product.id]), { code: '42501' });
+      } finally {
+        await admin.query("insert into public.role_permissions(role_id,permission_code) values($1,'products.read')", [readRole]);
+      }
+    });
     await check('four concurrent order retries reserve stock and create order/items/delivery/audit only once',async()=>{
       const payload={request_id:randomUUID(),warehouse_id:warehouse.id,customer_name:'Synthetic customer',phone:'99112233',delivery_address:'Synthetic test address',items:[{product_id:product.id,quantity:2}]};
       const replies=await Promise.all(Array.from({length:4},()=>call(operator,'core_create_order',payload)));
@@ -375,6 +403,7 @@ export async function runCoreProductionChecks({ t, admin, actor, rpc, withRestor
     });
     await check('disabled actor loses core read/mutation and cannot self-reactivate',async()=>{
       await admin.query("update public.profiles set status='disabled' where id=$1",[reader]);
+      await assert.rejects(() => catalogStock(reader, [product.id]), { code: '42501' });
       await denied(()=>rpc(reader,'core_dashboard_summary',[]));
       const unchanged=await actor(reader,c=>c.query("update public.profiles set status='active' where id=$1 returning id",[reader]));
       assert.equal(unchanged.rowCount,0);

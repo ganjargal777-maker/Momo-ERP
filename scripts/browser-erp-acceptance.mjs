@@ -291,6 +291,36 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       await page.waitForFunction(() => Number(window.momoCoreUi.snapshot.summary.finance.income) === 24000);
       await nav('dashboard'); assert.equal((await page.locator('#dashboard-sales').textContent()).replace(/\D/gu, ''), '24000');
     });
+    await check('Catalog stock includes balances outside the latest 500 inventory rows', async () => {
+      // The original SKU's 8 units and a second SKU's 7 older units are both
+      // outside the first inventory page. Only the second SKU has recent rows.
+      const second = randomUUID();
+      await database.query(`INSERT INTO public.products(id, organization_id, sku, name)
+        VALUES ($1, $2, 'SYNTH-STOCK-LIMIT', 'SYNTHETIC stock limit')`, [second, org]);
+      await database.query(`INSERT INTO public.inventory_balances(organization_id, warehouse_id, product_id, quantity)
+        SELECT $1, id, $2, 7 FROM public.warehouses WHERE organization_id = $1`, [org, second]);
+      await database.query(`WITH extra AS (
+        INSERT INTO public.warehouses(organization_id, name)
+        SELECT $1, 'SYNTHETIC stock location ' || n FROM generate_series(1, 500) AS n
+        RETURNING id
+      ) INSERT INTO public.inventory_balances(organization_id, warehouse_id, product_id, quantity)
+        SELECT $1, id, $2, 1 FROM extra`, [org, second]);
+      await page.reload();
+      await page.waitForFunction(() => window.momoCoreUi?.snapshot?.status === 'ready');
+      await nav('products');
+      const sample = await page.evaluate(() => {
+        const { limited, balances } = window.momoCoreUi.snapshot;
+        return { limited: limited.balances, rows: balances.length, products: [...new Set(balances.map(row => row.product_id))] };
+      });
+      assert.deepEqual(sample, { limited: true, rows: 500, products: [second] });
+      for (const [sku, expected] of [['SYNTH-E2E-001', '8 ш'], ['SYNTH-STOCK-LIMIT', '507 ш']]) {
+        const card = page.locator('#product-grid .product-card').filter({ hasText: sku });
+        assert.equal(await card.locator('.product-price span').innerText(), expected);
+        const inventoryRow = page.locator('#inventory-list .inventory-item').filter({ hasText: sku });
+        assert.equal(await inventoryRow.locator('b').textContent(), expected);
+      }
+      assert.match(await page.locator('[data-core-report="inventory"]').textContent(), /500 мөр/u);
+    });
     await check('Permission revocation is enforced by PostgREST/RPC despite stale UI grants', async () => {
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='products.manage'", [role]);
       const denial = await page.evaluate(async () => {
