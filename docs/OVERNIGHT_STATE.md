@@ -4,7 +4,34 @@ Updated: 2026-11-26, Asia/Ulaanbaatar. Owner requests hourly independent safe
 development until **2026-11-27 08:00 +08:00**; no production deployment, secret
 changes, paid service, database reset or real customer test data.
 
-## Active integration — 2026-11-26 Asia/Ulaanbaatar
+## Catalog stock — 2026-11-26 23:00 run, Asia/Ulaanbaatar
+
+Implementation and evidence commit `0c277ec` on verified merged base
+`d4ed605`. Catalog cards, the product form and warehouse list now use per-product
+totals across all permitted warehouses. A missing result or lost permission
+leaves stock unavailable. Inventory CSV identifies the capped sample when truncated.
+
+Local synthetic results from this commit:
+
+- Unit and contract regression: 156 PASS / 0 FAIL / 2 SKIPPED (DB entrypoints).
+- Regression with PostgreSQL 15: 222 PASS / 0 FAIL / 2 SKIPPED, including the
+  500-ID boundary, true zero, cross-tenant exclusion and revoked access. The
+  separate legacy entrypoint ran nested; the own-assigned-only policy stays gated.
+- Chromium with GoTrue, PostgREST, PG15 and Mailpit: 17 PASS / 0 FAIL. With
+  502 balance rows the 500-row sample omitted all 8 units of one SKU and 7
+  units of another. Both catalog and warehouse list displayed 8 and 507.
+  All 14 local migrations applied and the owned stack was removed.
+- Current evidence is in `docs/evidence/browser-erp-acceptance.json`,
+  `core-pg15-tests.tap`, `core-pg15-validation.json` and
+  `erp-readiness-regression.tap` in the same directory.
+
+Next: correct dashboard low/out-of-stock product counts. The existing summary
+counts warehouse balance rows and misses active products without balance rows.
+Test multi-warehouse stock and a true zero against the same SKU totals used in
+the catalog. Full catalog pagination and full exports are still open.
+Hosted acceptance and production rollout remain BLOCKED on the gates below.
+
+## Prior integration at d4ed605 — 2026-11-26 Asia/Ulaanbaatar
 
 Invitation commits `6791cc4`/`a973b4f` and readiness `c4c088c` are integrated on
 `codex/overnight-erp-20261126`; both histories are preserved. Prior invitation
@@ -27,7 +54,7 @@ No production changes were performed.
   checkout contains prior dirty work; never overwrite it. Continue from the
   reviewed overnight branch; do not repeat the already completed branch merge.
 
-## Completed code and actual evidence
+## Completed code and actual evidence at d4ed605
 
 - Auth/recovery/session races and runtime-config safeguards; exact callback
   allowlists, public-key validation and Vercel no-store headers.
