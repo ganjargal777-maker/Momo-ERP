@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAtUtc": "2026-11-26T20:07:24.868Z",
+  "checkedAtUtc": "2026-11-26T21:05:31.450Z",
   "scope": "real-local-Chromium-GoTrue-PostgREST-PG15-Mailpit",
   "checks": [
     {
@@ -76,6 +76,14 @@
       "status": "PASS"
     },
     {
+      "name": "Delivery CSV includes every permitted non-demo delivery without order read access",
+      "status": "PASS"
+    },
+    {
+      "name": "Delivery export view enforces tenant and revoked grants on direct authenticated reads",
+      "status": "PASS"
+    },
+    {
       "name": "Permission revocation is enforced by PostgREST/RPC despite stale UI grants",
       "status": "PASS"
     },
@@ -100,18 +108,19 @@
   "localInviteHandlerAdapter": true,
   "hostedEdgeGatewayVerified": false,
   "stack": {
-    "projectId": "momo-browser-1354ab6e-75b",
+    "projectId": "momo-browser-e064bc6c-cbd",
     "host": "127.0.0.1",
     "postgresMajor": 15,
     "auth": "real-local-GoTrue",
     "rest": "real-local-PostgREST",
     "mail": "local-Mailpit-no-external-email"
   },
-  "appliedMigrationCount": 15,
+  "appliedMigrationCount": 16,
   "exportedOrderCount": 1008,
+  "exportedDeliveryCount": 1008,
   "status": "PASS",
   "counts": {
-    "pass": 22,
+    "pass": 24,
     "fail": 0
   },
   "ownedStackCleaned": true,

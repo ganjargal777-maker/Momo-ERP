@@ -4,6 +4,16 @@ Checked: **2026-11-26, Asia/Ulaanbaatar**. Implemented in the isolated checkout 
 
 Migration: `supabase/migrations/20261126133809_core_production_readiness.sql`, created with the installed Supabase CLI. It is additive; no seed data, reset, destructive table replacement or remote migration is included. SQL SHA-256: `49D39BB8C34A661138EF6924F58ADD8DCDA343E647F4D022BFFCF604F2319356`.
 
+## Delivery export
+
+The `core_delivery_export` view applies the caller's delivery RLS policies. Its
+private order-key projection checks the active organization, `deliveries.read`
+and the parent order's demo flag. Joining on both organization and order ID
+excludes inconsistent tenant links. The public projection contains organization
+ID, order ID, delivery status, courier ID and delivery timestamp. Delivery-only
+roles can export these fields while customer and financial fields retain their
+existing access controls. Each export page reads current committed data.
+
 ## RPC surface
 
 The browser calls Supabase `client.rpc(name, arguments)` with its own authenticated JWT. These are local implemented SQL functions, not claims that production already exposes them. Tenant and actor come from `auth.uid()`, active profile and `current_organization_id()`, never from a caller-supplied organization/actor. No service-role key belongs in the frontend.

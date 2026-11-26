@@ -214,6 +214,12 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
         catch (error) { return error.code === '42501'; }
       });
       assert.equal(exportDenied, true);
+      assert.equal(await employeePage.locator('[data-core-report="deliveries"]').isDisabled(), true);
+      const deliveryExportDenied = await employeePage.evaluate(async () => {
+        try { await window.momoCoreUi.service.loadDeliveryExport(); return false; }
+        catch (error) { return error.code === '42501'; }
+      });
+      assert.equal(deliveryExportDenied, true);
       assert.equal(await employeePage.evaluate(() => window.momoCoreUi.snapshot.summary.finance), null);
       const login = await createClient(stack.apiUrl, stack.publicKey, { auth: { persistSession: false, autoRefreshToken: false } }).auth.signInWithPassword({ email: employeeEmail, password });
       assert.equal(login.error, null);
@@ -547,6 +553,56 @@ export async function runBrowserAcceptance({ dockerBin, chromiumPath, reportPath
       assert.deepEqual(labels, expected.rows.map(row => row.label));
       assert.ok(records.some(row => row.includes(`,"'=SYNTHETIC ""quoted"", customer","00000009",`)));
       report.exportedOrderCount = labels.length;
+    });
+    await check('Delivery CSV includes every permitted non-demo delivery without order read access', async () => {
+      // The preceding bulk order fixture includes a demo order and another organization's order.
+      await database.query(`INSERT INTO public.deliveries(organization_id,order_id,status,courier_id,created_at)
+        SELECT o.organization_id,o.id,
+          CASE WHEN o.organization_id=$1 AND o.order_number%2=0 THEN 'assigned' ELSE 'pending' END,
+          CASE WHEN o.organization_id=$1 AND o.order_number%2=0 THEN $2::uuid END,'2026-01-01T00:00:00Z'
+        FROM public.orders o WHERE NOT EXISTS (SELECT 1 FROM public.deliveries d WHERE d.order_id=o.id)`, [org, user]);
+      const expected = await database.query(`SELECT d.order_id,d.status,d.courier_id,d.delivered_at
+        FROM public.deliveries d JOIN public.orders o ON d.order_id=o.id AND o.organization_id=d.organization_id
+        WHERE d.organization_id=$1 AND NOT o.is_demo ORDER BY d.order_id DESC`, [org]);
+      assert.ok(expected.rowCount > 1000);
+      const controls = await database.query(`SELECT count(*) FILTER (WHERE o.is_demo AND o.organization_id=$1)::int AS demo,
+        count(*) FILTER (WHERE o.organization_id<>$1)::int AS foreign_tenant
+        FROM public.deliveries d JOIN public.orders o ON d.order_id=o.id`, [org]);
+      assert.deepEqual(controls.rows, [{ demo: 1, foreign_tenant: 1 }]);
+
+      await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='orders.read'", [role]);
+      await page.reload();
+      await page.waitForFunction(() => window.momoCoreUi?.snapshot?.limited.deliveries === true);
+      assert.equal(await page.evaluate(() => window.momoCoreUi.snapshot.deliveries.length), 500);
+      await nav('reports');
+      assert.equal(await page.locator('[data-core-report="orders"]').isDisabled(), true);
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.locator('[data-core-report="deliveries"]').click(),
+      ]);
+      assert.match(download.suggestedFilename(), /^momo-deliveries-\d{4}-\d{2}-\d{2}\.csv$/u);
+      const csv = await readFile(await download.path(), 'utf8');
+      const [header, ...records] = csv.replace(/^\uFEFF/u, '').split('\r\n');
+      assert.equal(header, '"orderId","status","courierId","deliveredAt"');
+      const fields = records.map(record => {
+        const match = /^"([^"]+)","([^"]+)","([^"]*)","([^"]*)"$/u.exec(record);
+        assert.ok(match, 'Each delivery record has four quoted fields');
+        return [match[1], match[2], match[3], match[4] ? new Date(match[4]).toISOString() : ''];
+      });
+      const labels = { pending: 'Хүлээгдэж буй', assigned: 'Хуваарилсан', delivered: 'Хүргэгдсэн' };
+      assert.deepEqual(fields, expected.rows.map(row => [row.order_id, labels[row.status], row.courier_id ?? '', row.delivered_at?.toISOString() ?? '']));
+      report.exportedDeliveryCount = records.length;
+    });
+    await check('Delivery export view enforces tenant and revoked grants on direct authenticated reads', async () => {
+      const countVisible = () => page.evaluate(async () => {
+        const { count, error } = await window.nexerpAuth.client.from('core_delivery_export')
+          .select('order_id', { head: true, count: 'exact' });
+        if (error) throw new Error(error.code);
+        return count;
+      });
+      assert.equal(await countVisible(), report.exportedDeliveryCount);
+      await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='deliveries.read'", [role]);
+      assert.equal(await countVisible(), 0);
     });
     await check('Permission revocation is enforced by PostgREST/RPC despite stale UI grants', async () => {
       await database.query("DELETE FROM public.role_permissions WHERE role_id=$1 AND permission_code='products.manage'", [role]);

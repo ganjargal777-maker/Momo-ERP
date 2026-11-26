@@ -61,6 +61,10 @@
     {
       "name": "20261126155806_dashboard_stock_by_product.sql",
       "sha256": "cad71c5ba154c84ccdea3971b29265c7375ae4caaa17ed32eef34a175b765962"
+    },
+    {
+      "name": "20261126210330_core_delivery_export.sql",
+      "sha256": "8f199cab8b78f3ec04dd5732c0478532dc66422f4d8cbdfaf68dcf30022fada9"
     }
   ],
   "checks": {},
@@ -68,11 +72,11 @@
     "serverVersion": "15.20",
     "serverVersionNumber": 150020,
     "host": "127.0.0.1",
-    "port": 62867,
+    "port": 50982,
     "mode": "docker",
     "imageTag": "public.ecr.aws/supabase/postgres:15.20.0.004",
     "imageId": "sha256:49653bf383f8e932839ae2b4723c5d7b367b00b5f507a24267eee39352030e58",
-    "containerName": "momo-phase4-pg15-8cd81484-3e1"
+    "containerName": "momo-phase4-pg15-9fea2782-ab2"
   },
   "transactionRollback": {
     "files": [
@@ -101,7 +105,7 @@
     "assignedUserCanRead": true,
     "differentAuthorizedPageMemberCanRead": true,
     "explanation": "Current assignments_read is Page-wide; there is no assignee-only predicate.",
-    "assignmentId": "4d3035b5-0c41-4774-b5ce-c5346ca0ad2b",
+    "assignmentId": "7257838e-9d56-42be-a6d2-64a79d9c44e5",
     "assigneeId": "00000000-0000-4000-8000-000000000013",
     "observingUserId": "00000000-0000-4000-8000-000000000014",
     "implemented": false,
