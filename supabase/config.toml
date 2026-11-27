@@ -35,3 +35,7 @@ verify_jwt = true
 # Opaque bot connector token is authenticated by the service-only handler.
 [functions.social-access-recheck]
 verify_jwt = false
+
+# Isolated synthetic acceptance only; disabled by default in the handler.
+[functions.social-integration-phase7]
+verify_jwt = true
