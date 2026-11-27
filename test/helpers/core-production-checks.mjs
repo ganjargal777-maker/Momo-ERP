@@ -405,6 +405,16 @@ export async function runCoreProductionChecks({ t, admin, actor, rpc, withRestor
       await denied(()=>actor(owner,c=>c.query("select momo_core_private.require_permission('orders.create')")));
       assert.equal((await admin.query("select has_function_privilege('anon','public.core_create_order(jsonb)','execute') allowed")).rows[0].allowed,false);
       assert.equal((await admin.query("select has_function_privilege('authenticated','public.handle_new_auth_user()','execute') allowed")).rows[0].allowed,false);
+      const helperAcl=(await admin.query("select has_function_privilege('anon','public.current_organization_id()','execute') current_org_anon,has_function_privilege('anon','public.has_permission(text)','execute') permission_anon,has_function_privilege('anon','public.has_assigned_role(uuid)','execute') role_anon,has_function_privilege('anon','public.protect_profile_security_fields()','execute') profile_trigger_anon,has_function_privilege('authenticated','public.protect_profile_security_fields()','execute') profile_trigger_employee,has_function_privilege('authenticated','public.current_organization_id()','execute') current_org_employee,has_function_privilege('authenticated','public.has_permission(text)','execute') permission_employee")).rows[0];
+      assert.deepEqual(helperAcl,{
+        current_org_anon:false,
+        permission_anon:false,
+        role_anon:false,
+        profile_trigger_anon:false,
+        profile_trigger_employee:false,
+        current_org_employee:true,
+        permission_employee:true,
+      });
     });
     await check('full core backup restores synthetic order, inventory, cash, audit and idempotency into a fresh DB',{skip:!withRestoredDatabase},async()=>{
       const snapshot=async client=>({
