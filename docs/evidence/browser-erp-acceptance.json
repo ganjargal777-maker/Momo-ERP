@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAtUtc": "2026-11-26T23:02:52.829Z",
+  "checkedAtUtc": "2026-11-27T04:59:57.928Z",
   "scope": "real-local-Chromium-GoTrue-PostgREST-PG15-Mailpit",
   "checks": [
     {
@@ -120,14 +120,14 @@
   "localInviteHandlerAdapter": true,
   "hostedEdgeGatewayVerified": false,
   "stack": {
-    "projectId": "momo-browser-d1dc71df-b21",
+    "projectId": "momo-browser-530fd85a-167",
     "host": "127.0.0.1",
     "postgresMajor": 15,
     "auth": "real-local-GoTrue",
     "rest": "real-local-PostgREST",
     "mail": "local-Mailpit-no-external-email"
   },
-  "appliedMigrationCount": 16,
+  "appliedMigrationCount": 17,
   "exportedOrderCount": 1008,
   "exportedDeliveryCount": 1008,
   "exportedFinanceCount": 1006,

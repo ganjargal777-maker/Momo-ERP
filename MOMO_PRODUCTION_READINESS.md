@@ -1,5 +1,12 @@
 # MOMO ERP production readiness
 
+2026-11-27 update: a real Free isolated Supabase/Render ERP staging environment
+now exists, separate from production. Hosted JWT/RLS/Page/team/expiry acceptance
+is11PASS, and the real local ERP→Bot server/queue drill is8PASS with a mock Meta
+provider. Current exact targets, evidence, rollback and unresolved repository,
+Meta-account and production-backup gates are in docs/MOMO_STAGING_VALIDATION.md.
+The earlier checkpoint table below is historical, not a production rollout claim.
+
 2026-11-26, Asia/Ulaanbaatar. **Local implementation/acceptance PASS;
 production rollout BLOCKED** until verified backup/rollback/hosted acceptance.
 No production data, Auth settings, Edge deployment, Meta service or billing was

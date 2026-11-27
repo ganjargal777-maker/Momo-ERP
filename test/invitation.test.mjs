@@ -6,6 +6,14 @@ import { inviteRedirectUrl, isValidStartDate } from '../supabase/functions/invit
 test('invitations default to the existing hosted setup page', () => {
   assert.equal(inviteRedirectUrl(), 'https://erp.momoshop.mn/?setup=1');
 });
+
+test('only the exact approved sandbox callback is accepted when server configured', () => {
+  const callback = 'https://momo-erp-social-sandbox.onrender.com/?setup=1';
+  assert.equal(inviteRedirectUrl(callback), callback);
+  for (const altered of ['https://other-sandbox.onrender.com/?setup=1', callback + '&next=elsewhere', callback + '#token', 'http://momo-erp-social-sandbox.onrender.com/?setup=1'])
+    assert.throws(() => inviteRedirectUrl(altered), /Unsupported invitation callback/);
+  assert.equal(inviteRedirectUrl(), 'https://erp.momoshop.mn/?setup=1');
+});
 test('the existing local setup callback remains allowed by helper and source Auth', async () => {
   const callback = 'http://localhost:4173/?setup=1';
   assert.equal(inviteRedirectUrl(callback), callback);

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "scope": "actual-local-Auth-PostgREST-PostgreSQL-bot-HTTP-SQLite",
+  "checkedAtUtc": "2026-11-27T04:51:02.138Z",
+  "checks": [
+    {
+      "name": "Curated migrations compile in a new loopback-only database",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual Auth JWT, foreign organization and frontend actor injection fail closed",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed webhook deduplicates and a real authorized ERP inbox reads local SQLite",
+      "status": "PASS"
+    },
+    {
+      "name": "Draft then edit then approve persists each version without an automatic send",
+      "status": "PASS"
+    },
+    {
+      "name": "Gateway derives staff/team from SQL; queue calls real authorization and sends once to mock provider",
+      "status": "PASS"
+    },
+    {
+      "name": "Revocation after enqueue is read from PostgreSQL before provider I/O",
+      "status": "PASS"
+    },
+    {
+      "name": "Revoked queue and single-send receipt survive actual bot restart",
+      "status": "PASS"
+    },
+    {
+      "name": "Global permission removal defeats active JWT and service decision; database failure is unknown",
+      "status": "PASS"
+    }
+  ],
+  "productionWrites": 0,
+  "realMetaSends": 0,
+  "externalEmails": 0,
+  "hostedVerified": false,
+  "hostedTlsVerified": false,
+  "provider": "injected-no-network",
+  "backendAuthorizationMocks": false,
+  "stack": {
+    "projectId": "momo-browser-00c5c035-0cf",
+    "host": "127.0.0.1",
+    "postgresMajor": 15,
+    "auth": "real-local-GoTrue",
+    "rest": "real-local-PostgREST",
+    "mail": "local-Mailpit-no-external-email"
+  },
+  "migrationCount": 17,
+  "status": "PASS",
+  "counts": {
+    "pass": 8,
+    "fail": 0
+  },
+  "mockProviderCalls": 1,
+  "cleanup": {
+    "ownedStackStopped": true,
+    "failures": []
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "checkedAtUtc": "2026-11-27T04:59:00.541Z",
+  "projectRef": "lxjkkqypiwnnrjmnpick",
+  "scope": "read-only-backup-inventory-and-approved-credential-presence",
+  "status": "BLOCKED",
+  "plan": "free",
+  "postgresMajor": 17,
+  "visibleBackupCount": 0,
+  "pitrEnabled": false,
+  "walgEnabled": true,
+  "restorePointVerified": false,
+  "existingDatabaseCredentialFound": false,
+  "backupCreated": false,
+  "restorePerformed": false,
+  "productionWrites": 0,
+  "reason": "No visible restore point or existing PostgreSQL credential. CLI temporary login would mutate production access; not used."
+}

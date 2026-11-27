@@ -1,0 +1,17 @@
+{
+  "projectRef": "mmvmvweitrhlgqtjadaz",
+  "scope": "isolated-sandbox-security-advisor-review",
+  "anonymousFunctionFindingsBefore": 4,
+  "anonymousFunctionFindingsAfter": 0,
+  "remaining": [
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "level": "WARN",
+      "count": 18,
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable"
+    }
+  ],
+  "review": "Authenticated SECURITY DEFINER RPCs are intentional guarded APIs; blanket revocation/invoker conversion would break authorization or atomic operations. Real permission/tenant/revocation tests passed. This is not a claim that all advisor warnings are absent.",
+  "productionChanges": 0,
+  "checkedAtUtc": "2026-11-27T05:20:12.436Z"
+}

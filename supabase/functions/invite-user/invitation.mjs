@@ -1,11 +1,12 @@
 export const productionSetup = 'https://erp.momoshop.mn/?setup=1';
+export const hostedSandboxSetup = 'https://momo-erp-social-sandbox.onrender.com/?setup=1';
 export const canonicalOrigins = Object.freeze(['https://erp.momoshop.mn', 'http://localhost:4173']);
 
 // Only a validated server-side setting selects where an emailed session goes.
 // Dynamic HTTP loopback callbacks are for isolated local acceptance, never a
 // request-body or Origin-header redirect override.
 export function inviteRedirectUrl(configured = productionSetup) {
-  if (configured === productionSetup) return configured;
+  if (configured === productionSetup || configured === hostedSandboxSetup) return configured;
   try {
     if (typeof configured !== 'string' || configured.length > 2048) throw new Error();
     const url = new URL(configured);

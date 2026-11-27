@@ -1,0 +1,87 @@
+{
+  "checkedAtUtc": "2026-11-27T05:21:45.692Z",
+  "url": "https://momo-erp-social-sandbox.onrender.com",
+  "provider": "Render Static Site",
+  "serviceId": "srv-dc4gugm1egvs738d5vfg",
+  "plan": "Free",
+  "repository": "ganjargal777-maker/Momo-ERP",
+  "branch": "codex/overnight-erp-20261126",
+  "deployedSourceCommit": "99809e7a24e6449dbcee9b5cf547c2a5b038fdf7",
+  "productionChanges": 0,
+  "keyValuesRecorded": false,
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "cacheControl": "no-store"
+    },
+    {
+      "path": "/runtime-config.js",
+      "status": 200,
+      "cacheControl": "no-store",
+      "sandboxRefPresent": true,
+      "productionRefPresent": false,
+      "privilegedKeyPattern": false
+    },
+    {
+      "path": "/products.json",
+      "status": 404,
+      "cacheControl": null
+    },
+    {
+      "path": "/.env",
+      "status": 404,
+      "cacheControl": null
+    },
+    {
+      "path": "/supabase/config.toml",
+      "status": 404,
+      "cacheControl": null
+    }
+  ],
+  "frontendTextHashes": [
+    {
+      "file": "index.html",
+      "status": 200,
+      "matchesCommittedFrontend": true
+    },
+    {
+      "file": "app.js",
+      "status": 200,
+      "matchesCommittedFrontend": true
+    },
+    {
+      "file": "auth.js",
+      "status": 200,
+      "matchesCommittedFrontend": true
+    },
+    {
+      "file": "core-service.js",
+      "status": 200,
+      "matchesCommittedFrontend": true
+    },
+    {
+      "file": "core-ui.js",
+      "status": 200,
+      "matchesCommittedFrontend": true
+    },
+    {
+      "file": "social-service.js",
+      "status": 200,
+      "matchesCommittedFrontend": true
+    },
+    {
+      "file": "social.js",
+      "status": 200,
+      "matchesCommittedFrontend": true
+    },
+    {
+      "file": "styles.css",
+      "status": 200,
+      "matchesCommittedFrontend": true
+    }
+  ],
+  "cacheControlVerified": "no-store",
+  "status": "PASS",
+  "noStoreVerified": true
+}

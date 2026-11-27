@@ -105,6 +105,98 @@ export async function runCoreProductionChecks({ t, admin, actor, rpc, withRestor
     foreignRole=(await admin.query("select id from public.roles where organization_id=$1 and name='Admin'",[foreignOrg])).rows[0].id;
     await admin.query("insert into public.categories(id,organization_id,name) values($1,$2,'Core category'),($3,$4,'Foreign category')",[ownCategory,org,foreignCategory,foreignOrg]);
 
+    const authHelperSignatures = [
+      'public.current_organization_id()', 'public.has_permission(text)',
+      'public.has_assigned_role(uuid)', 'public.protect_profile_security_fields()',
+    ];
+    const authHelperPrivileges = async () => (await admin.query(`
+      select p.oid::regprocedure::text signature,
+        has_function_privilege('anon',p.oid,'execute') anon,
+        has_function_privilege('authenticated',p.oid,'execute') authenticated,
+        has_function_privilege('service_role',p.oid,'execute') service_role,
+        exists(select 1 from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a
+          where a.grantee=0 and a.privilege_type='EXECUTE') public_execute
+      from pg_proc p where p.oid=any($1::regprocedure[]) order by signature
+    `, [authHelperSignatures])).rows;
+    const assertAuthHelperPrivileges = rows => {
+      assert.equal(rows.length, 4);
+      for (const row of rows) {
+        assert.equal(row.anon, false, row.signature+' must deny anon');
+        assert.equal(row.public_execute, false, row.signature+' must deny PUBLIC');
+        const trigger = row.signature.includes('protect_profile_security_fields');
+        assert.equal(row.authenticated, !trigger, row.signature+' authenticated privilege');
+        if (!trigger) assert.equal(row.service_role, true, row.signature+' backend privilege');
+      }
+    };
+    await check('auth helper migration removes direct hosted anon grants, preserves bodies and guarded RPCs, rolls back and reapplies idempotently', async () => {
+      const helperSql = await readFile(new URL('../../supabase/migrations/20261127051607_harden_public_auth_helper_execution.sql', import.meta.url), 'utf8');
+      const definitions = async () => (await admin.query(`
+        select p.oid::regprocedure::text signature,pg_get_functiondef(p.oid) definition
+        from pg_proc p where p.oid=any($1::regprocedure[]) order by signature
+      `, [authHelperSignatures])).rows;
+      const guardedRpcGrants = async () => (await admin.query(`
+        select p.oid::regprocedure::text signature,p.proacl::text privileges
+        from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+        where n.nspname='public' and (p.proname like 'core_%' or p.proname='provision_invited_user')
+        order by signature
+      `)).rows;
+      const beforeDefinitions = await definitions(), beforeRpcGrants = await guardedRpcGrants();
+      const beforePrivileges = await authHelperPrivileges();
+      assertAuthHelperPrivileges(beforePrivileges);
+      await admin.query('BEGIN');
+      try {
+        // Real hosted default privileges grant anon directly. A PUBLIC-only
+        // revoke would fail this regression even when the native baseline passes.
+        await admin.query('grant execute on function public.current_organization_id(), public.has_permission(text), public.has_assigned_role(uuid), public.protect_profile_security_fields() to public, anon, authenticated');
+        const legacyPrivileges = await authHelperPrivileges();
+        assert.ok(legacyPrivileges.every(row => row.anon && row.authenticated && row.public_execute));
+        await admin.query('SAVEPOINT helper_migration');
+        await admin.query(helperSql);
+        assertAuthHelperPrivileges(await authHelperPrivileges());
+        await admin.query(helperSql);
+        assertAuthHelperPrivileges(await authHelperPrivileges());
+        assert.deepEqual(await definitions(), beforeDefinitions, 'No helper definition or SECURITY DEFINER guard changes.');
+        assert.deepEqual(await guardedRpcGrants(), beforeRpcGrants, 'No guarded core/invitation RPC grant changes.');
+        await admin.query('ROLLBACK TO SAVEPOINT helper_migration');
+        assert.deepEqual(await authHelperPrivileges(), legacyPrivileges, 'Rollback restores all original direct and PUBLIC grants.');
+      } finally { await admin.query('ROLLBACK'); }
+      assert.deepEqual(await authHelperPrivileges(), beforePrivileges);
+    });
+    await check('anonymous calls to all four auth helpers are denied while authenticated and backend identity checks remain valid', async () => {
+      const ownRole = (await admin.query("select id from public.roles where organization_id=$1 and name='Admin'", [org])).rows[0].id;
+      const queries = [
+        ['select public.current_organization_id()', []],
+        ["select public.has_permission('users.manage')", []],
+        ['select public.has_assigned_role($1::uuid)', [ownRole]],
+        ['select public.protect_profile_security_fields()', []],
+      ];
+      for (const [query, params] of queries) {
+        await assert.rejects(() => actor(owner, async client => {
+          await client.query("select set_config('request.jwt.claim.sub','',true),set_config('request.jwt.claims','',true)");
+          await client.query('SET LOCAL ROLE anon');
+          assert.equal((await client.query('select current_role role')).rows[0].role, 'anon');
+          await client.query(query, params);
+        }), {code:'42501'});
+      }
+      const authenticated = await actor(owner, client => client.query(`
+        select public.current_organization_id() organization_id,
+          public.has_permission('users.manage') permitted,
+          public.has_assigned_role($1::uuid) assigned
+      `, [ownRole]));
+      assert.deepEqual(authenticated.rows, [{organization_id:org, permitted:true, assigned:true}]);
+      const backend = await actor(owner, async client => {
+        await client.query("select set_config('request.jwt.claim.sub','',true),set_config('request.jwt.claims','',true)");
+        await client.query('SET LOCAL ROLE service_role');
+        return client.query(`
+          select public.current_organization_id() organization_id,
+            public.has_permission('users.manage') permitted,
+            public.has_assigned_role($1::uuid) assigned
+        `, [ownRole]);
+      });
+      assert.deepEqual(backend.rows, [{organization_id:null, permitted:false, assigned:false}], 'A backend role without staff identity never inherits a synthetic employee.');
+      await assert.rejects(() => actor(owner, client => client.query('select public.protect_profile_security_fields()')), {code:'42501'});
+    });
+
     await check('Auth trigger ignores user-editable organization metadata and pending user cannot enter ERP', async () => {
       await admin.query('insert into auth.users(id,email,raw_user_meta_data,email_confirmed_at) values($1,$2,$3,now())',[forged,`forged-${forged}@example.invalid`,JSON.stringify({organization_id:org})]);
       assert.equal((await admin.query('select organization_id from public.profiles where id=$1',[forged])).rows[0].organization_id,null);

@@ -65,6 +65,14 @@
     {
       "name": "20261126210330_core_delivery_export.sql",
       "sha256": "8f199cab8b78f3ec04dd5732c0478532dc66422f4d8cbdfaf68dcf30022fada9"
+    },
+    {
+      "name": "20261127044305_social_delivery_access_recheck.sql",
+      "sha256": "ba83e891984cb916ff55e093c9e24abcf785d5a3063c934fe40abc3f835b2311"
+    },
+    {
+      "name": "20261127051607_harden_public_auth_helper_execution.sql",
+      "sha256": "333540624b3b082bafd31415b1fe099a2506e552cefb33ec27b084696e538ae2"
     }
   ],
   "checks": {},
@@ -72,11 +80,11 @@
     "serverVersion": "15.20",
     "serverVersionNumber": 150020,
     "host": "127.0.0.1",
-    "port": 50982,
+    "port": 63193,
     "mode": "docker",
     "imageTag": "public.ecr.aws/supabase/postgres:15.20.0.004",
     "imageId": "sha256:49653bf383f8e932839ae2b4723c5d7b367b00b5f507a24267eee39352030e58",
-    "containerName": "momo-phase4-pg15-9fea2782-ab2"
+    "containerName": "momo-phase4-pg15-5a93e011-65b"
   },
   "transactionRollback": {
     "files": [
@@ -105,7 +113,7 @@
     "assignedUserCanRead": true,
     "differentAuthorizedPageMemberCanRead": true,
     "explanation": "Current assignments_read is Page-wide; there is no assignee-only predicate.",
-    "assignmentId": "7257838e-9d56-42be-a6d2-64a79d9c44e5",
+    "assignmentId": "e84afe0c-2794-4c53-add9-ddcc495fc2a3",
     "assigneeId": "00000000-0000-4000-8000-000000000013",
     "observingUserId": "00000000-0000-4000-8000-000000000014",
     "implemented": false,
@@ -128,5 +136,12 @@
     "containerRemoved": true,
     "networkRemoved": true,
     "persistentVolumeUsed": false
+  },
+  "testRun": {
+    "status": "PASS",
+    "exitCode": 0,
+    "startedAtUtc": "2026-11-27T05:19:18.953Z",
+    "finishedAtUtc": "2026-11-27T05:19:32.721Z",
+    "freshEvidence": true
   }
 }

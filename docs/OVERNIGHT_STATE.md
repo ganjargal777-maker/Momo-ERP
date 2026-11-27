@@ -1,5 +1,49 @@
 # MOMO ERP overnight state
 
+## Interactive isolated-server continuation — 2026-11-27
+
+New owner authorization continues beyond the expired08:00 overnight schedule.
+Base99809e7; existing worktrees/history and the original dirty checkout preserved.
+The standalone Free Supabase sandbox mmvmvweitrhlgqtjadaz is now real/healthy:
+18 curated migrations,3 deployed Edge Functions, signup disabled and exact
+staging callbacks. No production migration/deploy/Auth/billing change occurred.
+Free Render static staging is https://momo-erp-social-sandbox.onrender.com;
+its initial frontend source is99809e7. This is not the production ERP domain.
+
+- Added real ERP staff delivery-context/recheck RPCs and own-auth server Edge
+  endpoint, plus trusted gateway identity headers. Default flags remain false.
+- Actual local Auth/RLS/gateway→Bot HTTP/SQLite drill8PASS with1 mocked provider
+  call; real Meta sends0. Hosted JWT/RLS/Edge11PASS, including real expiry;
+  sandbox TTL restored3600, owned synthetic cleanup0 remaining. Final staging
+  origin rerun10PASS; repeat expiry skipped because its separate proof passed.
+- Fresh local browser27PASS with17migrations and actual CRUD/exports/revocation.
+  Actual public Render staging browser15PASS/0FAIL/1emailSKIP, ownedcleanupPASS.
+  Hosted JWT expiry11PASS/0FAIL/0SKIP separately. Runtime no-store verified.
+  Current TAP/evidence files contain exact unit/fullPG counts and skip reasons.
+  The PG wrapper uses unique actual evidence paths and records child exit status.
+- Final unit regression184PASS/0FAIL/2SKIP; full actualPG regression253PASS/
+  0FAIL/2SKIP. New anonymous-helper ACL hardening preserves authenticated RLS,
+  invitations and profile trigger. Actual hosted anonymous RPC denials PASS;
+  advisor anon SECURITY DEFINER findings4→0. Guarded authenticated RPC warnings
+  remain intentional, not a missing-RLS finding. Post-hardening hosted browser
+  repeats15PASS/1emailSKIP and service access repeats10PASS.
+- Sandbox artifact preparation now requires17 exact migration/source hashes and
+  fresh successful PG/rollback/restore/cleanup evidence; old bundles fail closed.
+- Production backup inventory0/PITRfalse; existing PG credential unavailable.
+  Read-only production dump/PG17 restore remains BLOCKED. Never create a
+  temporary production CLI login implicitly to bypass that gate.
+- Private Bot repository is unavailable to Render's current GitHub app. Scoped
+  Bearer/no-send env generated in private ACL storage outside Git, NOT installed
+  on a new Bot Render service. Do not publish/mirror the private repository.
+- Meta UI observed Khoroolol messages subscription and current callback, then
+  developer-account confirmation blocked further checks. Local Page token is
+  bound to a different Page; no Graph/test/send used it. Current AI status unknown.
+
+Read docs/MOMO_STAGING_VALIDATION.md and newest hosted browser/HTTP evidence
+before the next run. Complete Bot hosted acceptance after repository-scoped
+access; production deployment/send/paid actions require explicit owner approval.
+Do not repeat completed local drills without a new change or unresolved concern.
+
 Updated: 2026-11-27, Asia/Ulaanbaatar. Owner requests hourly independent safe
 development until **2026-11-27 08:00 +08:00**; no production deployment, secret
 changes, paid service, database reset or real customer test data.

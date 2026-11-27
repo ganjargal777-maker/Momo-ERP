@@ -10,7 +10,9 @@
     "test:pg15": "node scripts/validate-social-pg15.mjs",
     "prepare:hosted-social": "node scripts/prepare-hosted-social-sandbox.mjs",
     "test:hosted-social": "node scripts/validate-hosted-social-sandbox.mjs",
-    "test:browser": "node scripts/browser-erp-acceptance.mjs"
+    "test:browser": "node scripts/browser-erp-acceptance.mjs",
+    "test:social:delivery": "node scripts/rehearse-social-delivery.mjs",
+    "test:hosted:access": "node scripts/check-hosted-social-access.mjs"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.112.3",

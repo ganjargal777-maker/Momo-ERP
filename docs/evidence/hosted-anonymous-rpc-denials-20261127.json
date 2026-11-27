@@ -1,0 +1,27 @@
+{
+  "checkedAtUtc": "2026-11-27T05:20:42.048Z",
+  "projectRef": "mmvmvweitrhlgqtjadaz",
+  "checks": [
+    {
+      "function": "current_organization_id",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "function": "has_permission",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "function": "has_assigned_role",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    }
+  ],
+  "productionChanges": 0,
+  "denialClassification": "PostgREST maps insufficient_privilege to 401 for anonymous callers or 403 for authenticated callers; SQLSTATE must be 42501.",
+  "status": "PASS"
+}

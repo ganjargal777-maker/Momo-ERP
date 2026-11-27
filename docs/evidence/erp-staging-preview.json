@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-27T05:00:21.978Z",
+  "status": "PASS_RENDER_STAGING",
+  "scope": "Free staging static preview only; no production/project/environment/billing changes",
+  "sandbox": {
+    "projectRef": "mmvmvweitrhlgqtjadaz",
+    "url": "https://mmvmvweitrhlgqtjadaz.supabase.co",
+    "frontendKeyType": "legacy anon",
+    "keyValueRecorded": false,
+    "productionRefDenied": true
+  },
+  "vercel": {
+    "cachedCliVersion": "67.0.0",
+    "whoami": {
+      "exitCode": 1,
+      "status": "missing_or_invalid_vercel_auth",
+      "rawOutputRetained": false
+    },
+    "existingProjectLinkFound": false,
+    "deployAttempted": false,
+    "deploymentUrl": null,
+    "blocker": "No existing authenticated Vercel CLI session or verified project link. No login or cloud deployment attempted."
+  },
+  "artifact": {
+    "status": "READY",
+    "directory": "C:\\Users\\begii\\AppData\\Local\\MomoShop\\isolated-acceptance-94d5e7fc\\staging-preview-e38b2c35-ea9b-4ed7-a286-f8bd755309cb",
+    "staticBuildDirectory": "C:\\Users\\begii\\AppData\\Local\\MomoShop\\isolated-acceptance-94d5e7fc\\staging-preview-e38b2c35-ea9b-4ed7-a286-f8bd755309cb\\source\\build",
+    "vercelPrebuiltDirectory": "C:\\Users\\begii\\AppData\\Local\\MomoShop\\isolated-acceptance-94d5e7fc\\staging-preview-e38b2c35-ea9b-4ed7-a286-f8bd755309cb\\preview",
+    "staticFileCount": 11,
+    "manifestSha256": "a6153b7884d271201f17346134b43c862397f3b168e77f9b75e1c3d9cf38f689",
+    "publicFiles": [
+      "app.js",
+      "assets/momo-shop-logo.png",
+      "auth.js",
+      "core-service.js",
+      "core-ui.js",
+      "favicon.svg",
+      "index.html",
+      "runtime-config.js",
+      "social-service.js",
+      "social.js",
+      "styles.css"
+    ],
+    "legacyCatalogPublished": false,
+    "sourceUnchanged": true,
+    "publicAnonKeyOnly": true,
+    "productionRefAbsent": true,
+    "secretValuesRecorded": false
+  },
+  "checks": [
+    {
+      "name": "Allowlisted static build using fresh sandbox runtime config",
+      "status": "PASS"
+    },
+    {
+      "name": "Public anon role and sandbox project ref validation",
+      "status": "PASS"
+    },
+    {
+      "name": "Production ref and privileged-key denial across published bytes",
+      "status": "PASS"
+    },
+    {
+      "name": "Authored source hashes unchanged after isolated build",
+      "status": "PASS"
+    },
+    {
+      "name": "Localhost static identity HTTP checks",
+      "status": "PASS",
+      "details": {
+        "root200": true,
+        "sandboxRuntime200": true,
+        "runtimeNoStore": true,
+        "legacyCatalog404": true,
+        "secretFile404": true,
+        "environment404": true
+      }
+    },
+    {
+      "name": "Hosted preview HTTP identity",
+      "status": "SKIPPED",
+      "reason": "Vercel authentication unavailable; no hosted deployment."
+    },
+    {
+      "name": "Hosted browser login/reset/RLS acceptance",
+      "status": "SKIPPED",
+      "reason": "Requires approved hosted preview and sandbox Auth callback/origin configuration; not run by this static preparation."
+    }
+  ],
+  "nextStep": "Root will evaluate FREE Render static staging after repository-scoped GitHub app permission. Do not request a Vercel login. No Render or Vercel resource was created by this task.",
+  "mutations": {
+    "production": false,
+    "projectConfig": false,
+    "environment": false,
+    "billing": false,
+    "remoteDeploy": false,
+    "sourceCode": false,
+    "git": false
+  },
+  "render": {
+    "url": "https://momo-erp-social-sandbox.onrender.com",
+    "serviceId": "srv-dc4gugm1egvs738d5vfg",
+    "plan": "Free",
+    "initialSourceCommit": "99809e7a24e6449dbcee9b5cf547c2a5b038fdf7",
+    "deploymentSucceeded": true,
+    "privilegedKeysPublished": false,
+    "hostedBrowserReport": "hosted-erp-browser-final-20261127.json"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-11-27T04:57:07.637Z",
+  "projectRef": "mmvmvweitrhlgqtjadaz",
+  "scope": "isolated-hosted-synthetic-Auth-RLS-Edge-access-acceptance",
+  "status": "PASS_WITH_SKIPS",
+  "productionWrites": 0,
+  "metaRequests": 0,
+  "externalEmails": 0,
+  "checks": [
+    {
+      "name": "Real hosted Auth and caller-derived primary delivery context",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted RLS hides foreign Page and service-only subject RPC from authenticated caller",
+      "status": "PASS"
+    },
+    {
+      "name": "Real Edge rejects missing, wrong-principal and corrupt JWT",
+      "status": "PASS"
+    },
+    {
+      "name": "Real Edge rejects foreign organization Page and unauthorized browser origin",
+      "status": "PASS"
+    },
+    {
+      "name": "Real Edge read flag is fail-closed before upstream registry forwarding",
+      "status": "PASS"
+    },
+    {
+      "name": "Real hosted service Edge issues correlated allowed delivery decision",
+      "status": "PASS"
+    },
+    {
+      "name": "Page explicit deny overrides active team membership",
+      "status": "PASS"
+    },
+    {
+      "name": "Revoked Page and membership hold old team while authenticated context chooses backup",
+      "status": "PASS"
+    },
+    {
+      "name": "Team deactivation, global permission and send flag revocation deny current dispatch",
+      "status": "PASS"
+    },
+    {
+      "name": "Inactive profile and foreign subject/org cannot reuse an allowed decision",
+      "status": "PASS"
+    },
+    {
+      "name": "Previously valid signed JWT expiry",
+      "status": "SKIPPED",
+      "reason": "Server-issued token outlives bounded expiry wait; no expired claim was forged."
+    }
+  ],
+  "network": {
+    "requests": 79,
+    "nonReadRequests": 68
+  },
+  "cleanup": {
+    "status": "PASS",
+    "counts": {
+      "social_page_user_access": 2,
+      "social_team_members": 3,
+      "social_page_teams": 3,
+      "audit_logs": 0,
+      "feature_flags": 4,
+      "user_roles": 2,
+      "role_permissions": 10,
+      "authUsers": 2,
+      "facebook_pages": 2,
+      "social_teams": 3,
+      "roles": 2,
+      "organizations": 2
+    },
+    "remaining": {
+      "profiles": 0,
+      "facebook_pages": 0,
+      "social_teams": 0,
+      "roles": 0,
+      "organizations": 0
+    },
+    "errors": [],
+    "providerAuditLogsRetained": true
+  },
+  "ownedFixtureLedger": "C:\\Users\\begii\\AppData\\Local\\MomoShop\\isolated-acceptance-94d5e7fc\\hosted-social-owned-c0643257-e74c-4bbd-8355-dbe9e8bf4e02.json",
+  "runId": "c0643257-e74c-4bbd-8355-dbe9e8bf4e02",
+  "counts": {
+    "pass": 10,
+    "fail": 0,
+    "skipped": 1
+  }
+}

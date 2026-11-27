@@ -1,5 +1,11 @@
 # MOMO ERP — Phase 6B Hosted Sandbox Readiness
 
+2026-11-27: the actual isolated Free project is `mmvmvweitrhlgqtjadaz`, and the
+Free Render static ERP is `https://momo-erp-social-sandbox.onrender.com`.
+Current deployed targets, real hosted/browser evidence and remaining Bot/backup/
+Meta gates are in `docs/MOMO_STAGING_VALIDATION.md`. Older preparation counts
+below are historical; no production rollout is claimed.
+
 Огноо: 2026-11-26, Asia/Ulaanbaatar. Энэ нь **deployment бэлтгэл**; hosted migration, function deployment, secret write, flag update, Meta subscription эсвэл бодит мессеж илгээлт хийгдээгүй. Production Supabase, Vercel, ERP database болон Facebook ботын repository-г өөрчлөхгүй.
 
 ## 1. Одоогийн төлөв ба эхний blocker

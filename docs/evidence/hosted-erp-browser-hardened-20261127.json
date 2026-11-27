@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-11-27T05:20:43.407Z",
+  "projectRef": "mmvmvweitrhlgqtjadaz",
+  "stagingOrigin": "https://momo-erp-social-sandbox.onrender.com",
+  "scope": "real-hosted-Chromium-sandbox-Auth-PostgREST-operational-CRUD",
+  "status": "PASS_WITH_SKIPS",
+  "productionWrites": 0,
+  "metaRequests": 0,
+  "externalEmails": 0,
+  "backendMocks": false,
+  "pinnedSdkFulfilledLocally": true,
+  "iconsOnlyMock": true,
+  "checks": [
+    {
+      "name": "Hosted public runtime is pinned to the isolated sandbox and excludes privileged credentials/catalog",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted real Auth rejects a wrong password and restores the submit button",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted login loads real profile/RBAC and an empty organization dashboard",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted warehouse/product create and product edit persist through real PostgREST RPCs",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted inventory adjustment persists stock and movement history",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted order form atomically persists order/items/delivery and reserves trusted-price stock",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted lead and call forms persist synthetic customer numbers",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted reload retains real records and ignores poisoned legacy demo localStorage",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted delivery transitions and cashflow update the real dashboard",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted catalog archive persists and preserves already reserved stock",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted RPC denies a revoked permission despite stale browser grants",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted core mutations have organization/actor-bound audit entries",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted logout clears the authorized shell and private client state",
+      "status": "PASS"
+    },
+    {
+      "name": "Public staging login screenshot contains no credentials or authorized shell",
+      "status": "PASS"
+    },
+    {
+      "name": "Hosted password recovery/invitation email",
+      "status": "SKIPPED",
+      "reason": "No external email is authorized; local real GoTrue/Mailpit recovery and invitation acceptance is separate evidence."
+    },
+    {
+      "name": "Hosted browser has no unhandled errors, forbidden backend destination or backend mocks",
+      "status": "PASS"
+    }
+  ],
+  "network": {
+    "forwardedExternalDestinations": 0,
+    "blockedExternalRequests": 4,
+    "forbiddenBackendRequests": 0,
+    "stagingReadRequests": 2,
+    "requests": 61,
+    "nonReadRequests": 28,
+    "stagingBrowserRequests": 47,
+    "sandboxBrowserRequests": 248
+  },
+  "cleanup": {
+    "status": "PASS",
+    "counts": {
+      "finance_entries": 1,
+      "call_logs": 1,
+      "order_status_history": 3,
+      "deliveries": 1,
+      "order_items": 1,
+      "orders": 1,
+      "leads": 1,
+      "lead_batches": 0,
+      "inventory_movements": 2,
+      "inventory_balances": 1,
+      "products": 1,
+      "warehouses": 1,
+      "categories": 0,
+      "facebook_pages": 1,
+      "audit_logs": 11,
+      "user_roles": 1,
+      "role_permissions": 18,
+      "roles": 1,
+      "authUsers": 1,
+      "organizations": 1
+    },
+    "remaining": {
+      "profiles": 0,
+      "organizations": 0,
+      "roles": 0,
+      "orders": 0,
+      "order_items": 0,
+      "deliveries": 0,
+      "finance_entries": 0,
+      "leads": 0,
+      "call_logs": 0,
+      "products": 0,
+      "warehouses": 0,
+      "inventory_balances": 0,
+      "inventory_movements": 0,
+      "audit_logs": 0
+    },
+    "errors": [],
+    "providerAuditLogsRetained": true
+  },
+  "ownedFixtureLedger": "C:\\Users\\begii\\AppData\\Local\\MomoShop\\isolated-acceptance-94d5e7fc\\hosted-browser-owned-c26540a5-8767-485f-a1d9-3ff02e6d8905.json",
+  "runId": "c26540a5-8767-485f-a1d9-3ff02e6d8905",
+  "auditActionsVerified": [
+    "core.warehouse.save",
+    "core.product.save",
+    "core.inventory.adjust",
+    "core.order.create",
+    "core.leads.create",
+    "core.lead.update",
+    "core.delivery.update",
+    "core.finance.record"
+  ],
+  "publicLoginScreenshot": "C:\\Users\\begii\\OneDrive\\Documents\\ChatGPT\\.overnight-worktrees\\erp-20261126\\docs\\evidence\\hosted-erp-staging-login.png",
+  "counts": {
+    "pass": 15,
+    "fail": 0,
+    "skipped": 1
+  }
+}

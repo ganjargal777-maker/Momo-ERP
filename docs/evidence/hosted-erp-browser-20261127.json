@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-11-27T05:09:26.805Z",
+  "projectRef": "mmvmvweitrhlgqtjadaz",
+  "stagingOrigin": "https://momo-erp-social-sandbox.onrender.com",
+  "scope": "real-hosted-Chromium-sandbox-Auth-PostgREST-operational-CRUD",
+  "status": "FAIL",
+  "productionWrites": 0,
+  "metaRequests": 0,
+  "externalEmails": 0,
+  "backendMocks": false,
+  "pinnedSdkFulfilledLocally": true,
+  "iconsOnlyMock": true,
+  "checks": [
+    {
+      "name": "Hosted public runtime is pinned to the isolated sandbox and excludes privileged credentials/catalog",
+      "status": "FAIL"
+    }
+  ],
+  "network": {
+    "forwardedExternalDestinations": 0,
+    "blockedExternalRequests": 0,
+    "forbiddenBackendRequests": 0,
+    "stagingReadRequests": 1
+  },
+  "cleanup": {
+    "status": "NOT_REQUIRED",
+    "counts": {},
+    "remaining": {}
+  },
+  "ownedFixtureLedger": "C:\\Users\\begii\\AppData\\Local\\MomoShop\\isolated-acceptance-94d5e7fc\\hosted-browser-owned-754c092e-ce5b-464d-8aed-3e63532aa495.json",
+  "runId": "754c092e-ce5b-464d-8aed-3e63532aa495",
+  "failedStage": "Hosted public runtime is pinned to the isolated sandbox and excludes privileged credentials/catalog",
+  "failure": {
+    "code": "runtime_sandbox_pin_failed"
+  },
+  "browserErrorCount": 0,
+  "backendErrors": [],
+  "counts": {
+    "pass": 0,
+    "fail": 1,
+    "skipped": 0
+  }
+}

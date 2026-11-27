@@ -317,16 +317,17 @@ export function createSocialIntegrationHandler({createClient,fetchImpl,env={},mo
           runtime=runtimeFor(page,get);secrets.push(runtime.token);
           if(typeof fetchImpl!=='function')fail(503,'adapter_configuration','HTTP adapter байхгүй.');
         } else if(!mockAdapter||typeof mockAdapter.request!=='function')fail(503,'mock_not_configured','Тусдаа stateful mock fixture тохируулаагүй.');
-        const upstream=async(method,path,payload,key)=>{
+        const upstream=async(method,path,payload,key,staffContext)=>{
           check();let response;
           if(method!=='GET')await reauthorizeMutation();
           try {
             if(method!=='GET')mutationAttempted=true;
-            if(mode==='mock')response=await mockAdapter.request({page,method,path,body:payload,idempotencyKey:key,signal:controller.signal});
+            if(mode==='mock')response=await mockAdapter.request({page,method,path,body:payload,idempotencyKey:key,signal:controller.signal,...(staffContext?{staffContext}:{} )});
             else {
               const url=new URL(path,runtime.baseUrl);url.searchParams.set('pageId',page.external_page_id);
               response=await fetchImpl(url.toString(),{method,redirect:'error',signal:controller.signal,
-                headers:{Authorization:`Bearer ${runtime.token}`,Accept:'application/json',...(payload===undefined?{}:{'Content-Type':'application/json'}),...(key?{'Idempotency-Key':key}:{})},
+                headers:{Authorization:`Bearer ${runtime.token}`,Accept:'application/json',...(payload===undefined?{}:{'Content-Type':'application/json'}),...(key?{'Idempotency-Key':key}:{}),
+                  ...(staffContext?{'X-Momo-Erp-Actor':staffContext.subjectId,'X-Momo-Erp-Organization':staffContext.organizationId,'X-Momo-Erp-Team':staffContext.teamId}:{})},
                 ...(payload===undefined?{}:{body:JSON.stringify(payload)})});
             }
           } catch {check();fail(502,'adapter_network','Adapter холболт амжилтгүй. Илгээлтийг шинэ key-ээр давтахгүй.');}
@@ -343,6 +344,10 @@ export function createSocialIntegrationHandler({createClient,fetchImpl,env={},mo
         };
         const caps=await upstream('GET','/erp/v1/capabilities');
         if(caps.data.apiVersion!=='1'||caps.data.pageId!==page.external_page_id)fail(503,'runtime_identity_mismatch','Runtime Page identity тохирохгүй.');
+        const staffRecheck=get('SOCIAL_STAFF_RECHECK_ENABLED');
+        if(staffRecheck!==undefined&&!['true','false'].includes(staffRecheck))fail(503,'adapter_configuration','Ажилтны эрх дахин шалгах тохиргоо буруу.');
+        if(body.action==='send'&&caps.data.actorRecheckRequired===true&&staffRecheck!=='true')
+          fail(503,'staff_recheck_required','Bot ажилтны баталгаажсан context шаардсан боловч ERP холболт идэвхгүй байна.');
         const kind=body.resource==='comment'?'comments':'conversations';
         const matches=(data,id,channel=body.resource)=>{
           if(!isObject(data)||data.pageId!==page.external_page_id||(id&&data.id!==id)||(channel&&data.channel!==channel))fail(502,'resource_page_mismatch','Bot resource Page эсвэл төрөл тохирохгүй.');return data;
@@ -378,9 +383,16 @@ export function createSocialIntegrationHandler({createClient,fetchImpl,env={},mo
               profile.organization_id,page.id,user.id,body.idempotencyKey,
             ]))))).map(byte=>byte.toString(16).padStart(2,'0')).join(''):undefined;
             operationId=key;
-            await audit(page,'requested',0,{replyVersion:body.reply.version,operationId:key});
+            let staffContext;
+            if(body.action==='send'&&staffRecheck==='true') {
+              staffContext=await db(client.rpc('get_social_delivery_context',{target_page:page.id}));
+              if(!isObject(staffContext)||staffContext.subjectId!==user.id||staffContext.organizationId!==profile.organization_id||
+                staffContext.erpPageId!==page.id||staffContext.pageId!==page.external_page_id||!UUID.test(staffContext.teamId??''))
+                fail(403,'staff_context_denied','Ажилтан, Page болон багийн хүчинтэй илгээх эрх олдсонгүй.');
+            }
+            await audit(page,'requested',0,{replyVersion:body.reply.version,operationId:key,...(staffContext?{teamId:staffContext.teamId}:{})});
             result=await upstream(body.action==='edit'?'PATCH':'POST',`/erp/v1/replies/${id}${body.action==='edit'?'':'/'+body.action}`,
-              {expectedVersion:body.reply.version,...(body.action==='edit'?{text:body.reply.text}:{})},key);
+              {expectedVersion:body.reply.version,...(body.action==='edit'?{text:body.reply.text}:{})},key,staffContext);
             if(body.action==='send'){if(result.data.replyId!==id)fail(502,'resource_page_mismatch','Queued reply тохирохгүй.');}
             else matches(result.data,id);
           }
